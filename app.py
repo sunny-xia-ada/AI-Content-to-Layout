@@ -72,7 +72,7 @@ def render_loopy_final_engine(md_text):
     return f'<div style="{STYLES["card"]}">{soup.decode_contents()}</div>'
 
 # --- 3. UI ARCHITECTURE (Side-by-Side) ---
-st.title("🎀 XYLAB x Loopy: Official Studio")
+st.title("🎀 XYLAB Contents Editor")
 
 col1, col2 = st.columns([1, 1], gap="large")
 
