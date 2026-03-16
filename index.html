@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XYLAB | STANCE CORE</title>
+    <link rel="stylesheet" href="design_tokens.css">
+    <style>
+        /* Specific Page Styles */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding-bottom: 10vh;
+            background: linear-gradient(rgba(26, 26, 26, 0.4), rgba(26, 26, 26, 0.4)), 
+                        url('hero_aesthetic_1773623718620.png') no-repeat center center/cover;
+            color: var(--color-white);
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 200;
+            letter-spacing: -0.05em;
+            line-height: 0.9;
+        }
+
+        .nav-minimal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: calc(var(--spacing-unit) * 4) var(--margin-right) calc(var(--spacing-unit) * 4) var(--margin-left);
+            z-index: 100;
+            mix-blend-mode: difference;
+            color: var(--color-white);
+        }
+
+        .nav-minimal .logo {
+            font-weight: 700;
+            letter-spacing: 0.2em;
+        }
+
+        .section-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 80vh;
+            align-items: center;
+            gap: calc(var(--spacing-unit) * 8);
+            margin-top: 20vh;
+            margin-bottom: 20vh;
+        }
+
+        .product-image {
+            width: 100%;
+            height: auto;
+            border: var(--hairline);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .product-image:hover {
+            transform: scale(1.02);
+            border-color: var(--accent-color);
+        }
+
+        .data-overlay {
+            position: relative;
+            z-index: 1;
+        }
+
+        .data-overlay::before {
+            content: '0x3F_CORE';
+            position: absolute;
+            top: -40px;
+            left: -20px;
+            font-family: var(--font-mono);
+            font-size: 8rem;
+            color: rgba(0, 224, 255, 0.05);
+            z-index: -1;
+            white-space: nowrap;
+        }
+
+        footer {
+            padding: 10vh var(--margin-right) 10vh var(--margin-left);
+            border-top: var(--hairline);
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="nav-minimal">
+        <div class="logo">XYLAB</div>
+        <div class="mono-subtitle" style="color: inherit;">Collection 01 // 2026</div>
+    </nav>
+
+    <header class="hero asymmetric-container">
+        <div class="mono-subtitle">Structural Autonomy</div>
+        <h1>STANCE<br>CORE</h1>
+    </header>
+
+    <main>
+        <section class="asymmetric-container section-split">
+            <div class="data-overlay">
+                <div class="mono-subtitle">Technical Analysis</div>
+                <h2 style="font-size: 2.5rem; font-weight: 300; margin-bottom: 2rem;">Weightless<br>Architecture</h2>
+                <div class="weightless-card">
+                    <p>Designed for the digital-native nomad. Utilizing precision data modeling to minimize textile waste and maximize structural integrity.</p>
+                </div>
+                <div class="mono-subtitle">Latency: 0.00ms</div>
+            </div>
+            <div>
+                <img src="/Users/yidanxia/.gemini/antigravity/brain/c5b885aa-8807-4bfb-9bd5-419da85b62e0/product_structure_data_1773623732006.png" alt="XYLAB Product Structure" class="product-image">
+            </div>
+        </section>
+
+        <section class="asymmetric-container" style="margin-bottom: 20vh;">
+            <div class="mono-subtitle">Circuitry & Flow</div>
+            <div style="width: 100%; height: 0.5px; background: linear-gradient(to right, var(--accent-color), transparent); margin-bottom: 4rem;"></div>
+            <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 4rem;">
+                <div>
+                   <p style="font-size: 0.9rem; opacity: 0.8; max-width: 300px;">The intersection of Data Science and Avant-Garde fashion. Every seam is a calculated line of code.</p>
+                </div>
+                <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-color); opacity: 0.6;">
+                    // INITIALIZING XYLAB_CORE...<br>
+                    // LOAD_STANCE: TRUE<br>
+                    // MARGIN_ASIM: 12%_LEFT / 6%_RIGHT<br>
+                    // BRAND_AESTHETIC: WEIGHTLESS<br>
+                    // STATUS: OPERATIONAL
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="mono-subtitle">Antigravity Inspired</div>
+        <p>&copy; 2026 XYLAB. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>

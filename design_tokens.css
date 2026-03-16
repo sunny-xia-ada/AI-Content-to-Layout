@@ -1,0 +1,200 @@
+:root {
+  /* HSL-Tailored Color Palette */
+  --color-charcoal: hsl(0, 0%, 10%);
+  /* #1A1A1A */
+  --color-white: hsl(0, 0%, 98%);
+  /* #FAFAFA */
+  --color-circuit-blue: hsl(187, 100%, 50%);
+  /* #00E0FF */
+  --color-loopy-pink: hsl(350, 100%, 88%);
+  /* #FFC0CB */
+
+  --bg-color: var(--color-white);
+  --text-color: var(--color-charcoal);
+  --accent-color: var(--color-circuit-blue);
+  --accent-soft: var(--color-loopy-pink);
+
+  /* Typography */
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Playfair Display', 'Georgia', serif;
+  --font-mono: 'JetBrains Mono', 'Roboto Mono', monospace;
+
+  /* Layout & Spacing */
+  --margin-left: 12vw;
+  --margin-right: 6vw;
+  --mobile-padding: 10vw;
+  --spacing-unit: 8px;
+  --hairline: 0.5px solid rgba(26, 26, 26, 0.1);
+  --hairline-light: 0.5px solid rgba(250, 250, 250, 0.2);
+
+  /* Effects */
+  --glass-blur: blur(12px);
+  --glass-bg: rgba(250, 250, 250, 0.7);
+  --shadow-subtle: 0 4px 30px rgba(0, 0, 0, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+.mono-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-color);
+  margin-bottom: var(--spacing-unit);
+}
+
+.asymmetric-container {
+  padding-left: var(--margin-left);
+  padding-right: var(--margin-right);
+}
+
+.weightless-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: var(--hairline);
+  box-shadow: var(--shadow-subtle);
+  padding: calc(var(--spacing-unit) * 3);
+  margin-bottom: calc(var(--spacing-unit) * 4);
+}
+
+/* Content Engine Rules */
+.premium-p {
+  line-height: 2.0 !important;
+  letter-spacing: 1px !important;
+  margin-bottom: calc(var(--spacing-unit) * 4);
+  font-weight: 300;
+}
+
+.align-right {
+  text-align: right;
+  margin-left: auto;
+  max-width: 80%;
+  /* Maintain asymmetric balance */
+}
+
+.xylabs-blockquote {
+  position: relative;
+  background: rgba(26, 26, 26, 0.03);
+  backdrop-filter: blur(4px);
+  padding: calc(var(--spacing-unit) * 4) calc(var(--spacing-unit) * 6);
+  border-left: none;
+  /* Removed standard border */
+  margin: calc(var(--spacing-unit) * 6) 0;
+  font-style: italic;
+  overflow: hidden;
+}
+
+.xylabs-blockquote::after {
+  content: 'XYLAB';
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.lightbox-img {
+  border-radius: 5px;
+  box-shadow: 0 0 40px rgba(0, 224, 255, 0.1), 0 0 100px rgba(0, 0, 0, 0.05);
+  /* Studio lightbox glow */
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: calc(var(--spacing-unit) * 6) auto;
+  transition: box-shadow 0.4s ease;
+}
+
+.lightbox-img:hover {
+  box-shadow: 0 0 60px rgba(0, 224, 255, 0.2), 0 0 120px rgba(0, 0, 0, 0.08);
+}
+
+/* Luxury 'Loopy Science' Additions */
+
+/* Luxury Python Snippet - Luxury Fashion Magazine Font */
+.luxury-snippet {
+  font-family: var(--font-serif);
+  background: linear-gradient(135deg, rgba(255, 192, 203, 0.05), rgba(255, 192, 203, 0.15));
+  padding: calc(var(--spacing-unit) * 4);
+  border-left: 2px solid var(--accent-soft);
+  margin: calc(var(--spacing-unit) * 4) 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.luxury-snippet::before {
+  content: "DEF STANCE_CORE(DATA):";
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  opacity: 0.3;
+}
+
+/* Custom 01/02 List Markers */
+.ordered-list-0x {
+  list-style: none;
+  counter-reset: custom-counter;
+  padding-left: calc(var(--spacing-unit) * 6);
+}
+
+.ordered-list-0x li {
+  counter-increment: custom-counter;
+  position: relative;
+  margin-bottom: calc(var(--spacing-unit) * 2);
+  line-height: 2.0;
+  letter-spacing: 1px;
+}
+
+.ordered-list-0x li::before {
+  content: counter(custom-counter, decimal-leading-zero);
+  position: absolute;
+  left: calc(var(--spacing-unit) * -6);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent-color);
+  font-weight: 700;
+}
+
+/* Mobile Evolution - Perfect Centering with Breathing Room */
+@media (max-width: 768px) {
+  body {
+    padding: 0 var(--mobile-padding);
+  }
+
+  .asymmetric-container {
+    padding-left: 0;
+    padding-right: 0;
+    text-align: center;
+  }
+
+  .align-right {
+    text-align: center;
+    margin-left: 0;
+    max-width: 100%;
+  }
+
+  .nav-minimal {
+    padding: calc(var(--spacing-unit) * 4);
+    justify-content: center;
+  }
+}
