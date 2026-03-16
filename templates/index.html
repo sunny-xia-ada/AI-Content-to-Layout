@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XYLAB // AURA RENDERER</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0A0A0A;
+            color: #FFFFFF;
+        }
+
+        .serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .pink-glow:hover {
+            box-shadow: 0 0 20px rgba(254, 197, 210, 0.4);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: rgba(254, 197, 210, 0.5);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        #toast {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="h-screen overflow-hidden flex flex-col">
+
+    <!-- Header -->
+    <header class="h-16 flex items-center justify-between px-8 border-b border-white/5 glass z-50">
+        <div class="flex items-center space-x-4">
+            <span class="serif text-2xl tracking-tighter uppercase font-bold text-white/90">XYLAB // AURA RENDERER <span
+                    class="text-xs font-light tracking-widest ml-2 opacity-40 italic">v1.0</span></span>
+        </div>
+        <div class="flex items-center space-x-6">
+            <button id="export-btn"
+                class="serif px-6 py-2 bg-white text-black text-sm uppercase tracking-widest font-bold pink-glow transition-all rounded-full">
+                Apply Aura
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 flex overflow-hidden">
+
+        <!-- Left: Discretion-Free Editor -->
+        <section class="w-1/2 h-full p-8 border-r border-white/5 bg-[#0F0F0F]">
+            <div class="h-full flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-[10px] uppercase tracking-[0.3em] opacity-40 font-semibold">Manuscript /
+                        Markdown</span>
+                    <span class="text-[10px] opacity-20">Live Sync Enabled</span>
+                </div>
+                <textarea id="editor"
+                    class="flex-1 bg-transparent text-white/80 font-mono text-sm leading-relaxed resize-none w-full p-4 glass rounded-xl"
+                    placeholder="# Title..."></textarea>
+            </div>
+        </section>
+
+        <!-- Right: Live Canvas (Mobile Simulation) -->
+        <section class="w-1/2 h-full bg-[#050505] flex items-center justify-center relative">
+
+            <!-- Corner Decor -->
+            <img src="{{ loopy_uri }}" class="absolute bottom-10 right-10 w-16 opacity-10 pointer-events-none grayscale"
+                alt="decor">
+
+            <div class="flex flex-col items-center">
+                <div class="text-[10px] uppercase tracking-[0.3em] opacity-40 mb-6 font-semibold flex items-center">
+                    <span class="mr-2">Mobile Canvas</span>
+                    <div class="w-2 h-2 rounded-full bg-pink-300 animate-pulse"></div>
+                </div>
+
+                <!-- Mockup Window -->
+                <div id="canvas-container"
+                    class="w-[375px] h-[700px] glass rounded-[40px] overflow-hidden shadow-2xl relative border border-white/10">
+                    <div id="preview" class="h-full overflow-y-auto p-0 scroll-smooth">
+                        <div
+                            class="flex items-center justify-center h-full text-white/20 text-xs tracking-widest serif uppercase italic">
+                            Awaiting Signal...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast"
+        class="fixed bottom-10 left-1/2 -translate-x-1/2 glass px-8 py-3 rounded-full text-xs uppercase tracking-widest font-bold text-pink-200 border-pink-200/20 shadow-[0_0_30px_rgba(254,197,210,0.1)] opacity-0 pointer-events-none translate-y-10 z-[100]">
+        Aura Applied. Copied to Clipboard.
+    </div>
+
+    <script>
+        const editor = document.getElementById('editor');
+        const preview = document.getElementById('preview');
+        const exportBtn = document.getElementById('export-btn');
+        const toast = document.getElementById('toast');
+
+        // Real-time conversion logic
+        let debounceTimer;
+        editor.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(convertMarkdown, 300);
+        });
+
+        async function convertMarkdown() {
+            const text = editor.value;
+            if (!text.trim()) {
+                preview.innerHTML = `<div class="flex items-center justify-center h-full text-white/20 text-xs tracking-widest serif uppercase italic">Awaiting Signal...</div>`;
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('markdown_input', text);
+
+            try {
+                const response = await fetch('/convert', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                preview.innerHTML = data.html;
+            } catch (err) {
+                console.error("Conversion failed:", err);
+            }
+        }
+
+        // Export & Copy logic
+        exportBtn.addEventListener('click', async () => {
+            const card = document.getElementById('aura-card');
+            if (!card) return;
+
+            const html = card.outerHTML;
+            try {
+                await navigator.clipboard.writeText(html);
+                showToast();
+            } catch (err) {
+                // Fallback for non-secure contexts
+                const textArea = document.createElement("textarea");
+                textArea.value = html;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand("copy");
+                document.body.removeChild(textArea);
+                showToast();
+            }
+        });
+
+        function showToast() {
+            toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-10');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-10');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>
