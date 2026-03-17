@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import base64
 import os
 import re
+import urllib.parse
 
 app = FastAPI(title="XYLAB // SMART LAYOUT AGENT")
 
@@ -86,7 +87,8 @@ def render_aura_engine(md_text, theme_id="loopy"):
         strong['style'] = theme['strong']
 
     for img in soup.find_all("img"):
-        img['style'] = theme['img']
+        # Apply strict premium styling to all images
+        img['style'] = "max-width: 100%; height: auto; display: block; margin: 30px auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);"
 
     # Signature logic based on theme
     if LOOPY_DATA_URI and theme_id == "loopy":
@@ -156,19 +158,26 @@ def smart_restructure(text):
     return "\n\n".join(final_output)
 
 def auto_illustrate(text):
-    # Analyzing text for keywords (simplified)
+    # Rule: Use Pollinations AI for no-auth reliable image generation
+    # Extracting meaningful visual keywords
     keywords = ["minimalist", "modern", "aesthetic", "future", "luxury", "essence"]
-    extracted = re.findall(r'\b[A-Za-z]{5,}\b', text)
+    extracted = re.findall(r'\b[A-Za-z]{6,}\b', text)
     top_keywords = list(set(extracted))[:3] if extracted else keywords[:3]
     
     lines = text.split('\n\n')
-    # Injection: Hero image at top, Divider in middle
+    
+    def get_pollination_url(prompt):
+        encoded = urllib.parse.quote(prompt)
+        return f"https://image.pollinations.ai/prompt/{encoded}?width=800&height=500&nologo=true"
+
+    # Injection: Hero and Divider images
     if len(lines) > 2:
-        hero_theme = top_keywords[0] if len(top_keywords) > 0 else "aesthetic"
-        mid_theme = top_keywords[1] if len(top_keywords) > 1 else "design"
-        lines.insert(0, f"![Hero](https://source.unsplash.com/featured/?{hero_theme},interior)")
-        if len(lines) > 4:
-            lines.insert(len(lines)//2 + 1, f"![Divider](https://source.unsplash.com/featured/?{mid_theme},nature)")
+        hero_prompt = f"{top_keywords[0]} luxury cinematic aesthetic"
+        lines.insert(0, f"![Hero]({get_pollination_url(hero_prompt)})")
+        
+        if len(lines) > 5:
+            mid_prompt = f"{top_keywords[1]} minimalist clean background"
+            lines.insert(len(lines)//2 + 1, f"![Divider]({get_pollination_url(mid_prompt)})")
             
     return "\n\n".join(lines)
 
