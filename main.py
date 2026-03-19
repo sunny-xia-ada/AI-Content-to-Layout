@@ -14,8 +14,11 @@ from fastapi.templating import Jinja2Templates
 
 app = FastAPI(title="XYLAB // SMART AGENT v4.0")
 
-if not os.path.exists("static"): os.makedirs("static")
-if not os.path.exists("templates"): os.makedirs("templates")
+try:
+    if not os.path.exists("static"): os.makedirs("static")
+    if not os.path.exists("templates"): os.makedirs("templates")
+except OSError:
+    pass # Deploying to Vercel (read-only filesystem), relying on Git structure
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
