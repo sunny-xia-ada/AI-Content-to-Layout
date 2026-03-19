@@ -12,15 +12,15 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-app = FastAPI(title="XYLAB // SMART AGENT v4.0")
+app = FastAPI(title="XYLAB // SMART AGENT v4.1")
 
-try:
-    if not os.path.exists("static"): os.makedirs("static")
-    if not os.path.exists("templates"): os.makedirs("templates")
-except OSError:
-    pass # Deploying to Vercel (read-only filesystem), relying on Git structure
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+# Vercel Serverless Absolute Pathing Fix
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+templates = Jinja2Templates(directory=TEMPLATE_DIR)
 
 LOOPY_PATH = "loopy_asset.png"
 def get_base64_asset(path):
