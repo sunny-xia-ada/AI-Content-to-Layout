@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XYLAB // AURA v2.0</title>
+    <meta name="referrer" content="no-referrer">
+    <title>XYLAB // SMART AGENT v3.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@300;400;600&display=swap"
@@ -74,6 +75,10 @@
         ::-webkit-scrollbar {
             width: 0px;
         }
+
+        #preview {
+            transition: opacity 0.3s ease;
+        }
     </style>
 </head>
 
@@ -84,7 +89,7 @@
         class="h-16 flex items-center justify-between px-6 border-b border-black/5 bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div class="flex items-center space-x-2">
             <span class="serif text-xl tracking-tighter uppercase font-bold text-black">XYLAB <span
-                    class="text-xs font-light opacity-30 italic ml-1">Aura v2.0</span></span>
+                    class="text-xs font-light opacity-30 italic ml-1">SMART AGENT v3.3</span></span>
         </div>
         <img src="{{ loopy_uri }}" class="w-8 h-8 rounded-full border border-pink-100" alt="loopy">
     </nav>
@@ -105,7 +110,23 @@
             <div class="bg-white rounded-3xl chic-shadow flex-1 flex flex-col overflow-hidden border border-black/5">
                 <div class="px-6 py-4 border-b border-black/5 flex justify-between items-center">
                     <span class="text-[10px] uppercase tracking-[0.2em] font-bold opacity-30">Editor</span>
-                    <div class="w-1.5 h-1.5 rounded-full bg-green-400"></div>
+                    <div class="flex items-center space-x-4">
+                        <button id="ai-btn" class="text-[10px] uppercase font-bold bg-[#FEC5D2] text-[#E91E63] px-3 py-1 rounded shadow-sm hover:scale-105 transition-transform duration-300">AI Auto-Layout</button>
+                        <button type="button" id="shuffle-btn" onclick="shuffleImage()" class="text-[10px] uppercase font-bold bg-gray-200 text-gray-700 px-3 py-1 rounded shadow-sm hover:scale-105 transition-transform duration-300">🎲 Shuffle</button>
+                        <select name="theme" id="theme-selector" class="text-[10px] uppercase tracking-[0.2em] font-bold opacity-50 bg-transparent outline-none cursor-pointer">
+                            <option value="loopy">Loopy Cute</option>
+                            <option value="executive">Executive Gray</option>
+                            <option value="ethereal">Ethereal Sky</option>
+                            <option value="techno">Techno Cyber</option>
+                            <option value="urban">Urban Pulse</option>
+                            <option value="wonyoung">Wonyoungism</option>
+                            <option value="algorithm">Algorithm Art</option>
+                            <option value="archive">Archive 2026</option>
+                            <option value="solidcore">Solidcore</option>
+                            <option value="bottari">Bottari</option>
+                        </select>
+                        <div class="w-1.5 h-1.5 rounded-full bg-green-400"></div>
+                    </div>
                 </div>
                 <textarea id="editor"
                     class="flex-1 p-6 text-sm leading-relaxed text-black/70 resize-none font-serif italic"
@@ -159,6 +180,7 @@
         const sectionEdit = document.getElementById('section-edit');
         const sectionPreview = document.getElementById('section-preview');
         const toast = document.getElementById('toast');
+        const aiBtn = document.getElementById('ai-btn');
 
         // Tab Switching
         tabEdit.addEventListener('click', () => {
@@ -178,22 +200,115 @@
 
         // Conversion Logic
         let debounce;
-        editor.addEventListener('input', () => {
-            clearTimeout(debounce);
-            debounce = setTimeout(async () => {
-                const text = editor.value;
-                if (!text.trim()) {
-                    preview.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-black/10 serif uppercase italic tracking-widest text-sm p-10 text-center">Write something to see the aura...</div>`;
-                    return;
-                }
+        // Refactored Preview Function for Immediate Callback
+        async function updatePreview() {
+            const text = editor.value;
+            if (!text.trim()) {
+                preview.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-black/10 serif uppercase italic tracking-widest text-sm p-10 text-center">Write something to see the aura...</div>`;
+                preview.style.opacity = 1;
+                return;
+            }
+            
+            preview.style.opacity = 0;
+            
+            const theme = document.getElementById('theme-selector').value;
+            try {
                 const res = await fetch('/convert', {
                     method: 'POST',
-                    body: new URLSearchParams({ markdown_input: text })
+                    body: new URLSearchParams({ markdown_input: text, theme: theme })
                 });
                 const data = await res.json();
                 preview.innerHTML = data.html;
-            }, 300);
+            } catch(e) { console.error(e); }
+            
+            setTimeout(() => {
+                preview.style.opacity = 1;
+            }, 50);
+        }
+
+        editor.addEventListener('input', () => {
+            clearTimeout(debounce);
+            debounce = setTimeout(updatePreview, 300);
         });
+
+        document.getElementById('theme-selector').addEventListener('change', () => {
+            updatePreview();
+        });
+
+        // AI Auto-Layout Logic
+        aiBtn.addEventListener('click', async () => {
+            const text = editor.value;
+            if (!text.trim()) return;
+            
+            aiBtn.innerText = "Processing...";
+            aiBtn.classList.add("opacity-50");
+            
+            const theme = document.getElementById('theme-selector').value;
+            try {
+                const res = await fetch('/ai-process', {
+                    method: 'POST',
+                    body: new URLSearchParams({ markdown_input: text, theme: theme })
+                });
+                const data = await res.json();
+                // Strict Override
+                editor.value = data.markdown;
+                // Immediate View Refresh
+                await updatePreview();
+            } catch (err) {
+                console.error(err);
+            } finally {
+                aiBtn.innerText = "AI Auto-Layout";
+                aiBtn.classList.remove("opacity-50");
+            }
+        });
+
+        // Shuffle Logic
+        async function shuffleImage() {
+            // 1. Get elements 
+            const editor = document.getElementById('editor');
+            const themeSelect = document.getElementById('theme-selector'); 
+            const shuffleBtn = document.getElementById('shuffle-btn');
+            
+            if (!editor) { console.error("Could not find textarea!"); return; }
+
+            const originalText = shuffleBtn.innerText;
+            shuffleBtn.innerText = "🎲 Shuffling...";
+            
+            try {
+                // 2. Fetch new image from backend
+                const response = await fetch('/shuffle-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ 'theme': themeSelect ? themeSelect.value : 'loopy' })
+                });
+                
+                const data = await response.json();
+                
+                if (data.new_image_markdown) {
+                    // 3. Bulletproof Regex: Target the Divider image specifically so we don't wipe the Hero
+                    const imageRegex = /!\[Divider\]\(.*?\)/g; 
+                    
+                    if (imageRegex.test(editor.value)) {
+                        editor.value = editor.value.replace(imageRegex, data.new_image_markdown);
+                    } else {
+                        // If somehow deleted, append to bottom
+                        editor.value += "\n\n" + data.new_image_markdown + "\n\n";
+                    }
+                    
+                    // 4. Force the preview to update! (Ensure this function exists)
+                    if (typeof updatePreview === "function") {
+                        updatePreview();
+                    } else {
+                        console.error("updatePreview() function is missing!");
+                    }
+                }
+            } catch (error) {
+                console.error("Shuffle API Error:", error);
+                alert("Failed to shuffle image. Check console.");
+            } finally {
+                shuffleBtn.innerText = originalText;
+            }
+        }
 
         // Clipboard Copy
         copyBtn.addEventListener('click', async () => {
