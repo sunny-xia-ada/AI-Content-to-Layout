@@ -1,10 +1,16 @@
 # XYLAB Smart Agent v4.1
 
+[English](#english) | [中文](#中文)
+
+---
+
+## English
+
 Welcome to **XYLAB Smart Agent**, an intelligent Markdown-to-HTML restructuring and layout tool designed for crafting pristine, highly-aesthetic article layouts (perfect for platforms like WeChat and Notion). 
 
 Version 4.1 introduces the **Zero-Hero Policy**, 10 distinct Emotional Themes from the XYLAB Multiverse, and a robust stateless Shuffle Engine to guarantee massive visual variety.
 
-## ✨ Features
+### ✨ Features
 
 - **Brain-Powered Auto-Layout**: The `smart_restructure` engine automatically parses raw text blocks. It provides "breathing room" by intelligently chunking long paragraphs, elevating short impactful phrases to HTML headers, and applying strategic bold emphasis (`**`) to the focal points of your sentences.
 - **The XYLAB Multiverse (10 Themes)**: Render your text in 10 highly-stylized, CSS-injected aesthetic universes.
@@ -22,7 +28,7 @@ Version 4.1 introduces the **Zero-Hero Policy**, 10 distinct Emotional Themes fr
 - **🎲 Stateless Shuffle**: Don't like the divider? Hit **Shuffle**. The app hits a dedicated API endpoint with timestamp cache-busting, retrieves a new image from the global Flickr pool, and safely replaces the markdown natively using localized Regex—without corrupting your current text edits.
 - **One-Click Export**: Renders everything directly to an `id="aura-card"` container that you can copy to your clipboard in a single click, ready for pasting into any rich-text editor (like WeChat's Official Account portal).
 
-## 🧭 Workflow
+### 🧭 Workflow
 
 ```mermaid
 graph TD
@@ -62,7 +68,7 @@ graph TD
     O --> P[One-Click Clipboard Copy]
 ```
 
-## 🚀 Run Locally
+### 🚀 Run Locally
 
 Ensure you have Python 3.9+ installed. 
 
@@ -83,10 +89,102 @@ python main.py
 ```
 *The agent will launch at `http://localhost:8000` (or `http://0.0.0.0:8000`). If you want to access it from your mobile device, find your computer's local IP address (e.g., `10.0.0.x`) and navigate to `http://10.0.0.x:8000` on your phone.*
 
-## 🛠 Tech Stack
+### 🛠 Tech Stack
 - **Backend**: Python, FastAPI, Uvicorn 
 - **Processing**: BeautifulSoup4, Python-Markdown, native RegEx
 - **Frontend**: HTML5, Tailwind CSS, Vanilla Javascript
 
 ---
-*Built by XYLAB // 2026*
+
+## 中文
+
+欢迎来到 **XYLAB Smart Agent（智能代理）**，这是一个智能的 Markdown 转 HTML 重排版工具，专为打造纯净、高美感的文章排版而设计（非常适合微信公众号和 Notion 等平台）。
+
+4.1 版本引入了 **Zero-Hero（零头图）策略**、来自 XYLAB 多元宇宙的 10 种独立情感主题，以及强大的无状态 Shuffle 引擎，以确保海量的视觉多样性。
+
+### ✨ 核心功能
+
+- **AI 大脑自动排版**: `smart_restructure` 引擎会自动解析原始文本块。它通过智能分段长段落来提供“呼吸感”，将短促有力的短语提升为 HTML 标题，并对句子焦点进行战略性的加粗强调 (`**`)。
+- **XYLAB 多元宇宙（10 大主题）**: 在 10 个高度风格化、CSS 注入的美学宇宙中渲染您的文本。
+  - `Loopy Cute` (柔和、可爱、气泡感)
+  - `Executive Gray` (锋利网格、单色调)
+  - `Ethereal Sky` (空灵、天蓝色、梦幻)
+  - `Techno Cyber` (深色模式、霓虹青色、电路网格)
+  - `Urban Pulse` (高对比度、倾斜阴影、重粉/紫色调)
+  - `Wonyoungism` (奢华、闪耀、玫瑰金)
+  - `Algorithm Art` (流体网格渐变、玻璃拟物化)
+  - `Archive 2026` (粗野主义混凝土、复古时尚胶带边框)
+  - `Solidcore` (动感模糊、深空灰配荧光绿)
+  - `Bottari` (原生纸张纹理、大地色极简画廊风)
+- **Zero-Hero（零头图）美学**: 完全摒弃通用的图片头图。引擎现在直接切入排版，仅根据您激活主题的关键词池，从 Flickr 动态提取并孤立生成*唯一一张*充满氛围感的文中 Divider（分割图）。
+- **🎲 无状态 Shuffle**: 不喜欢当前的图片？点击 **Shuffle（随机换图）**。应用会访问附加带有时间戳防缓存机制的独立 API 接口，从庞大的 Flickr 图库中检索新图片，并通过正则表达式安全地替换原 Markdown 中的链接——完全不会破坏您当前的文本。
+- **一键导出**: 将所有内容直接渲染到 `id="aura-card"` 容器中，只需单击即可将其复制到剪贴板，随后可无缝粘贴至任何富文本编辑器（如微信公众号后台）。
+
+### 🧭 工作流
+
+```mermaid
+graph TD
+    A[原始 Markdown 文本] --> B{AI 自动排版引擎}
+    
+    subgraph 文本重构
+        B --> C[段落配速分块]
+        B --> D[智能加粗强调 **]
+        B --> E[标题提取 ##]
+    end
+
+    C --> F((Zero-Hero 基础层))
+    D --> F
+    E --> F
+
+    F --> G[分割线图生成]
+    
+    subgraph 图库池
+        G --> H[LoremFlickr 单标签提取]
+        H -.-> |时间戳防缓存锁| I[Shuffle API 请求]
+    end
+
+    G --> J[HTML 编译引擎]
+    J --> K{主题渲染系统}
+
+    subgraph XYLAB 多元宇宙
+        K --> L[Ethereal Sky]
+        K --> M[Archive 2026]
+        K --> N[Solidcore...]
+    end
+
+    L --> O([最终版微信 Aura Card])
+    M --> O
+    N --> O
+
+    I --> G
+    O --> P[一键复制至剪贴板]
+```
+
+### 🚀 本地运行部署
+
+确保已安装 Python 3.9 或更高版本。
+
+**1. 创建虚拟环境**
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+**2. 安装依赖包**
+```bash
+pip install fastapi uvicorn beautifulsoup4 markdown python-multipart
+```
+
+**3. 启动引擎**
+```bash
+python main.py
+```
+*服务将在 `http://localhost:8000`（或 `http://0.0.0.0:8000`）启动。如果您想通过移动设备预览，请查找您内网 IP 地址（例如 `10.0.0.x`）并在手机上访问 `http://10.0.0.x:8000`。*
+
+### 🛠 技术栈
+- **后端架构**: Python, FastAPI, Uvicorn 
+- **数据处理**: BeautifulSoup4, Python-Markdown, 原生 RegEx 正则匹配
+- **前端页面**: HTML5, Tailwind CSS, Vanilla Javascript
+
+---
+*由 XYLAB 驱动 // 2026*
