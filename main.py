@@ -19,7 +19,11 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+# Only mount the static directory if it actually exists in the runtime environment
+if os.path.exists(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+else:
+    print("Warning: 'static' directory not found. Skipping static mount.")
 templates = Jinja2Templates(directory=TEMPLATE_DIR)
 
 LOOPY_PATH = "loopy_asset.png"
