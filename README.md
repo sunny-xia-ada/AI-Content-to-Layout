@@ -8,7 +8,10 @@
 
 Welcome to **XYLAB Smart Agent**, an intelligent Markdown-to-HTML restructuring and layout tool designed for crafting pristine, highly-aesthetic article layouts (perfect for platforms like WeChat and Notion). 
 
-Version 4.1 introduces the **Zero-Hero Policy**, 10 distinct Emotional Themes from the XYLAB Multiverse, and a robust stateless Shuffle Engine to guarantee massive visual variety.
+Version 4.1 introduces the **Zero-Hero Policy**, 10 distinct Emotional Themes from the XYLAB Multiverse, and a robust stateless Shuffle Engine to guarantee massive visual variety. IT IS NOW DEPLOYED ON VERCEL.
+
+### 🌐 Live Demo
+You can access the live application at: **[https://ai-content-to-layout.vercel.app](https://ai-content-to-layout.vercel.app)**
 
 ### ✨ Features
 
@@ -68,26 +71,20 @@ graph TD
     O --> P[One-Click Clipboard Copy]
 ```
 
-### 🚀 Run Locally
+### 🚀 Deployment & Local Run
 
+**Deployment (Vercel)**
+This project is optimized for **Vercel Serverless**. To deploy your own instance:
+1. Fork this repository.
+2. Link the repository to your Vercel Dashboard.
+3. Vercel will automatically detect the `vercel.json` and `requirements.txt` to build your ASGI FastAPI instance.
+
+**Run Locally**
 Ensure you have Python 3.9+ installed. 
 
-**1. Create a Virtual Environment**
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-**2. Install Dependencies**
-```bash
-pip install fastapi uvicorn beautifulsoup4 markdown python-multipart
-```
-
-**3. Boot the Engine**
-```bash
-python main.py
-```
-*The agent will launch at `http://localhost:8000` (or `http://0.0.0.0:8000`). If you want to access it from your mobile device, find your computer's local IP address (e.g., `10.0.0.x`) and navigate to `http://10.0.0.x:8000` on your phone.*
+1. Create a Virtual Environment: `python3 -m venv venv` and `source venv/bin/activate`.
+2. Install Dependencies: `pip install -r requirements.txt`.
+3. Boot the Engine: `python main.py`.
 
 ### 🛠 Tech Stack
 - **Backend**: Python, FastAPI, Uvicorn 
@@ -100,7 +97,10 @@ python main.py
 
 欢迎来到 **XYLAB Smart Agent（智能代理）**，这是一个智能的 Markdown 转 HTML 重排版工具，专为打造纯净、高美感的文章排版而设计（非常适合微信公众号和 Notion 等平台）。
 
-4.1 版本引入了 **Zero-Hero（零头图）策略**、来自 XYLAB 多元宇宙的 10 种独立情感主题，以及强大的无状态 Shuffle 引擎，以确保海量的视觉多样性。
+4.1 版本引入了 **Zero-Hero（零头图）策略**、来自 XYLAB 多元宇宙的 10 种独立情感主题，以及强大的无状态 Shuffle 引擎。本项目现已成功部署于 Vercel。
+
+### 🌐 线上演示
+您可以访问以下地址体验：**[https://ai-content-to-layout.vercel.app](https://ai-content-to-layout.vercel.app)**
 
 ### ✨ 核心功能
 
@@ -117,7 +117,7 @@ python main.py
   - `Solidcore` (动感模糊、深空灰配荧光绿)
   - `Bottari` (原生纸张纹理、大地色极简画廊风)
 - **Zero-Hero（零头图）美学**: 完全摒弃通用的图片头图。引擎现在直接切入排版，仅根据您激活主题的关键词池，从 Flickr 动态提取并孤立生成*唯一一张*充满氛围感的文中 Divider（分割图）。
-- **🎲 无状态 Shuffle**: 不喜欢当前的图片？点击 **Shuffle（随机换图）**。应用会访问附加带有时间戳防缓存机制的独立 API 接口，从庞大的 Flickr 图库中检索新图片，并通过正则表达式安全地替换原 Markdown 中的链接——完全不会破坏您当前的文本。
+- **🎲 无状态 Shuffle**: 不喜欢当前的图片？点击 **Shuffle（随机换图）**。应用会访问附加带有时间戳防缓存机制的独立 API 接口，从庞大的 Flickr 图库中检索新图片，并通过正则表达式安全地替换原 Markdown 中的链接。
 - **一键导出**: 将所有内容直接渲染到 `id="aura-card"` 容器中，只需单击即可将其复制到剪贴板，随后可无缝粘贴至任何富文本编辑器（如微信公众号后台）。
 
 ### 🧭 工作流
@@ -160,26 +160,20 @@ graph TD
     O --> P[一键复制至剪贴板]
 ```
 
-### 🚀 本地运行部署
+### 🚀 部署与本地运行
 
+**线上部署 (Vercel)**
+本项目针对 **Vercel Serverless** 进行了深度优化。如需部署您自己的版本：
+1. Fork 本仓库。
+2. 将仓库连接到您的 Vercel Dashboard。
+3. Vercel 将自动检测 `vercel.json` 和 `requirements.txt` 来构建您的 ASGI FastAPI 实例。
+
+**本地运行**
 确保已安装 Python 3.9 或更高版本。
 
-**1. 创建虚拟环境**
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-**2. 安装依赖包**
-```bash
-pip install fastapi uvicorn beautifulsoup4 markdown python-multipart
-```
-
-**3. 启动引擎**
-```bash
-python main.py
-```
-*服务将在 `http://localhost:8000`（或 `http://0.0.0.0:8000`）启动。如果您想通过移动设备预览，请查找您内网 IP 地址（例如 `10.0.0.x`）并在手机上访问 `http://10.0.0.x:8000`。*
+1. 创建虚拟环境：`python3 -m venv venv` 并激活 `source venv/bin/activate`。
+2. 安装依赖包：`pip install -r requirements.txt`。
+3. 启动引擎：`python main.py`。
 
 ### 🛠 技术栈
 - **后端架构**: Python, FastAPI, Uvicorn 
