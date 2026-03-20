@@ -30,6 +30,7 @@ You can access the live application at: **[https://ai-content-to-layout.vercel.a
 - **Zero-Hero Aesthetics**: Drops generic hero images entirely. The engine now goes straight into your typography, generating and isolating only *one* atmospheric mid-article Divider pulled dynamically from Flickr based on your active theme's keyword pool.
 - **🎲 Stateless Shuffle**: Don't like the divider? Hit **Shuffle**. The app hits a dedicated API endpoint with timestamp cache-busting, retrieves a new image from the global Flickr pool, and safely replaces the markdown natively using localized Regex—without corrupting your current text edits.
 - **One-Click Export**: Renders everything directly to an `id="aura-card"` container that you can copy to your clipboard in a single click, ready for pasting into any rich-text editor (like WeChat's Official Account portal).
+- **📥 Extract Original Image**: Long-pressing images on mobile can be finicky. The new **Extract Image** button opens the raw image URL in a clean tab, making it effortless to save to your camera roll.
 
 ### 🧭 Workflow
 
@@ -119,6 +120,7 @@ Ensure you have Python 3.9+ installed.
 - **Zero-Hero（零头图）美学**: 完全摒弃通用的图片头图。引擎现在直接切入排版，仅根据您激活主题的关键词池，从 Flickr 动态提取并孤立生成*唯一一张*充满氛围感的文中 Divider（分割图）。
 - **🎲 无状态 Shuffle**: 不喜欢当前的图片？点击 **Shuffle（随机换图）**。应用会访问附加带有时间戳防缓存机制的独立 API 接口，从庞大的 Flickr 图库中检索新图片，并通过正则表达式安全地替换原 Markdown 中的链接。
 - **一键导出**: 将所有内容直接渲染到 `id="aura-card"` 容器中，只需单击即可将其复制到剪贴板，随后可无缝粘贴至任何富文本编辑器（如微信公众号后台）。
+- **📥 提取原图**: 针对移动端优化。点击 **提取原图** 按钮即可在新标签页中打开原始图片链接，方便长按保存至相册。
 
 ### 🧭 工作流
 
