@@ -113,6 +113,7 @@
                     <div class="flex items-center space-x-4">
                         <button id="ai-btn" class="text-[10px] uppercase font-bold bg-[#FEC5D2] text-[#E91E63] px-3 py-1 rounded shadow-sm hover:scale-105 transition-transform duration-300">AI Auto-Layout</button>
                         <button type="button" id="shuffle-btn" onclick="shuffleImage()" class="text-[10px] uppercase font-bold bg-gray-200 text-gray-700 px-3 py-1 rounded shadow-sm hover:scale-105 transition-transform duration-300">🎲 Shuffle</button>
+                        <button type="button" onclick="extractImage()" class="text-[10px] uppercase font-bold bg-blue-100 text-blue-700 px-3 py-1 rounded shadow-sm hover:scale-105 transition-transform duration-300">📥 提取原图</button>
                         <select name="theme" id="theme-selector" class="text-[10px] uppercase tracking-[0.2em] font-bold opacity-50 bg-transparent outline-none cursor-pointer">
                             <option value="loopy">Loopy Cute</option>
                             <option value="executive">Executive Gray</option>
@@ -261,6 +262,17 @@
                 aiBtn.classList.remove("opacity-50");
             }
         });
+
+        // Extract Image Logic
+        function extractImage() {
+            const editor = document.getElementById('editor');
+            const imgMatch = editor.value.match(/!\[.*?\]\((.*?)\)/);
+            if (imgMatch && imgMatch[1]) {
+                window.open(imgMatch[1], '_blank');
+            } else {
+                alert("当前排版中没有找到图片哦！请先点击 AI Auto-Layout。");
+            }
+        }
 
         // Shuffle Logic
         async function shuffleImage() {
