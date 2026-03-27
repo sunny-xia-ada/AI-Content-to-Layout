@@ -12,7 +12,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-app = FastAPI(title="XYLAB // SMART AGENT v4.4")
+app = FastAPI(title="XYLAB // SMART AGENT v4.4.1")
 
 # Vercel Serverless Absolute Pathing Fix
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
