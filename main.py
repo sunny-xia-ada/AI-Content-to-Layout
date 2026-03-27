@@ -370,7 +370,8 @@ def render_aura_engine(md_text, theme_id="loopy"):
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     try:
-        return templates.TemplateResponse("index.html", {"request": request, "loopy_uri": LOOPY_DATA_URI})
+        # Debug: Remove large base64 uri
+        return templates.TemplateResponse("index.html", {"request": request, "loopy_uri": ""})
     except Exception as e:
         import traceback
         return f"TEMPLATE ERROR: {str(e)}<br><pre>{traceback.format_exc()}</pre>"
