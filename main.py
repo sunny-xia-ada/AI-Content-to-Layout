@@ -369,11 +369,18 @@ def render_aura_engine(md_text, theme_id="loopy"):
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "loopy_uri": LOOPY_DATA_URI})
+    try:
+        return templates.TemplateResponse("index.html", {"request": request, "loopy_uri": LOOPY_DATA_URI})
+    except Exception as e:
+        import traceback
+        return f"TEMPLATE ERROR: {str(e)}<br><pre>{traceback.format_exc()}</pre>"
 
 @app.post("/convert")
 async def convert(markdown_input: str = Form(...), theme: str = Form("loopy")):
-    return {"html": render_aura_engine(markdown_input, theme_id=theme)}
+    try:
+        return {"html": render_aura_engine(markdown_input, theme_id=theme)}
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.post("/ai-process")
 async def ai_process(markdown_input: str = Form(...), theme: str = Form('loopy')):
