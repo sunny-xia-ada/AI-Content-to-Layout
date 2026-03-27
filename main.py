@@ -374,10 +374,11 @@ async def test_route():
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     try:
-        # Modern FastAPI/Starlette TemplateResponse syntax
+        # Robust signature for varying Starlette/FastAPI versions
         return templates.TemplateResponse(
-            name="index.html", 
-            context={"request": request, "loopy_uri": LOOPY_DATA_URI}
+            request, 
+            "index.html", 
+            {"loopy_uri": LOOPY_DATA_URI}
         )
     except Exception as e:
         import traceback
