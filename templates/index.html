@@ -197,7 +197,7 @@
                         </div>
                     </div>
 
-                    <button class="loopy-btn w-full py-5 rounded-2xl text-white font-bold uppercase tracking-[0.2em] text-sm shadow-xl shadow-red-100 flex items-center justify-center space-x-2 !bg-[#FF2442]">
+                    <button id="generate-xhs-btn" onclick="generatePoster()" class="loopy-btn w-full py-5 rounded-2xl text-white font-bold uppercase tracking-[0.2em] text-sm shadow-xl shadow-red-100 flex items-center justify-center space-x-2 !bg-[#FF2442]">
                         <span>🚀 Generate Poster</span>
                     </button>
                 </div>
@@ -207,7 +207,7 @@
             <!-- Right: XHS Preview -->
             <section class="flex-1 p-4 md:p-10 flex flex-col items-center">
                 <div class="hidden md:flex text-[10px] uppercase tracking-[0.3em] font-bold opacity-30 mb-6">XHS Poster Preview (3:4)</div>
-                <div class="w-full max-w-[400px] aspect-[3/4] bg-white rounded-[40px] chic-shadow overflow-hidden border border-black/5 relative flex items-center justify-center group overflow-hidden">
+                <div id="xhs-canvas" class="w-full max-w-[400px] aspect-[3/4] bg-white rounded-[40px] chic-shadow overflow-hidden border border-black/5 relative flex items-center justify-center group">
                     <div class="absolute inset-0 bg-gradient-to-br from-red-50/30 to-blue-50/30 opacity-50"></div>
                     <div class="flex flex-col items-center space-y-4 z-10">
                         <div class="w-16 h-16 border-2 border-dashed border-black/10 rounded-full flex items-center justify-center">
@@ -435,6 +435,68 @@
                 btnWechat.className = "flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 bg-gray-100 text-gray-400 hover:bg-gray-200";
                 
                 if (copyBtn) copyBtn.innerText = "Export Image";
+            }
+        }
+
+        // --- XHS Poster Engine ---
+        async function generatePoster() {
+            const title = document.getElementById('xhs-title').value;
+            const hook = document.getElementById('xhs-hook').value;
+            const body = document.getElementById('xhs-body').value.replace(/\n/g, '<br>');
+
+            const canvasDiv = document.getElementById('xhs-canvas');
+            const generateBtn = document.getElementById('generate-xhs-btn');
+
+            if (!title.trim() && !hook.trim() && !body.trim()) {
+                alert("Please fill in some content first!");
+                return;
+            }
+
+            // 1. Render HTML inside the canvas
+            canvasDiv.innerHTML = `
+                <div class="p-10 h-full flex flex-col justify-start bg-white text-[#121212] relative overflow-hidden">
+                    <!-- Aesthetics -->
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#FF2442] opacity-5 -translate-y-16 translate-x-16 rounded-full"></div>
+                    
+                    <h1 class="text-4xl font-black mb-6 uppercase tracking-tight leading-none break-words">${title}</h1>
+                    
+                    <div class="text-lg font-bold italic bg-[#CCFF00] p-5 mb-8 border-l-[12px] border-[#121212] shadow-[8px_8px_0px_#121212]">
+                        ${hook}
+                    </div>
+                    
+                    <div class="text-base leading-relaxed whitespace-pre-line flex-1">
+                        ${body}
+                    </div>
+                    
+                    <div class="mt-auto pt-8 border-t-2 border-dashed border-gray-100 flex justify-between items-end">
+                        <div class="font-mono text-[10px] text-gray-300 tracking-tighter uppercase">
+                            XYLAB.AGENT // STUDIO<br>STABLE_RELEASE_V4.4
+                        </div>
+                        <div class="text-2xl opacity-20">🎀</div>
+                    </div>
+                </div>
+            `;
+
+            generateBtn.innerText = "⏳ Rendering...";
+            
+            // Allow DOM to update before capture
+            await new Promise(r => setTimeout(r, 100));
+
+            try {
+                const canvas = await html2canvas(canvasDiv, { 
+                    scale: 3, 
+                    useCORS: true,
+                    backgroundColor: "#FFFFFF"
+                });
+                const imgData = canvas.toDataURL("image/png");
+                
+                // Replace with high-res Image for mobile long-press
+                canvasDiv.innerHTML = `<img src="${imgData}" class="w-full h-full object-contain cursor-zoom-in" alt="XHS Poster" />`;
+                generateBtn.innerText = "✅ Long-press Image to Save";
+            } catch (error) {
+                console.error("Canvas rendering failed:", error);
+                generateBtn.innerText = "❌ Rendering Error";
+                alert("Failed to create poster. Check browser compatibility.");
             }
         }
     </script>

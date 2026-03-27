@@ -367,29 +367,17 @@ def render_aura_engine(md_text, theme_id="loopy"):
 
     return f'<div id="aura-card" style="{theme["card"]}">{soup.decode_contents()}</div>'
 
-@app.get("/test")
-async def test_route():
-    return "SERVER IS ALIVE"
-
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    try:
-        # Robust signature for varying Starlette/FastAPI versions
-        return templates.TemplateResponse(
-            request, 
-            "index.html", 
-            {"loopy_uri": LOOPY_DATA_URI}
-        )
-    except Exception as e:
-        import traceback
-        return f"TEMPLATE ERROR: {str(e)}<br><pre>{traceback.format_exc()}</pre>"
+    return templates.TemplateResponse(
+        request, 
+        "index.html", 
+        {"loopy_uri": LOOPY_DATA_URI}
+    )
 
 @app.post("/convert")
 async def convert(markdown_input: str = Form(...), theme: str = Form("loopy")):
-    try:
-        return {"html": render_aura_engine(markdown_input, theme_id=theme)}
-    except Exception as e:
-        return {"error": str(e)}
+    return {"html": render_aura_engine(markdown_input, theme_id=theme)}
 
 @app.post("/ai-process")
 async def ai_process(markdown_input: str = Form(...), theme: str = Form('loopy')):
