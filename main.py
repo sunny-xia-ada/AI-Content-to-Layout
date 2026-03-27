@@ -367,6 +367,10 @@ def render_aura_engine(md_text, theme_id="loopy"):
 
     return f'<div id="aura-card" style="{theme["card"]}">{soup.decode_contents()}</div>'
 
+@app.get("/test")
+async def test_route():
+    return "SERVER IS ALIVE"
+
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     try:
