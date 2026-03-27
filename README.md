@@ -1,4 +1,4 @@
-# XYLAB Smart Agent v4.1
+# XYLAB Smart Agent v4.4
 
 [English](#english) | [中文](#中文)
 
@@ -96,9 +96,9 @@ Ensure you have Python 3.9+ installed.
 
 ## 中文
 
-欢迎来到 **XYLAB Smart Agent（智能代理）**，这是一个智能的 Markdown 转 HTML 重排版工具，专为打造纯净、高美感的文章排版而设计（非常适合微信公众号和 Notion 等平台）。
+欢迎来到 **XYLAB Smart Agent（智能代理）** v4.4，这是一个智能的 Markdown 转 HTML 重排版工具。
 
-4.1 版本引入了 **Zero-Hero（零头图）策略**、来自 XYLAB 多元宇宙的 10 种独立情感主题，以及强大的无状态 Shuffle 引擎。本项目现已成功部署于 Vercel。
+4.4 版本引入了 **双引擎内容工作室 (Dual-Engine Studio)**、**Zero-Hero（零头图）策略**、10 种独立情感主题。本项目现已成功部署于 Vercel。
 
 ### 🌐 线上演示
 您可以访问以下地址体验：**[https://ai-content-to-layout.vercel.app](https://ai-content-to-layout.vercel.app)**

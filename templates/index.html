@@ -1,368 +1,443 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XYLAB // AI BUILDER & EXPLORER</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="referrer" content="no-referrer">
+    <title>XYLAB // SMART AGENT v4.4</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;700&family=Space+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
     <style>
-        :root {
-            --radius-huge: 48px;
-            --radius-large: 32px;
-            --font-outfit: 'Outfit', sans-serif;
-            --font-mono: 'Space Mono', monospace;
-            
-            /* Theme Variables */
-            --bg-accent: #E8F0FE;
-            --text-accent: #4285F4;
-            --theme-color: #4285F4;
-        }
-
         body {
-            font-family: var(--font-outfit);
-            background: #F9F9F9;
-            color: #1a1a1a;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            margin: 0;
-            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #FDFDFD;
+            color: #1A1A1A;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .dance-mode {
-            --bg-accent: #FFF0F0;
-            --text-accent: #FF2442;
-            --theme-color: #FF2442;
+        .serif {
+            font-family: 'Cormorant Garamond', serif;
         }
 
-        .play-mode {
-            --bg-accent: #FFFBEB;
-            --text-accent: #D97706;
-            --theme-color: #D97706;
+        .chic-shadow {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.03);
         }
 
-        .bento-card {
-            background: #FFFFFF;
-            border-radius: var(--radius-large);
-            padding: 2.5rem;
-            transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-            border: 1px solid rgba(0,0,0,0.03);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
+        .pink-gradient {
+            background: linear-gradient(135deg, #FFF5F7 0%, #FFF 100%);
         }
 
-        .bento-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        .loopy-btn {
+            background: #FEC5D2;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .pill {
-            padding: 0.5rem 1.25rem;
-            border-radius: 999px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            background: var(--bg-accent);
-            color: var(--text-accent);
-            display: inline-block;
+        .loopy-btn:active {
+            transform: scale(0.95);
+            opacity: 0.9;
         }
 
-        .tab-btn {
-            padding: 1rem 2rem;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.875rem;
-            transition: all 0.3s;
-            cursor: pointer;
+        .tab-active {
+            color: #1A1A1A;
+            border-bottom: 2px solid #1A1A1A;
         }
 
-        .tab-btn.active {
-            background: #000;
-            color: #fff;
+        .tab-inactive {
+            color: #A0A0A0;
         }
 
-        /* Apple Glass Chatbot 🍎 */
-        .chatbot-btn {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 4rem;
-            height: 4rem;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            z-index: 100;
+        /* Mobile Sticky Footer */
+        @media (max-width: 768px) {
+            .mobile-height {
+                height: calc(100vh - 120px);
+            }
+
+            .sticky-footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 20px;
+                background: rgba(255, 255, 255, 0.8);
+                backdrop-filter: blur(20px);
+                border-top: 1px solid rgba(0, 0, 0, 0.05);
+                z-index: 100;
+            }
         }
 
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border-radius: var(--radius-large);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        textarea:focus {
+            outline: none;
         }
 
-        .stack-arrow {
-            width: 2px;
-            height: 20px;
-            background: var(--text-accent);
-            opacity: 0.3;
-            margin: 0.5rem 0;
+        ::-webkit-scrollbar {
+            width: 0px;
         }
 
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+        #preview {
+            transition: opacity 0.3s ease;
         }
-
-        .floating-bubble {
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .hidden { display: none !important; }
     </style>
 </head>
-<body id="main-body">
 
-    <!-- Top Navigation Themes -->
-    <nav class="fixed top-8 left-1/2 -translate-x-1/2 flex space-x-2 glass-panel p-2 z-50">
-        <button onclick="setTheme('core')" id="mode-core" class="px-6 py-2 rounded-full text-sm font-bold bg-white shadow-sm border border-black/5 hover:scale-105 transition-all">🧘 Core</button>
-        <button onclick="setTheme('dance')" id="mode-dance" class="px-6 py-2 rounded-full text-sm font-bold text-gray-400 hover:text-black hover:bg-white/50 transition-all">💃 Dance</button>
-        <button onclick="setTheme('play')" id="mode-play" class="px-6 py-2 rounded-full text-sm font-bold text-gray-400 hover:text-black hover:bg-white/50 transition-all">🎈 Play</button>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav
+        class="h-16 flex items-center justify-between px-6 border-b border-black/5 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="flex items-center space-x-2">
+            <span class="serif text-xl tracking-tighter uppercase font-bold text-black">XYLAB <span
+                    class="text-xs font-light opacity-30 italic ml-1">SMART AGENT v4.4</span></span>
+        </div>
+        <img src="{{ loopy_uri }}" class="w-8 h-8 rounded-full border border-pink-100" alt="loopy">
     </nav>
 
-    <div class="max-w-[1400px] mx-auto pt-32 pb-20 px-6 lg:px-12">
-        
-        <!-- Hero Section -->
-        <header class="text-center mb-24">
-            <div class="flex justify-center space-x-3 mb-8">
-                <span class="pill">[✨ AI BUILDER & EXPLORER]</span>
-                <span class="pill">[🌙 STUDIO PHILOSOPHY]</span>
-            </div>
-            <h1 class="text-7xl lg:text-9xl font-bold tracking-tight mb-8">Structural<br>Autonomy</h1>
-            <p class="text-xl opacity-60 max-w-2xl mx-auto leading-relaxed">
-                Creator of <span class="font-bold">XYLAB</span>. Integrating Data Science, Aesthetics, and Human Emotion into weightless digital interfaces.
-            </p>
-        </header>
+    <!-- Mode Switcher -->
+    <div class="flex justify-center bg-white border-b border-black/5 py-3 space-x-6 sticky top-16 z-40">
+        <button id="btn-wechat" onclick="switchMode('wechat')" class="flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 bg-black text-white shadow-lg shadow-black/10 scale-105">
+            <span class="text-xs font-bold tracking-widest uppercase">🟢 WeChat (HTML)</span>
+        </button>
+        <button id="btn-xhs" onclick="switchMode('xhs')" class="flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 bg-gray-100 text-gray-400 hover:bg-gray-200">
+            <span class="text-xs font-bold tracking-widest uppercase">🔴 Xiaohongshu (Image)</span>
+        </button>
+    </div>
 
-        <!-- Bento Grid / Tabs Area -->
-        <section>
-            <div class="flex justify-center mb-12 space-x-4">
-                <button onclick="showTab('philosophy')" class="tab-btn bento-tab active" id="tab-philosophy-btn">Philosophy</button>
-                <button onclick="showTab('architecture')" class="tab-btn bento-tab text-gray-400 hover:text-black" id="tab-architecture-btn">Architecture</button>
-                <button onclick="showTab('agents')" class="tab-btn bento-tab text-gray-400 hover:text-black" id="tab-agents-btn">Ecosystem</button>
-                <button onclick="showTab('dna')" class="tab-btn bento-tab text-gray-400 hover:text-black" id="tab-dna-btn">DNA</button>
-            </div>
+    <!-- WeChat Workspace -->
+    <div id="wechat-workspace" class="flex-1 flex flex-col">
+        <!-- Mobile Tabs (Visible on Mobile) -->
+        <div class="flex md:hidden bg-white border-b border-black/5 items-center justify-around h-12">
+            <button id="tab-edit"
+                class="h-full px-8 text-xs font-bold uppercase tracking-widest tab-active">Manuscript</button>
+            <button id="tab-preview" class="h-full px-8 text-xs font-bold uppercase tracking-widest tab-inactive">Aura
+                View</button>
+        </div>
 
-            <!-- Tab 1: Philosophy (The Heart) -->
-            <div id="tab-philosophy" class="tab-content grid grid-cols-1 md:grid-cols-12 gap-8">
-                <div class="md:col-span-8 bento-card bg-black text-white flex flex-col justify-between min-h-[500px]">
-                    <h2 class="text-3xl font-light mb-auto leading-tight italic">
-                        "Technology should be <span class="font-bold underline decoration-var(--theme-color)">powerful</span> — but also warm, expressive, and beautiful."
-                    </h2>
-                    <div class="mt-20">
-                        <div class="text-[10px] uppercase tracking-[0.3em] opacity-30 mb-4">The Formula</div>
-                        <div class="text-5xl lg:text-7xl font-mono font-bold tracking-tighter">
-                            Emotion <span class="text-white/20">→</span> AI <span class="text-white/20">→</span> Interface
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col md:flex-row overflow-hidden bg-[#F9F9F9]">
+            <!-- Editor Section -->
+            <section id="section-edit" class="flex-1 p-4 md:p-10 flex flex-col">
+                <div class="bg-white rounded-3xl chic-shadow flex-1 flex flex-col overflow-hidden border border-black/5">
+                    <div class="px-6 py-4 border-b border-black/5 flex justify-between items-center">
+                        <span class="text-[10px] uppercase tracking-[0.2em] font-bold opacity-30">Editor</span>
+                        <div class="flex items-center space-x-4">
+                            <button id="ai-btn" class="text-[10px] uppercase font-bold bg-[#FEC5D2] text-[#E91E63] px-3 py-1 rounded shadow-sm hover:scale-105 transition-transform duration-300">AI Auto-Layout</button>
+                            <button type="button" id="shuffle-btn" onclick="shuffleImage()" class="text-[10px] uppercase font-bold bg-gray-200 text-gray-700 px-3 py-1 rounded shadow-sm hover:scale-105 transition-transform duration-300">🎲 Shuffle</button>
+                            <button type="button" onclick="extractImage()" class="text-[10px] uppercase font-bold bg-blue-100 text-blue-700 px-3 py-1 rounded shadow-sm hover:scale-105 transition-transform duration-300">📥 提取原图</button>
+                            <select name="theme" id="theme-selector" class="text-[10px] uppercase tracking-[0.2em] font-bold opacity-50 bg-transparent outline-none cursor-pointer">
+                                <option value="loopy">Loopy Cute</option>
+                                <option value="executive">Executive Gray</option>
+                                <option value="ethereal">Ethereal Sky</option>
+                                <option value="techno">Techno Cyber</option>
+                                <option value="urban">Urban Pulse</option>
+                                <option value="wonyoung">Wonyoungism</option>
+                                <option value="algorithm">Algorithm Art</option>
+                                <option value="archive">Archive 2026</option>
+                                <option value="solidcore">Solidcore</option>
+                                <option value="bottari">Bottari</option>
+                            </select>
+                            <div class="w-1.5 h-1.5 rounded-full bg-green-400"></div>
                         </div>
                     </div>
+                    <textarea id="editor"
+                        class="flex-1 p-6 text-sm leading-relaxed text-black/70 resize-none font-serif italic"
+                        placeholder="Type your story here..."></textarea>
                 </div>
-                <div class="md:col-span-4 bento-card flex flex-col justify-center items-center text-center space-y-6">
-                    <div class="w-24 h-24 rounded-full bg-[var(--bg-accent)] flex items-center justify-center text-4xl floating-bubble text-[var(--text-accent)]">🔮</div>
-                    <div class="space-y-2">
-                        <h3 class="text-2xl font-bold">The Vision</h3>
-                        <p class="opacity-50">Less like software. More like a living digital space.</p>
-                    </div>
-                </div>
-            </div>
+                <!-- Padding for sticky footer on mobile -->
+                <div class="h-24 md:hidden"></div>
+            </section>
 
-            <!-- Tab 2: Architecture (The Stack) -->
-            <div id="tab-architecture" class="tab-content hidden grid grid-cols-1 md:grid-cols-12 gap-8">
-                <div class="md:col-span-4 bento-card flex items-center justify-center">
-                    <div class="flex flex-col items-center w-full">
-                        <div class="pill w-fit mb-8">SYSTEM STACK</div>
-                        <div class="font-mono text-sm py-3 px-6 rounded-xl border border-black/5 bg-gray-50 shadow-sm w-full text-center">User</div>
-                        <div class="stack-arrow"></div>
-                        <div class="font-mono text-sm py-3 px-6 rounded-xl border border-black/5 bg-[var(--bg-accent)] font-bold text-[var(--text-accent)] w-full text-center">Emotion Signal</div>
-                        <div class="stack-arrow"></div>
-                        <div class="font-mono text-sm py-3 px-6 rounded-xl border border-black/5 bg-gray-50 w-full text-center">Emotion Engine</div>
-                        <div class="stack-arrow"></div>
-                        <div class="font-mono text-sm py-3 px-6 rounded-xl border border-black/5 bg-gray-50 w-full text-center">Generative Interface</div>
-                        <div class="stack-arrow"></div>
-                        <div class="font-mono text-sm py-3 px-6 rounded-xl border border-black/5 bg-black text-white w-full text-center">AI Agents</div>
-                    </div>
-                </div>
-                <div class="md:col-span-8 bento-card bg-gray-50 flex flex-col space-y-12">
-                    <div>
-                        <h3 class="text-4xl font-bold mb-8">Brutalist Logic</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                            <div class="p-8 bg-white border border-black/5 rounded-[32px]">
-                                <div class="text-[10px] font-bold opacity-30 mb-2">TRADITIONAL</div>
-                                <div class="text-xl font-mono">Function → Interface</div>
-                                <p class="mt-4 text-sm opacity-50">Static, utility-first, and emotionally disconnected.</p>
-                            </div>
-                            <div class="p-8 bg-white border border-[var(--text-accent)]/20 rounded-[32px] ring-4 ring-[var(--text-accent)]/5 shadow-xl shadow-[var(--text-accent)]/5">
-                                <div class="text-[10px] font-bold text-[var(--text-accent)] mb-2">XYLAB PHILOSOPHY</div>
-                                <div class="text-xl font-mono font-bold">Emotion → AI → Interface</div>
-                                <p class="mt-4 text-sm opacity-60 font-medium">Fluid, personalized, and deeply resonant with user state.</p>
+            <!-- Preview Section -->
+            <section id="section-preview" class="flex-1 p-4 md:p-10 flex flex-col md:flex hidden">
+                <div class="flex flex-col items-center justify-center h-full">
+                    <div class="hidden md:flex text-[10px] uppercase tracking-[0.3em] font-bold opacity-30 mb-6">Mobile
+                        Preview (375px)</div>
+
+                    <div
+                        class="w-full max-w-[375px] h-[667px] md:h-[700px] bg-white rounded-[40px] chic-shadow overflow-hidden border border-black/5 relative">
+                        <div id="preview" class="h-full overflow-y-auto overflow-x-hidden scroll-smooth bg-[#F8F8F8]">
+                            <div
+                                class="flex flex-col items-center justify-center h-full text-black/10 serif uppercase italic tracking-widest text-sm p-10 text-center">
+                                Write something to see the aura...
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Tab 3: Agent Ecosystem (The Tools) -->
-            <div id="tab-agents" class="tab-content hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                <!-- Agent 1 -->
-                <div class="bento-card group hover:border-[var(--text-accent)]/40 transition-all">
-                    <div class="text-3xl mb-6">🤖</div>
-                    <h3 class="text-xl font-bold mb-4">Smart Layout Agent</h3>
-                    <p class="text-sm opacity-50 mb-8 flex-1">Transforms Markdown to styled HTML for creators in seconds.</p>
-                    <div class="pill w-fit !bg-black !text-white text-[10px] cursor-pointer hover:scale-105 active:scale-95 transition-all">TRY AGENT →</div>
-                </div>
-                <!-- Agent 2 -->
-                <div class="bento-card hover:border-[var(--text-accent)]/40 transition-all opacity-60">
-                    <div class="text-3xl mb-6">✈️</div>
-                    <h3 class="text-xl font-bold mb-4">Travel Agent</h3>
-                    <p class="text-sm opacity-50 mb-8 flex-1">Automated itinerary design (e.g., Dubai Solo Trip design).</p>
-                    <div class="text-[10px] font-bold opacity-30">UNDER CONSTRUCTION</div>
-                </div>
-                <!-- Agent 3 -->
-                <div class="bento-card hover:border-[var(--text-accent)]/40 transition-all opacity-60">
-                    <div class="text-3xl mb-6">🎥</div>
-                    <h3 class="text-xl font-bold mb-4">Video Agent</h3>
-                    <p class="text-sm opacity-50 mb-8 flex-1">Creative short-form video generation system.</p>
-                    <div class="text-[10px] font-bold opacity-30">BETA ACCESS</div>
-                </div>
-                <!-- Agent 4 -->
-                <div class="bento-card hover:border-[var(--text-accent)]/40 transition-all opacity-60">
-                    <div class="text-3xl mb-6">📈</div>
-                    <h3 class="text-xl font-bold mb-4">Resale Agent</h3>
-                    <p class="text-sm opacity-50 mb-8 flex-1">Analyzes organic demand for second-hand premium markets.</p>
-                    <div class="text-[10px] font-bold opacity-30">RESEARCH PHASE</div>
-                </div>
-            </div>
-
-            <!-- Tab 4: DNA / ABOUT (The Creator) -->
-            <div id="tab-dna" class="tab-content hidden grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bento-card bg-black text-white">
-                    <div class="flex items-center space-x-3 mb-10">
-                        <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-black font-bold">XY</div>
-                        <h3 class="text-2xl font-bold">[LOGIC]</h3>
-                    </div>
-                    <ul class="space-y-6 opacity-80 font-mono text-sm">
-                        <li class="flex items-center space-x-4">
-                            <span class="w-2 h-2 bg-white rounded-full"></span>
-                            <span>Quant Econ (SMU/Nankai)</span>
-                        </li>
-                        <li class="flex items-center space-x-4">
-                            <span class="w-2 h-2 bg-white rounded-full"></span>
-                            <span>Python, PySpark, AWS</span>
-                        </li>
-                        <li class="flex items-center space-x-4">
-                            <span class="w-2 h-2 bg-white rounded-full"></span>
-                            <span>Causal Inference Analysis</span>
-                        </li>
-                        <li class="flex items-center space-x-4">
-                            <span class="w-2 h-2 bg-white rounded-full"></span>
-                            <span>Product Strategy & DS</span>
-                        </li>
-                    </ul>
-                </div>
-                <div class="bento-card bg-[var(--bg-accent)] border-none">
-                    <div class="flex items-center space-x-3 mb-10">
-                        <div class="w-10 h-10 rounded-full bg-[var(--text-accent)] flex items-center justify-center text-white font-bold">🎀</div>
-                        <h3 class="text-2xl font-bold text-[var(--text-accent)]">[EMOTION]</h3>
-                    </div>
-                    <div class="flex flex-wrap gap-4">
-                        <span class="px-6 py-3 bg-white/40 border border-black/5 rounded-2xl text-sm font-bold">K-pop Dancer</span>
-                        <span class="px-6 py-3 bg-white/40 border border-black/5 rounded-2xl text-sm font-bold">Solidcore Addict</span>
-                        <span class="px-6 py-3 bg-white/40 border border-black/5 rounded-2xl text-sm font-bold">Aesthetic Blogger</span>
-                        <span class="px-6 py-3 bg-white/40 border border-black/5 rounded-2xl text-sm font-bold italic">Zanmang Loopy Fan</span>
-                    </div>
-                </div>
-            </div>
-        </section>
+                <!-- Padding for sticky footer on mobile -->
+                <div class="h-24 md:hidden"></div>
+            </section>
+        </main>
     </div>
 
-    <!-- Apple Glass Chatbot Widget -->
-    <div class="chatbot-btn group" onclick="toggleChat()">
-        <span class="text-2xl group-hover:rotate-12 transition-transform">💬</span>
+    <!-- XHS Workspace -->
+    <div id="xhs-workspace" class="flex-1 flex flex-col" style="display: none;">
+        <main class="flex-1 flex flex-col md:flex-row overflow-hidden bg-[#F9F9F9]">
+            <!-- Left: XHS Inputs -->
+            <section class="flex-1 p-4 md:p-10 flex flex-col">
+                <div class="bg-white rounded-3xl chic-shadow flex-1 p-8 flex flex-col space-y-6 border border-black/5">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-[10px] uppercase tracking-[0.2em] font-bold opacity-30">XHS Studio</span>
+                        <div class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest font-bold opacity-40 mb-2 block">Post Title</label>
+                            <input type="text" id="xhs-title" class="w-full text-xl font-bold outline-none border-b border-black/5 pb-2 focus:border-red-200 transition-colors" placeholder="Create a catchy headline...">
+                        </div>
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest font-bold opacity-40 mb-2 block">The Hook</label>
+                            <textarea id="xhs-hook" class="w-full text-sm outline-none resize-none h-20 bg-gray-50/50 rounded-xl p-4 focus:bg-white focus:ring-1 focus:ring-red-100 transition-all font-serif italic" placeholder="Why should they stop scrolling?"></textarea>
+                        </div>
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest font-bold opacity-40 mb-2 block">Body Points</label>
+                            <textarea id="xhs-body" class="w-full text-sm outline-none resize-none h-40 bg-gray-50/50 rounded-xl p-4 focus:bg-white focus:ring-1 focus:ring-red-100 transition-all" placeholder="• Key takeaway one&#10;• Key takeaway two&#10;• Call to action..."></textarea>
+                        </div>
+                    </div>
+
+                    <button class="loopy-btn w-full py-5 rounded-2xl text-white font-bold uppercase tracking-[0.2em] text-sm shadow-xl shadow-red-100 flex items-center justify-center space-x-2 !bg-[#FF2442]">
+                        <span>🚀 Generate Poster</span>
+                    </button>
+                </div>
+                <div class="h-24 md:hidden"></div>
+            </section>
+
+            <!-- Right: XHS Preview -->
+            <section class="flex-1 p-4 md:p-10 flex flex-col items-center">
+                <div class="hidden md:flex text-[10px] uppercase tracking-[0.3em] font-bold opacity-30 mb-6">XHS Poster Preview (3:4)</div>
+                <div class="w-full max-w-[400px] aspect-[3/4] bg-white rounded-[40px] chic-shadow overflow-hidden border border-black/5 relative flex items-center justify-center group overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-red-50/30 to-blue-50/30 opacity-50"></div>
+                    <div class="flex flex-col items-center space-y-4 z-10">
+                        <div class="w-16 h-16 border-2 border-dashed border-black/10 rounded-full flex items-center justify-center">
+                            <span class="text-xl">🎨</span>
+                        </div>
+                        <span class="serif italic text-black/20 text-sm tracking-widest">Poster Viewport Placeholder</span>
+                    </div>
+                </div>
+                <div class="h-24 md:hidden"></div>
+            </section>
+        </main>
     </div>
 
-    <div id="chat-window" class="fixed bottom-28 right-8 w-[380px] h-[520px] glass-panel z-50 hidden flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
-        <div class="p-6 border-b border-black/5 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-[10px] font-bold">XY</div>
-                <div class="text-sm font-bold">XYLAB_ASSISTANT</div>
-            </div>
-            <button onclick="toggleChat()" class="opacity-30 hover:opacity-100 transition-opacity">✕</button>
-        </div>
-        <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4">
-            <div class="bg-black text-white p-4 rounded-3xl rounded-tl-none text-sm max-w-[85%] shadow-lg shadow-black/10">
-                Welcome to the Studio. I'm the XYLAB bot. How can I assist your exploration today?
-            </div>
-        </div>
-        <div class="p-6 border-t border-black/5 bg-white/30">
-            <input type="text" id="chat-input" placeholder="Type a frequency..." class="w-full bg-white border border-black/5 px-6 py-4 rounded-2xl text-sm outline-none focus:ring-4 ring-[var(--text-accent)]/10 transition-all shadow-inner">
-        </div>
+    <!-- Sticky Footer Copy Button -->
+    <div class="sticky-footer md:fixed md:bottom-10 md:right-10 md:bg-transparent md:border-none">
+        <button id="copy-btn"
+            class="loopy-btn w-full md:w-auto md:px-12 py-4 rounded-2xl md:rounded-full text-white font-bold uppercase tracking-[0.2em] text-sm shadow-xl shadow-pink-200">
+            Copy for WeChat
+        </button>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast"
+        class="fixed top-20 left-1/2 -translate-x-1/2 bg-black text-white px-8 py-3 rounded-full text-[10px] uppercase tracking-widest font-bold opacity-0 transition-all duration-500 z-[200]">
+        Aura Copied to Clipboard
     </div>
 
     <script>
-        function setTheme(mode) {
-            const body = document.getElementById('main-body');
-            body.classList.remove('dance-mode', 'play-mode');
+        const editor = document.getElementById('editor');
+        const preview = document.getElementById('preview');
+        const copyBtn = document.getElementById('copy-btn');
+        const tabEdit = document.getElementById('tab-edit');
+        const tabPreview = document.getElementById('tab-preview');
+        const sectionEdit = document.getElementById('section-edit');
+        const sectionPreview = document.getElementById('section-preview');
+        const toast = document.getElementById('toast');
+        const aiBtn = document.getElementById('ai-btn');
+
+        // Tab Switching
+        tabEdit.addEventListener('click', () => {
+            tabEdit.classList.replace('tab-inactive', 'tab-active');
+            tabPreview.classList.replace('tab-active', 'tab-inactive');
+            sectionEdit.classList.remove('hidden');
+            sectionPreview.classList.add('hidden');
+        });
+
+        tabPreview.addEventListener('click', () => {
+            tabPreview.classList.replace('tab-inactive', 'tab-active');
+            tabEdit.classList.replace('tab-active', 'tab-inactive');
+            sectionPreview.classList.remove('hidden', 'md:flex');
+            sectionPreview.classList.add('flex');
+            sectionEdit.classList.add('hidden');
+        });
+
+        // Conversion Logic
+        let debounce;
+        // Refactored Preview Function for Immediate Callback
+        async function updatePreview() {
+            const text = editor.value;
+            if (!text.trim()) {
+                preview.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-black/10 serif uppercase italic tracking-widest text-sm p-10 text-center">Write something to see the aura...</div>`;
+                preview.style.opacity = 1;
+                return;
+            }
             
-            // Handle active button state
-            const modes = ['core', 'dance', 'play'];
-            modes.forEach(m => {
-                const btn = document.getElementById(`mode-${m}`);
-                if (m === mode) {
-                    btn.classList.add('bg-white', 'shadow-sm', 'border-black/5', 'text-black');
-                    btn.classList.remove('text-gray-400');
-                } else {
-                    btn.classList.remove('bg-white', 'shadow-sm', 'border-black/5', 'text-black');
-                    btn.classList.add('text-gray-400');
+            preview.style.opacity = 0;
+            
+            const theme = document.getElementById('theme-selector').value;
+            try {
+                const res = await fetch('/convert', {
+                    method: 'POST',
+                    body: new URLSearchParams({ markdown_input: text, theme: theme })
+                });
+                const data = await res.json();
+                preview.innerHTML = data.html;
+            } catch(e) { console.error(e); }
+            
+            setTimeout(() => {
+                preview.style.opacity = 1;
+            }, 50);
+        }
+
+        editor.addEventListener('input', () => {
+            clearTimeout(debounce);
+            debounce = setTimeout(updatePreview, 300);
+        });
+
+        document.getElementById('theme-selector').addEventListener('change', () => {
+            updatePreview();
+        });
+
+        // AI Auto-Layout Logic
+        aiBtn.addEventListener('click', async () => {
+            const text = editor.value;
+            if (!text.trim()) return;
+            
+            aiBtn.innerText = "Processing...";
+            aiBtn.classList.add("opacity-50");
+            
+            const theme = document.getElementById('theme-selector').value;
+            try {
+                const res = await fetch('/ai-process', {
+                    method: 'POST',
+                    body: new URLSearchParams({ markdown_input: text, theme: theme })
+                });
+                const data = await res.json();
+                // Strict Override
+                editor.value = data.markdown;
+                // Immediate View Refresh
+                await updatePreview();
+            } catch (err) {
+                console.error(err);
+            } finally {
+                aiBtn.innerText = "AI Auto-Layout";
+                aiBtn.classList.remove("opacity-50");
+            }
+        });
+
+        // Extract Image Logic
+        function extractImage() {
+            const editor = document.getElementById('editor');
+            const imgMatch = editor.value.match(/!\[.*?\]\((.*?)\)/);
+            if (imgMatch && imgMatch[1]) {
+                window.open(imgMatch[1], '_blank');
+            } else {
+                alert("当前排版中没有找到图片哦！请先点击 AI Auto-Layout。");
+            }
+        }
+
+        // Shuffle Logic
+        async function shuffleImage() {
+            // 1. Get elements 
+            const editor = document.getElementById('editor');
+            const themeSelect = document.getElementById('theme-selector'); 
+            const shuffleBtn = document.getElementById('shuffle-btn');
+            
+            if (!editor) { console.error("Could not find textarea!"); return; }
+
+            const originalText = shuffleBtn.innerText;
+            shuffleBtn.innerText = "🎲 Shuffling...";
+            
+            try {
+                // 2. Fetch new image from backend
+                const response = await fetch('/shuffle-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ 'theme': themeSelect ? themeSelect.value : 'loopy' })
+                });
+                
+                const data = await response.json();
+                
+                if (data.new_image_markdown) {
+                    // 3. Bulletproof Regex: Target the Divider image specifically so we don't wipe the Hero
+                    const imageRegex = /!\[Divider\]\(.*?\)/g; 
+                    
+                    if (imageRegex.test(editor.value)) {
+                        editor.value = editor.value.replace(imageRegex, data.new_image_markdown);
+                    } else {
+                        // If somehow deleted, append to bottom
+                        editor.value += "\n\n" + data.new_image_markdown + "\n\n";
+                    }
+                    
+                    // 4. Force the preview to update! (Ensure this function exists)
+                    if (typeof updatePreview === "function") {
+                        updatePreview();
+                    } else {
+                        console.error("updatePreview() function is missing!");
+                    }
                 }
-            });
-
-            if (mode === 'dance') body.classList.add('dance-mode');
-            if (mode === 'play') body.classList.add('play-mode');
+            } catch (error) {
+                console.error("Shuffle API Error:", error);
+                alert("Failed to shuffle image. Check console.");
+            } finally {
+                shuffleBtn.innerText = originalText;
+            }
         }
 
-        function showTab(tabId) {
-            // Content visibility
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+        // Clipboard Copy
+        copyBtn.addEventListener('click', async () => {
+            const auraCard = document.getElementById('aura-card');
+            if (!auraCard) return;
 
-            // Tab button state
-            document.querySelectorAll('.bento-tab').forEach(btn => {
-                btn.classList.remove('active', 'bg-black', 'text-white');
-                btn.classList.add('text-gray-400');
-            });
-            const active = document.getElementById(`tab-${tabId}-btn`);
-            active.classList.add('active', 'bg-black', 'text-white');
-            active.classList.remove('text-gray-400');
+            const html = auraCard.outerHTML;
+            try {
+                await navigator.clipboard.writeText(html);
+                showToast();
+            } catch (err) {
+                // Fallback for older mobile browsers
+                const textArea = document.createElement("textarea");
+                textArea.value = html;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast();
+            }
+        });
+
+        function showToast() {
+            toast.classList.replace('opacity-0', 'opacity-100');
+            setTimeout(() => toast.classList.replace('opacity-100', 'opacity-0'), 2500);
         }
 
-        function toggleChat() {
-            const chat = document.getElementById('chat-window');
-            chat.classList.toggle('hidden');
-        }
+        // Mode Switching Logic
+        function switchMode(mode) {
+            const wechatWs = document.getElementById('wechat-workspace');
+            const xhsWs = document.getElementById('xhs-workspace');
+            const btnWechat = document.getElementById('btn-wechat');
+            const btnXhs = document.getElementById('btn-xhs');
+            const copyBtn = document.getElementById('copy-btn');
 
-        // Initialize with core theme
-        setTheme('core');
+            if (mode === 'wechat') {
+                wechatWs.style.display = 'flex';
+                xhsWs.style.display = 'none';
+                
+                btnWechat.className = "flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 bg-black text-white shadow-lg shadow-black/10 scale-105";
+                btnXhs.className = "flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 bg-gray-100 text-gray-400 hover:bg-gray-200";
+                
+                if (copyBtn) copyBtn.innerText = "Copy for WeChat";
+            } else {
+                wechatWs.style.display = 'none';
+                xhsWs.style.display = 'flex';
+                
+                btnXhs.className = "flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 bg-[#FF2442] text-white shadow-lg shadow-red-200 scale-105";
+                btnWechat.className = "flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 bg-gray-100 text-gray-400 hover:bg-gray-200";
+                
+                if (copyBtn) copyBtn.innerText = "Export Image";
+            }
+        }
     </script>
 </body>
+
 </html>
