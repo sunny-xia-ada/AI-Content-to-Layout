@@ -16,14 +16,25 @@ app = FastAPI(title="XYLAB // SMART AGENT v4.4")
 
 # Vercel Serverless Absolute Pathing Fix
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# If the code is running in a different context (like Vercel functions), 
+# we ensure the templates and static folders are reached correctly.
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
+if not os.path.exists(TEMPLATE_DIR):
+    # Fallback to a relative path from the current working directory
+    TEMPLATE_DIR = os.path.abspath("templates")
+
 STATIC_DIR = os.path.join(BASE_DIR, "static")
+if not os.path.exists(STATIC_DIR):
+    # Fallback to a relative path from the current working directory
+    STATIC_DIR = os.path.abspath("static")
 
 # Only mount the static directory if it actually exists in the runtime environment
 if os.path.exists(STATIC_DIR):
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 else:
-    print("Warning: 'static' directory not found. Skipping static mount.")
+    print(f"Warning: 'static' directory not found at {STATIC_DIR}. Skipping static mount.")
+
 templates = Jinja2Templates(directory=TEMPLATE_DIR)
 
 LOOPY_PATH = "loopy_asset.png"
