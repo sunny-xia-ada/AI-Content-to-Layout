@@ -205,7 +205,7 @@
                         <!-- Theme Selector -->
                         <div class="mb-6">
                             <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-2">🎨 杂志视觉情绪 (Editorial Theme)</label>
-                            <select id="xhs-theme-selector" class="w-full p-3 bg-gray-50 border border-black/5 rounded-xl outline-none focus:ring-1 focus:ring-red-100 transition-all text-sm font-medium">
+                            <select id="xhs-theme-selector" onchange="shuffleXhsBg()" class="w-full p-3 bg-gray-50 border border-black/5 rounded-xl outline-none focus:ring-1 focus:ring-red-100 transition-all text-sm font-medium">
                                 <option value="techno">🔌 Techno Cyber (暗黑科技专刊)</option>
                                 <option value="wonyoungism">🎀 Wonyoungism (财阀千金画报)</option>
                                 <option value="solidcore">🔥 Solidcore Burn (硬核塑形海报)</option>
@@ -661,12 +661,13 @@
                 "posh": "3D soft fabric simulation, floating white drapery, pristine studio lighting, minimalist expensive aesthetic"
             };
 
-            // 3. Generate dynamic AI image URL via Pollinations
+            // 3. Generate dynamic AI image URL via Pollinations with Cache-Buster
             const seed = Math.floor(Math.random() * 9999999);
+            const timestamp = new Date().getTime(); // Prevents aggressive browser caching
             const basePrompt = themePrompts[currentTheme] || themePrompts["techno"];
             const finalPrompt = encodeURIComponent(basePrompt + ", empty background, no text, clean space");
             
-            const newBgUrl = `https://image.pollinations.ai/prompt/${finalPrompt}?width=1000&height=1400&nologo=true&seed=${seed}`;
+            const newBgUrl = `https://image.pollinations.ai/prompt/${finalPrompt}?width=1000&height=1400&nologo=true&seed=${seed}&t=${timestamp}`;
             
             // 4. Update input field
             bgInput.value = newBgUrl;
