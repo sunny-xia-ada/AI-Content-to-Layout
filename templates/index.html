@@ -84,13 +84,28 @@
         @keyframes fallAndSway {
             0% { transform: translateY(-50px) translateX(0) rotate(0deg); opacity: 0; }
             10% { opacity: 1; }
-            100% { transform: translateY(1200px) translateX(100px) rotate(360deg); opacity: 0; }
+            100% { transform: translateY(1200px) translateX(120px) rotate(360deg); opacity: 0; }
         }
-        .particle {
+        
+        .live-particle {
             position: absolute;
             pointer-events: none;
             z-index: 5;
             animation: fallAndSway linear infinite;
+        }
+
+        #xhs-canvas-background-fluid {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(var(--bg-angle, 135deg), var(--primary-fluid), var(--secondary-fluid));
+            animation: hueRotate 10s infinite linear;
+            filter: blur(50px) saturate(2);
+            z-index: -1;
+        }
+
+        @keyframes hueRotate {
+            0% { filter: blur(50px) saturate(2) hue-rotate(0deg); }
+            100% { filter: blur(50px) saturate(2) hue-rotate(360deg); }
         }
     </style>
 </head>
@@ -512,9 +527,9 @@
                 ? `background-image: url('${bgImageUrl}'); background-size: cover; background-position: center;` 
                 : `background: #121212;`; // Dark fallback
 
-            // 3. Render the Canva-style Magazine Layout
+            // 3. Render the Canva-style Magazine Layout with Sandwich Layers
             canvasDiv.innerHTML = `
-                <div class="relative h-full w-full flex flex-col overflow-hidden shadow-2xl" style="${bgStyle}">
+                <div id="xhs-canvas-content" class="relative h-full w-full flex flex-col overflow-hidden shadow-2xl rounded-md" style="${bgStyle} background-size: cover; background-position: center;">
                     <div class="absolute inset-0 bg-gradient-to-b ${style.overlay} z-0"></div>
                     
                     <div id="particle-layer" class="absolute inset-0 overflow-hidden pointer-events-none z-0"></div>
@@ -525,7 +540,6 @@
                             <span>XYLAB // ISSUE NO.01</span>
                             <span>2026 EDITION</span>
                         </div>
-
                         <h1 class="text-[72px] leading-[0.85] tracking-tighter text-center mt-2 mb-auto ${style.masthead} drop-shadow-lg">
                             ${themeKey.toUpperCase()}
                         </h1>
@@ -570,7 +584,7 @@
             // Trigger the dynamic particle engine based on the theme
             startParticles(themeKey);
 
-            generateBtn.innerText = "⏳ 正在生成...";
+            generateBtn.innerText = "⏳ 正在生成静态大片...";
             generateBtn.disabled = true;
             generateBtn.classList.add('opacity-50');
             
@@ -580,8 +594,12 @@
                 const canvas = await html2canvas(canvasDiv, { scale: 3, useCORS: true, allowTaint: true, backgroundColor: null });
                 const imgData = canvas.toDataURL("image/png");
                 
-                canvasDiv.innerHTML = `<img src="${imgData}" class="w-full h-full object-cover shadow-2xl rounded-md" alt="Magazine Cover" />`;
-                generateBtn.innerText = "✅ 长按上方大片保存";
+                // Update Preview Area with Static Image (particles will freeze)
+                canvasDiv.innerHTML = `<img src="${imgData}" class="w-full h-full object-cover shadow-2xl rounded-md" alt="XHS Poster" />`;
+                generateBtn.innerText = "✅ 长按静态图保存";
+
+                // STOP PARTICLES on static image so they don't leak out
+                clearInterval(particleEmitterInterval);
             } catch (error) {
                 console.error("Rendering failed:", error);
                 generateBtn.innerText = "❌ 生成失败";
@@ -592,37 +610,37 @@
             }
         }
 
-        let particleInterval;
+        let particleEmitterInterval;
 
-        function startParticles(theme) {
+        function startParticles(themeKey) {
             const layer = document.getElementById('particle-layer');
             if (!layer) return;
             
-            // Clear existing particles
-            layer.innerHTML = '';
-            clearInterval(particleInterval);
+            // Clear existing interval to prevent overlap
+            clearInterval(particleEmitterInterval);
+            layer.innerHTML = ''; // Essential cleanup
 
-            // Define theme-specific particles
+            // Curated dynamic particle pool
             const particleMaps = {
-                "wonyoungism": ['🌸', '✨', '🎀', '🌸'], // Sakura & Ribbons
-                "y2k": ['🖤', '💖', '💿', '✨'], // Cyber hearts & discs
+                "wonyoungism": ['🌸', '✨', '🎀', '🌸'], // Sakura and Ribbons
+                "y2k": ['🖤', '💖', '💿', '✨'], // Cyber Hearts & Discs
                 "urban": ['💸', '🔥', '✨'], // Hype vibe
-                "techno": ['0', '1', '⚡', '💻'], // Matrix rain vibe
+                "techno": ['0', '1', '⚡', '💻'], // Matrix vibe
                 "default": ['✨', '🫧', '🤍'] // Neutral sparkles/bubbles
             };
 
-            const emojis = particleMaps[theme] || particleMaps["default"];
+            const emojis = particleMaps[themeKey] || particleMaps["default"];
 
             // Emitter loop
-            particleInterval = setInterval(() => {
+            particleEmitterInterval = setInterval(() => {
                 const p = document.createElement('div');
-                p.className = 'particle drop-shadow-lg';
+                p.className = 'live-particle drop-shadow-lg';
                 p.innerText = emojis[Math.floor(Math.random() * emojis.length)];
                 
-                // Randomize size, starting position, and fall speed
-                const size = Math.random() * 20 + 15; // 15px to 35px
+                // Randomize size, position, and fall speed to simulate 3D depth
+                const size = Math.random() * 20 + 18; // 18px to 38px
                 const left = Math.random() * 100; // 0% to 100%
-                const duration = Math.random() * 5 + 4; // 4s to 9s fall time
+                const duration = Math.random() * 6 + 5; // 5s to 11s fall time
                 
                 p.style.fontSize = `${size}px`;
                 p.style.left = `${left}%`;
@@ -631,11 +649,11 @@
                 
                 layer.appendChild(p);
 
-                // Cleanup after fall
+                // Cleanup element after fall
                 setTimeout(() => {
                     if (p.parentNode) p.parentNode.removeChild(p);
                 }, duration * 1000);
-            }, 400); // Spawn a new particle every 400ms
+            }, 300); // Spawn new particle every 300ms
         }
 
         // --- XHS Background Shuffle Logic ---
