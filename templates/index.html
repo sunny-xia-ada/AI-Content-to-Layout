@@ -96,17 +96,13 @@
     </nav>
 
     <!-- Mode Switcher -->
-    <div class="flex justify-center bg-white border-b border-black/5 py-3 space-x-6 sticky top-16 z-40">
-        <button id="btn-wechat" onclick="switchMode('wechat')" class="flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 bg-black text-white shadow-lg shadow-black/10 scale-105">
-            <span class="text-xs font-bold tracking-widest uppercase">🟢 WeChat (HTML)</span>
-        </button>
-        <button id="btn-xhs" onclick="switchMode('xhs')" class="flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 bg-gray-100 text-gray-400 hover:bg-gray-200">
-            <span class="text-xs font-bold tracking-widest uppercase">🔴 Xiaohongshu (Image)</span>
-        </button>
+    <div class="flex justify-center bg-white border-b border-black/5 py-4 space-x-4 sticky top-16 z-40">
+        <button id="tab-wechat" onclick="switchMode('wechat')" class="px-6 py-2 bg-black text-white font-bold rounded-full shadow-lg transition-all">🟢 微信排版模式</button>
+        <button id="tab-xhs" onclick="switchMode('xhs')" class="px-6 py-2 bg-gray-200 text-gray-500 font-bold rounded-full transition-all">🔴 小红书出图模式</button>
     </div>
 
     <!-- WeChat Workspace -->
-    <div id="wechat-workspace" class="flex-1 flex flex-col">
+    <div id="wechat-workspace" class="flex-1 flex flex-col block">
         <!-- Mobile Tabs (Visible on Mobile) -->
         <div class="flex md:hidden bg-white border-b border-black/5 items-center justify-around h-12">
             <button id="tab-edit"
@@ -172,7 +168,7 @@
     </div>
 
     <!-- XHS Workspace -->
-    <div id="xhs-workspace" class="flex-1 flex flex-col" style="display: none;">
+    <div id="xhs-workspace" class="flex-1 flex flex-col hidden">
         <main class="flex-1 flex flex-col md:flex-row overflow-hidden bg-[#F9F9F9]">
             <!-- Left: XHS Inputs -->
             <section class="flex-1 p-4 md:p-10 flex flex-col">
@@ -183,6 +179,28 @@
                     </div>
                     
                     <div class="space-y-4">
+                        <!-- Background Image -->
+                        <div class="mb-4">
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-2">📸 封面底图 (Background Image URL)</label>
+                            <input type="text" id="xhs-bg-image" class="w-full p-3 bg-gray-50 border border-black/5 rounded-xl outline-none focus:ring-1 focus:ring-red-100 transition-all text-sm" placeholder="粘贴高清图片网址 (留空则用纯色)">
+                        </div>
+                        
+                        <!-- Theme Selector -->
+                        <div class="mb-6">
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-2">🎨 杂志视觉情绪 (Editorial Theme)</label>
+                            <select id="xhs-theme-selector" class="w-full p-3 bg-gray-50 border border-black/5 rounded-xl outline-none focus:ring-1 focus:ring-red-100 transition-all text-sm font-medium">
+                                <option value="techno">🔌 Techno Cyber (暗黑科技专刊)</option>
+                                <option value="wonyoungism">🎀 Wonyoungism (财阀千金画报)</option>
+                                <option value="solidcore">🔥 Solidcore Burn (硬核塑形海报)</option>
+                                <option value="urban">🛹 Urban Pulse (街头/舞蹈Lookbook)</option>
+                                <option value="salon">📚 Cultural Salon (文化沙龙/读书会)</option>
+                                <option value="bottari">🪵 Bottari Scent (木质香氛/空间美学)</option>
+                                <option value="nomad">✈️ Solo Nomad (旷野独旅/公路纪实)</option>
+                                <option value="algorithm">📐 Algorithm Art (极客代码/视觉逻辑)</option>
+                                <option value="y2k">💿 Y2K Archive (千禧复古/胶片碎念)</option>
+                                <option value="posh">👗 Posh Resale (极简高街/OOTD闲置)</option>
+                            </select>
+                        </div>
                         <div>
                             <label class="text-[10px] uppercase tracking-widest font-bold opacity-40 mb-2 block">Post Title</label>
                             <input type="text" id="xhs-title" class="w-full text-xl font-bold outline-none border-b border-black/5 pb-2 focus:border-red-200 transition-colors" placeholder="Create a catchy headline...">
@@ -413,26 +431,32 @@
 
         // Mode Switching Logic
         function switchMode(mode) {
-            const wechatWs = document.getElementById('wechat-workspace');
-            const xhsWs = document.getElementById('xhs-workspace');
-            const btnWechat = document.getElementById('btn-wechat');
-            const btnXhs = document.getElementById('btn-xhs');
+            const wechatWorkspace = document.getElementById('wechat-workspace');
+            const xhsWorkspace = document.getElementById('xhs-workspace');
+            const tabWechat = document.getElementById('tab-wechat');
+            const tabXhs = document.getElementById('tab-xhs');
             const copyBtn = document.getElementById('copy-btn');
 
             if (mode === 'wechat') {
-                wechatWs.style.display = 'flex';
-                xhsWs.style.display = 'none';
+                wechatWorkspace.classList.remove('hidden');
+                wechatWorkspace.classList.add('block');
+                xhsWorkspace.classList.remove('block');
+                xhsWorkspace.classList.add('hidden');
                 
-                btnWechat.className = "flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 bg-black text-white shadow-lg shadow-black/10 scale-105";
-                btnXhs.className = "flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 bg-gray-100 text-gray-400 hover:bg-gray-200";
+                // Active Tab Style
+                tabWechat.className = "px-6 py-2 bg-black text-white font-bold rounded-full shadow-lg transition-all";
+                tabXhs.className = "px-6 py-2 bg-gray-200 text-gray-500 font-bold rounded-full transition-all";
                 
                 if (copyBtn) copyBtn.innerText = "Copy for WeChat";
             } else {
-                wechatWs.style.display = 'none';
-                xhsWs.style.display = 'flex';
+                xhsWorkspace.classList.remove('hidden');
+                xhsWorkspace.classList.add('block');
+                wechatWorkspace.classList.remove('block');
+                wechatWorkspace.classList.add('hidden');
                 
-                btnXhs.className = "flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 bg-[#FF2442] text-white shadow-lg shadow-red-200 scale-105";
-                btnWechat.className = "flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 bg-gray-100 text-gray-400 hover:bg-gray-200";
+                // Active Tab Style
+                tabXhs.className = "px-6 py-2 bg-[#FF2442] text-white font-bold rounded-full shadow-lg transition-all";
+                tabWechat.className = "px-6 py-2 bg-gray-200 text-gray-500 font-bold rounded-full transition-all";
                 
                 if (copyBtn) copyBtn.innerText = "Export Image";
             }
@@ -440,63 +464,100 @@
 
         // --- XHS Poster Engine ---
         async function generatePoster() {
-            const title = document.getElementById('xhs-title').value;
-            const hook = document.getElementById('xhs-hook').value;
-            const body = document.getElementById('xhs-body').value.replace(/\n/g, '<br>');
-
+            const title = document.getElementById('xhs-title').value || "THE CORE";
+            const hook = document.getElementById('xhs-hook').value || "EXCLUSIVE INTERVIEW";
+            const body = document.getElementById('xhs-body').value.replace(/\n/g, '<br>') || "Discover the new aesthetic.\nIssue 01.";
+            const bgImageUrl = document.getElementById('xhs-bg-image').value.trim();
+            const themeKey = document.getElementById('xhs-theme-selector').value;
             const canvasDiv = document.getElementById('xhs-canvas');
             const generateBtn = document.getElementById('generate-xhs-btn');
 
-            if (!title.trim() && !hook.trim() && !body.trim()) {
-                alert("Please fill in some content first!");
-                return;
-            }
+            if (!canvasDiv || !generateBtn) return;
 
-            // 1. Render HTML inside the canvas
+            // 1. The 10-Theme Magazine Aesthetic Engine
+            const themes = {
+                "techno": { masthead: "font-mono text-[#00FF41]", text: "text-white", overlay: "from-black/95 via-black/40 to-black/95", accent: "border-[#00FF41]" },
+                "wonyoungism": { masthead: "font-serif text-[#FF1493]", text: "text-white", overlay: "from-pink-900/60 via-transparent to-pink-900/80", accent: "border-[#FF69B4]" },
+                "solidcore": { masthead: "font-black italic text-red-600", text: "text-white", overlay: "from-black/90 via-black/20 to-black/95", accent: "border-red-600" },
+                "urban": { masthead: "font-black uppercase text-white drop-shadow-[4px_4px_0_#FF00FF]", text: "text-white", overlay: "from-gray-900/80 via-gray-900/30 to-black", accent: "border-[#FF00FF]" },
+                "salon": { masthead: "font-serif font-light tracking-[0.2em] text-[#F5F5F0]", text: "text-[#F5F5F0]", overlay: "from-[#2C2C2C]/80 via-[#2C2C2C]/30 to-[#1A1A1A]/95", accent: "border-[#DCDCDC]" },
+                "bottari": { masthead: "font-serif text-[#EAE4D9]", text: "text-[#EAE4D9]", overlay: "from-[#5C4A3D]/80 via-[#5C4A3D]/20 to-[#3E2F21]/95", accent: "border-[#CBBFAB]" },
+                "nomad": { masthead: "font-sans font-black text-orange-200 uppercase", text: "text-white", overlay: "from-orange-900/80 via-transparent to-black/95", accent: "border-orange-400" },
+                "algorithm": { masthead: "font-mono font-bold text-blue-200 underline decoration-wavy", text: "text-white", overlay: "from-blue-900/80 via-blue-900/20 to-blue-950/95", accent: "border-blue-400" },
+                "y2k": { masthead: "font-black text-yellow-300 drop-shadow-[3px_3px_0_#FF00FF]", text: "text-white", overlay: "from-purple-900/60 via-purple-900/20 to-indigo-900/95", accent: "border-yellow-300" },
+                "posh": { masthead: "font-serif italic text-white", text: "text-white", overlay: "from-black/50 via-transparent to-black/90", accent: "border-white" }
+            };
+
+            const style = themes[themeKey] || themes["techno"];
+            
+            // 2. Build Background Style
+            const bgStyle = bgImageUrl 
+                ? `background-image: url('${bgImageUrl}'); background-size: cover; background-position: center;` 
+                : `background: #121212;`; // Dark fallback
+
+            // 3. Render the Canva-style Magazine Layout
             canvasDiv.innerHTML = `
-                <div class="p-10 h-full flex flex-col justify-start bg-white text-[#121212] relative overflow-hidden">
-                    <!-- Aesthetics -->
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#FF2442] opacity-5 -translate-y-16 translate-x-16 rounded-full"></div>
+                <div class="relative h-full w-full flex flex-col overflow-hidden shadow-2xl" style="${bgStyle}">
+                    <div class="absolute inset-0 bg-gradient-to-b ${style.overlay} z-0"></div>
                     
-                    <h1 class="text-4xl font-black mb-6 uppercase tracking-tight leading-none break-words">${title}</h1>
-                    
-                    <div class="text-lg font-bold italic bg-[#CCFF00] p-5 mb-8 border-l-[12px] border-[#121212] shadow-[8px_8px_0px_#121212]">
-                        ${hook}
-                    </div>
-                    
-                    <div class="text-base leading-relaxed whitespace-pre-line flex-1">
-                        ${body}
-                    </div>
-                    
-                    <div class="mt-auto pt-8 border-t-2 border-dashed border-gray-100 flex justify-between items-end">
-                        <div class="font-mono text-[10px] text-gray-300 tracking-tighter uppercase">
-                            XYLAB.AGENT // STUDIO<br>STABLE_RELEASE_V4.4
+                    <div class="relative z-10 flex flex-col h-full p-8 ${style.text}">
+                        
+                        <div class="flex justify-between items-center text-[10px] font-mono tracking-widest uppercase mb-4 opacity-80 border-b border-current pb-2">
+                            <span>XYLAB // ISSUE NO.01</span>
+                            <span>2026 EDITION</span>
                         </div>
-                        <div class="text-2xl opacity-20">🎀</div>
+
+                        <h1 class="text-[72px] leading-[0.85] tracking-tighter text-center mt-2 mb-auto ${style.masthead} drop-shadow-lg">
+                            ${themeKey.toUpperCase()}
+                        </h1>
+
+                        <div class="mt-auto mb-10 w-[85%]">
+                            <div class="text-xs font-bold uppercase tracking-widest mb-3 py-1 border-l-4 pl-3 ${style.accent}">
+                                ${hook}
+                            </div>
+                            <h2 class="text-4xl font-black leading-tight mb-4 drop-shadow-md">
+                                ${title}
+                            </h2>
+                            <p class="text-sm leading-relaxed opacity-90 font-medium">
+                                ${body}
+                            </p>
+                        </div>
+
+                        <div class="flex justify-between items-end border-t border-current pt-4 mt-auto">
+                            <div class="font-mono text-[8px] leading-tight opacity-70">
+                                WWW.XYLAB.AGENT<br>PRINTED IN SF, CA
+                            </div>
+                            <div class="text-right">
+                                <div class="flex space-x-[2px] h-6 mb-1 items-end justify-end opacity-80">
+                                    <div class="w-1 h-full bg-current"></div><div class="w-2 h-full bg-current"></div><div class="w-1 h-full bg-current"></div><div class="w-3 h-full bg-current"></div><div class="w-1 h-full bg-current"></div><div class="w-2 h-full bg-current"></div>
+                                </div>
+                                <span class="font-mono text-[10px]">$12.00 USD</span>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             `;
 
-            generateBtn.innerText = "⏳ Rendering...";
+            generateBtn.innerText = "⏳ 正在生成封面...";
+            generateBtn.disabled = true;
+            generateBtn.classList.add('opacity-50');
             
-            // Allow DOM to update before capture
-            await new Promise(r => setTimeout(r, 100));
-
             try {
-                const canvas = await html2canvas(canvasDiv, { 
-                    scale: 3, 
-                    useCORS: true,
-                    backgroundColor: "#FFFFFF"
-                });
+                // Wait for background image to fully load before capturing
+                await new Promise(r => setTimeout(r, 400)); 
+                const canvas = await html2canvas(canvasDiv, { scale: 3, useCORS: true, allowTaint: true, backgroundColor: null });
                 const imgData = canvas.toDataURL("image/png");
                 
-                // Replace with high-res Image for mobile long-press
-                canvasDiv.innerHTML = `<img src="${imgData}" class="w-full h-full object-contain cursor-zoom-in" alt="XHS Poster" />`;
-                generateBtn.innerText = "✅ Long-press Image to Save";
+                canvasDiv.innerHTML = `<img src="${imgData}" class="w-full h-full object-cover shadow-2xl rounded-md" alt="Magazine Cover" />`;
+                generateBtn.innerText = "✅ 长按上方大片保存";
             } catch (error) {
-                console.error("Canvas rendering failed:", error);
-                generateBtn.innerText = "❌ Rendering Error";
-                alert("Failed to create poster. Check browser compatibility.");
+                console.error("Rendering failed:", error);
+                generateBtn.innerText = "❌ 生成失败";
+                canvasDiv.innerHTML = `<div class="p-8 text-center text-red-500">渲染失败。确保图片链接支持跨域加载 (CORS)。<br/>Error: ${error.message}</div>`;
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.classList.remove('opacity-50');
             }
         }
     </script>
