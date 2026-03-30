@@ -516,16 +516,20 @@
                             ${themeKey.toUpperCase()}
                         </h1>
 
-                        <div class="mt-auto mb-10 w-[85%]">
-                            <div class="text-xs font-bold uppercase tracking-widest mb-3 py-1 border-l-4 pl-3 ${style.accent}">
-                                ${hook}
+                        <div class="mt-auto mb-10 w-[90%] relative">
+                            <div class="absolute inset-0 bg-gradient-to-br from-white/30 to-white/5 border border-white/50 rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] z-0"></div>
+                            
+                            <div class="relative z-10 p-6 backdrop-filter-none">
+                                <div class="text-xs font-bold uppercase tracking-widest mb-3 py-1 border-l-4 pl-3 ${style.accent} drop-shadow-lg">
+                                    ${hook}
+                                </div>
+                                <h2 class="text-4xl font-black leading-tight mb-4 drop-shadow-[0_5px_5px_rgba(0,0,0,0.9)]">
+                                    ${title}
+                                </h2>
+                                <p class="text-sm leading-relaxed opacity-100 text-gray-100 font-medium drop-shadow-md">
+                                    ${body}
+                                </p>
                             </div>
-                            <h2 class="text-4xl font-black leading-tight mb-4 drop-shadow-md">
-                                ${title}
-                            </h2>
-                            <p class="text-sm leading-relaxed opacity-90 font-medium">
-                                ${body}
-                            </p>
                         </div>
 
                         <div class="flex justify-between items-end border-t border-current pt-4 mt-auto">
@@ -575,18 +579,18 @@
             // 1. Get current theme
             const currentTheme = themeSelector ? themeSelector.value : "techno";
             
-            // 2. The High-Editorial AI Prompt Dictionary
+            // 2. The 3D High-Editorial AI Prompt Dictionary
             const themePrompts = {
-                "techno": "dark cyberpunk matrix terminal code green neon glowing abstract futuristic aesthetic, high resolution, minimalist",
-                "wonyoungism": "coquette aesthetic pink ribbon soft makeup vanity elegant soft lighting high fashion editorial beauty photography",
-                "solidcore": "dark moody pilates reformer studio dramatic red lighting sweat fitness high end editorial photography",
-                "urban": "streetwear fashion lookbook seoul night neon hiphop grunge aesthetic flash photography cool girl",
-                "salon": "minimalist kinfolk magazine open book coffee cup white linen warm sunlight soft shadows aesthetic",
-                "bottari": "wabi sabi interior wooden texture luxury perfume bottle soft shadow aesthetic still life photography",
-                "nomad": "cinematic desert sunset solo traveler distant mountains sand dune aesthetic national geographic style",
-                "algorithm": "abstract data visualization glowing blue lines futuristic UI minimalist tech background",
-                "y2k": "y2k retro futuristic metallic pink purple aesthetic flash photography cdrom glitch art",
-                "posh": "minimalist high fashion neutral tones capsule wardrobe editorial white background clean expensive look"
+                "techno": "CGI masterpiece, 3D modeling, liquid chrome metal, glowing neon green wires, abstract futuristic aesthetic",
+                "wonyoungism": "CGI masterpiece, 3D modeling, floating glossy pink bubbles, soft silk cloth waving, hyper-realistic glass",
+                "solidcore": "CGI masterpiece, 3D abstract metallic liquid, dark chrome, dramatic red neon lighting, intense fitness",
+                "urban": "CGI 3D brutalist concrete structures, floating silver typography, fisheye perspective, street aesthetic",
+                "salon": "3D white marble minimalist sculpture, soft ambient occlusion, Kinfolk spatial design, clean lighting",
+                "bottari": "3D floating wood textures, amber glass perfume bottle, ray tracing, wabi sabi interior 3D concept",
+                "nomad": "3D topographical map landscape, surreal desert dunes, golden hour 3D environment, cinematic lighting",
+                "algorithm": "3D holographic data nodes, glowing blue glass cubes, futuristic UI spatial design, Blender 3D",
+                "y2k": "3D liquid metal shapes, chrome hearts, holographic floating stickers, retro CGI 2000s aesthetic",
+                "posh": "3D soft fabric simulation, floating white drapery, pristine studio lighting, minimalist expensive aesthetic"
             };
 
             // 3. Generate dynamic AI image URL via Pollinations
