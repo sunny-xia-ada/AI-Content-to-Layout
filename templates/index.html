@@ -181,8 +181,13 @@
                     <div class="space-y-4">
                         <!-- Background Image -->
                         <div class="mb-4">
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-2">📸 封面底图 (Background Image URL)</label>
-                            <input type="text" id="xhs-bg-image" class="w-full p-3 bg-gray-50 border border-black/5 rounded-xl outline-none focus:ring-1 focus:ring-red-100 transition-all text-sm" placeholder="粘贴高清图片网址 (留空则用纯色)">
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-2">📸 封面底图 (Background Image)</label>
+                            <div class="flex space-x-2">
+                                <input type="text" id="xhs-bg-image" class="flex-grow p-3 bg-gray-50 border border-black/5 rounded-xl outline-none focus:ring-1 focus:ring-red-100 transition-all text-sm font-mono" placeholder="粘贴网址或点击右侧抽卡 👉">
+                                <button type="button" onclick="shuffleXhsBg()" class="px-4 py-3 bg-[#121212] text-white text-[10px] font-bold rounded-xl shadow-lg hover:bg-gray-800 transition-all whitespace-nowrap active:scale-95">
+                                    🎲 灵感盲盒
+                                </button>
+                            </div>
                         </div>
                         
                         <!-- Theme Selector -->
@@ -558,6 +563,38 @@
             } finally {
                 generateBtn.disabled = false;
                 generateBtn.classList.remove('opacity-50');
+            }
+        }
+
+        // --- XHS Background Shuffle Logic ---
+        function shuffleXhsBg() {
+            const bgInput = document.getElementById('xhs-bg-image');
+            const generateBtn = document.getElementById('generate-xhs-btn');
+            
+            // Curated high-editorial tag pool
+            const aestheticTags = [
+                'editorial', 'minimal', 'pilates', 'streetwear', 
+                'perfume', 'desert', 'architecture', 'film', 
+                'cyberpunk', 'seoul', 'texture', 'fashion'
+            ];
+            
+            // Single-Tag Logic to prevent Flickr pool exhaustion
+            const randomTag = aestheticTags[Math.floor(Math.random() * aestheticTags.length)];
+            const seed = Math.floor(Math.random() * 999999);
+            const timestamp = new Date().getTime(); // Cache buster
+            
+            // Generate the high-res LoremFlickr URL
+            const newBgUrl = `https://loremflickr.com/1000/1400/${randomTag}/all?lock=${seed}&t=${timestamp}`;
+            
+            // Update the input field
+            bgInput.value = newBgUrl;
+            
+            // Auto-trigger the poster generation if there's already text
+            const title = document.getElementById('xhs-title').value;
+            if (title || document.getElementById('xhs-hook').value) {
+                if (typeof generatePoster === 'function') {
+                    generatePoster();
+                }
             }
         }
     </script>
