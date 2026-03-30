@@ -569,33 +569,55 @@
         // --- XHS Background Shuffle Logic ---
         function shuffleXhsBg() {
             const bgInput = document.getElementById('xhs-bg-image');
+            const themeSelector = document.getElementById('xhs-theme-selector');
             const generateBtn = document.getElementById('generate-xhs-btn');
             
-            // Curated high-editorial tag pool
-            const aestheticTags = [
-                'editorial', 'minimal', 'pilates', 'streetwear', 
-                'perfume', 'desert', 'architecture', 'film', 
-                'cyberpunk', 'seoul', 'texture', 'fashion'
-            ];
+            // 1. Get current theme
+            const currentTheme = themeSelector ? themeSelector.value : "techno";
             
-            // Single-Tag Logic to prevent Flickr pool exhaustion
-            const randomTag = aestheticTags[Math.floor(Math.random() * aestheticTags.length)];
-            const seed = Math.floor(Math.random() * 999999);
-            const timestamp = new Date().getTime(); // Cache buster
+            // 2. The High-Editorial AI Prompt Dictionary
+            const themePrompts = {
+                "techno": "dark cyberpunk matrix terminal code green neon glowing abstract futuristic aesthetic, high resolution, minimalist",
+                "wonyoungism": "coquette aesthetic pink ribbon soft makeup vanity elegant soft lighting high fashion editorial beauty photography",
+                "solidcore": "dark moody pilates reformer studio dramatic red lighting sweat fitness high end editorial photography",
+                "urban": "streetwear fashion lookbook seoul night neon hiphop grunge aesthetic flash photography cool girl",
+                "salon": "minimalist kinfolk magazine open book coffee cup white linen warm sunlight soft shadows aesthetic",
+                "bottari": "wabi sabi interior wooden texture luxury perfume bottle soft shadow aesthetic still life photography",
+                "nomad": "cinematic desert sunset solo traveler distant mountains sand dune aesthetic national geographic style",
+                "algorithm": "abstract data visualization glowing blue lines futuristic UI minimalist tech background",
+                "y2k": "y2k retro futuristic metallic pink purple aesthetic flash photography cdrom glitch art",
+                "posh": "minimalist high fashion neutral tones capsule wardrobe editorial white background clean expensive look"
+            };
+
+            // 3. Generate dynamic AI image URL via Pollinations
+            const seed = Math.floor(Math.random() * 9999999);
+            const basePrompt = themePrompts[currentTheme] || themePrompts["techno"];
+            const finalPrompt = encodeURIComponent(basePrompt + ", empty background, no text, clean space");
             
-            // Generate the high-res LoremFlickr URL
-            const newBgUrl = `https://loremflickr.com/1000/1400/${randomTag}/all?lock=${seed}&t=${timestamp}`;
+            const newBgUrl = `https://image.pollinations.ai/prompt/${finalPrompt}?width=1000&height=1400&nologo=true&seed=${seed}`;
             
-            // Update the input field
+            // 4. Update input field
             bgInput.value = newBgUrl;
             
-            // Auto-trigger the poster generation if there's already text
+            // 5. Visual feedback on the button & Auto-trigger
+            const shuffleBtn = document.querySelector('button[onclick="shuffleXhsBg()"]');
+            const originalText = shuffleBtn.innerText;
+            shuffleBtn.innerText = "✨ AI 绘图中...";
+            
+            // Auto-trigger poster generation if we have a title or hook
             const title = document.getElementById('xhs-title').value;
-            if (title || document.getElementById('xhs-hook').value) {
+            const hook = document.getElementById('xhs-hook').value;
+            
+            if (title || hook) {
                 if (typeof generatePoster === 'function') {
                     generatePoster();
                 }
             }
+            
+            // Reset button text after a short delay
+            setTimeout(() => {
+                shuffleBtn.innerText = originalText;
+            }, 1500);
         }
     </script>
 </body>
