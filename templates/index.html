@@ -248,6 +248,21 @@
                                 <option value="posh">👗 Posh Resale (极简高街/OOTD闲置)</option>
                             </select>
                         </div>
+
+                        <!-- Layout Mode Toggle -->
+                        <div class="mb-4">
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-2">📐 排版模式 (Layout Mode)</label>
+                            <div class="flex space-x-2">
+                                <label class="flex-1 cursor-pointer">
+                                    <input type="radio" name="layout_mode" value="cover" class="peer sr-only" checked onchange="if(typeof generatePoster === 'function') generatePoster()">
+                                    <div class="p-3 text-[10px] uppercase font-bold text-center bg-gray-50 border border-black/5 rounded-xl peer-checked:bg-[#121212] peer-checked:text-white transition-all">🖼️ 封面模式</div>
+                                </label>
+                                <label class="flex-1 cursor-pointer">
+                                    <input type="radio" name="layout_mode" value="inner" class="peer sr-only" onchange="if(typeof generatePoster === 'function') generatePoster()">
+                                    <div class="p-3 text-[10px] uppercase font-bold text-center bg-gray-50 border border-black/5 rounded-xl peer-checked:bg-[#121212] peer-checked:text-white transition-all">📄 长文内页</div>
+                                </label>
+                            </div>
+                        </div>
                         <div>
                             <label class="text-[10px] uppercase tracking-widest font-bold opacity-40 mb-2 block">Post Title</label>
                             <input type="text" id="xhs-title" class="w-full text-xl font-bold outline-none border-b border-black/5 pb-2 focus:border-red-200 transition-colors" placeholder="Create a catchy headline...">
@@ -537,67 +552,117 @@
 
             const style = themes[themeKey] || themes["techno"];
             
-            // 2. Build Background Style
-            const bgStyle = bgImageUrl 
-                ? `background-image: url('${bgImageUrl}'); background-size: cover; background-position: center;` 
-                : `background: #121212;`; // Dark fallback
+            // 2. Layout Mode Selection & Style
+            const layoutMode = document.querySelector('input[name="layout_mode"]:checked').value;
 
-            // 3. Render the Canva-style Magazine Layout with Sandwich Layers
-            canvasDiv.innerHTML = `
-                <div id="xhs-canvas-content" class="relative h-full w-full flex flex-col overflow-hidden shadow-2xl rounded-md" style="${bgStyle} background-size: cover; background-position: center;">
-                    <div class="absolute inset-0 bg-gradient-to-b ${style.overlay} z-0"></div>
-                    
-                    <div id="particle-layer" class="absolute inset-0 overflow-hidden pointer-events-none z-0"></div>
-                    
-                    <div class="relative z-10 flex flex-col h-full p-8 ${style.text}">
+            // Inner Page Color Palette (Derived from the 10 themes)
+            const innerStyles = {
+                "techno": "bg-[#0A0A0A] text-[#00FF41] border-[#00FF41]",
+                "wonyoungism": "bg-[#FFF0F5] text-gray-800 border-[#FFB6C1]",
+                "solidcore": "bg-[#121212] text-gray-200 border-red-800",
+                "urban": "bg-gray-200 text-gray-900 border-black",
+                "salon": "bg-[#F5F5F0] text-[#333333] border-[#DCDCDC]",
+                "bottari": "bg-[#EAE4D9] text-[#5C4A3D] border-[#CBBFAB]",
+                "nomad": "bg-[#F4EDE4] text-[#4A3B32] border-orange-300",
+                "algorithm": "bg-[#F4F7FB] text-[#1E3A8A] border-blue-200",
+                "y2k": "bg-[#1A1A2E] text-pink-300 border-indigo-500",
+                "posh": "bg-white text-gray-900 border-gray-200"
+            };
+
+            const innerStyle = innerStyles[themeKey] || innerStyles["techno"];
+
+            if (layoutMode === 'cover') {
+                // === COVER MODE LOGIC (Standard Full-Bleed) ===
+                const bgStyle = bgImageUrl 
+                    ? `background-image: url('${bgImageUrl}'); background-size: cover; background-position: center;` 
+                    : `background: #121212;`;
+
+                canvasDiv.innerHTML = `
+                    <div id="xhs-canvas-content" class="relative h-full w-full flex flex-col overflow-hidden shadow-2xl rounded-md" style="${bgStyle}">
+                        <div class="absolute inset-0 bg-gradient-to-b ${style.overlay} z-0"></div>
                         
-                        <div class="flex justify-between items-center text-[10px] font-mono tracking-widest uppercase mb-4 opacity-80 border-b border-current pb-2">
-                            <span>XYLAB // ISSUE NO.01</span>
-                            <span>2026 EDITION</span>
-                        </div>
-                        <h1 class="text-[72px] leading-[0.85] tracking-tighter text-center mt-2 mb-auto ${style.masthead} drop-shadow-lg">
-                            ${themeKey.toUpperCase()}
-                        </h1>
-
-                        <div class="mt-auto mb-10 w-[90%] relative">
-                            <div class="absolute inset-0 bg-gradient-to-br from-white/30 to-white/5 border border-white/50 rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] z-0"></div>
+                        <div id="particle-layer" class="absolute inset-0 overflow-hidden pointer-events-none z-0"></div>
+                        
+                        <div class="relative z-10 flex flex-col h-full p-8 ${style.text}">
                             
-                            <div class="relative z-10 p-6 backdrop-filter-none">
-                                <div class="text-xs font-bold uppercase tracking-widest mb-3 py-1 border-l-4 pl-3 ${style.accent} drop-shadow-lg">
-                                    ${hook}
-                                </div>
-                                <h2 class="text-4xl font-black leading-tight mb-4 drop-shadow-[0_5px_5px_rgba(0,0,0,0.9)]">
-                                    ${title}
-                                </h2>
-                                <p class="text-sm leading-relaxed opacity-100 text-gray-100 font-medium drop-shadow-md">
-                                    ${body}
-                                </p>
+                            <div class="flex justify-between items-center text-[10px] font-mono tracking-widest uppercase mb-4 opacity-80 border-b border-current pb-2">
+                                <span>XYLAB // ISSUE NO.01</span>
+                                <span>2026 EDITION</span>
                             </div>
-                        </div>
+                            <h1 class="text-[72px] leading-[0.85] tracking-tighter text-center mt-2 mb-auto ${style.masthead} drop-shadow-lg">
+                                ${themeKey.toUpperCase()}
+                            </h1>
 
-                        <div class="flex justify-between items-end border-t border-current pt-4 mt-auto">
-                            <div class="font-mono text-[8px] leading-tight opacity-70">
-                                WWW.XYLAB.AGENT<br>PRINTED IN SF, CA
-                            </div>
-                            <div class="text-right">
-                                <div class="flex space-x-[2px] h-6 mb-1 items-end justify-end opacity-80">
-                                    <div class="w-[1px] h-full bg-current"></div>
-                                    <div class="w-[2px] h-full bg-current"></div>
-                                    <div class="w-[1px] h-full bg-current"></div>
-                                    <div class="w-[1px] h-[70%] bg-current"></div>
-                                    <div class="w-[3px] h-full bg-current"></div>
-                                    <div class="w-[1px] h-full bg-current"></div>
+                            <div class="mt-auto mb-10 w-[90%] relative">
+                                <div class="absolute inset-0 bg-gradient-to-br from-white/30 to-white/5 border border-white/50 rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] z-0"></div>
+                                
+                                <div class="relative z-10 p-6 backdrop-filter-none">
+                                    <div class="text-xs font-bold uppercase tracking-widest mb-3 py-1 border-l-4 pl-3 ${style.accent} drop-shadow-lg">
+                                        ${hook}
+                                    </div>
+                                    <h2 class="text-4xl font-black leading-tight mb-4 drop-shadow-[0_5px_5px_rgba(0,0,0,0.9)]">
+                                        ${title}
+                                    </h2>
+                                    <p class="text-sm leading-relaxed opacity-100 text-gray-100 font-medium drop-shadow-md">
+                                        ${body}
+                                    </p>
                                 </div>
-                                <div class="text-[8px] font-bold">$12.99 USD</div>
                             </div>
-                        </div>
 
+                            <div class="flex justify-between items-end border-t border-current pt-4 mt-auto">
+                                <div class="font-mono text-[8px] leading-tight opacity-70">
+                                    WWW.XYLAB.AGENT<br>PRINTED IN SF, CA
+                                </div>
+                                <div class="text-right">
+                                    <div class="flex space-x-[2px] h-6 mb-1 items-end justify-end opacity-80">
+                                        <div class="w-[1px] h-full bg-current"></div>
+                                        <div class="w-[2px] h-full bg-current"></div>
+                                        <div class="w-[1px] h-full bg-current"></div>
+                                        <div class="w-[1px] h-[70%] bg-current"></div>
+                                        <div class="w-[3px] h-full bg-current"></div>
+                                        <div class="w-[1px] h-full bg-current"></div>
+                                    </div>
+                                    <div class="text-[8px] font-bold">$12.99 USD</div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
 
-            // Trigger the dynamic particle engine based on the theme
-            startParticles(themeKey);
+                // Trigger particles for cover only
+                startParticles(themeKey);
+
+            } else {
+                // === INNER PAGE LOGIC (Typography-Focused) ===
+                // Stop particles for clean reading
+                if (typeof particleEmitterInterval !== 'undefined') clearInterval(particleEmitterInterval);
+                const particleLayer = document.getElementById('particle-layer');
+                if(particleLayer) particleLayer.innerHTML = '';
+
+                canvasDiv.innerHTML = `
+                    <div id="xhs-canvas-content" class="h-full w-full flex flex-col p-10 ${innerStyle} shadow-2xl rounded-md transition-all duration-300 border-8 border-double">
+                        
+                        <div class="flex justify-between items-center border-b-2 border-current pb-4 mb-8 opacity-80">
+                            <span class="font-bold tracking-widest uppercase text-[10px]">${hook}</span>
+                            <span class="font-mono text-[8px]">PAGE 02 // XYLAB</span>
+                        </div>
+
+                        <h2 class="text-3xl font-black leading-snug mb-8 opacity-90 tracking-tight">
+                            ${title}
+                        </h2>
+
+                        <div class="flex-grow text-sm leading-[2.1] font-medium opacity-90 whitespace-pre-line text-justify">
+                            ${body}
+                        </div>
+
+                        <div class="border-t border-current pt-4 mt-8 flex justify-between items-center opacity-60">
+                            <span class="font-mono text-[8px] uppercase">${themeKey} AESTHETIC</span>
+                            <span class="font-mono text-[8px] font-bold tracking-widest">READ MORE 👉</span>
+                        </div>
+                    </div>
+                `;
+            }
 
             generateBtn.innerText = "⏳ 正在生成静态大片...";
             generateBtn.disabled = true;
