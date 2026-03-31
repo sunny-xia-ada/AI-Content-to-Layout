@@ -11,8 +11,37 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from pydantic import BaseModel
 
 app = FastAPI(title="XYLAB // SMART AGENT v4.4.1")
+
+class XhsMagicRequest(BaseModel):
+    prompt: str
+
+# XHS Native Template Engine (Viral Frameworks)
+XHS_TEMPLATES = [
+    {
+        "title": "沉浸式{topic}｜我的结界。",
+        "hook": "救命！谁懂这个{topic}的含金量啊😭",
+        "body": "真的建议所有姐妹都去尝试这个{topic}！\n✅ 氛围感拉满，整个空间都被治愈了\n✅ 颗粒感十足，随手一拍都是大片\n✅ 极致冷静，这是属于智性恋的独处哲学\n\n快点收藏起来，不然下次找不到了！✨",
+        "theme": "bottari",
+        "layout": "cover"
+    },
+    {
+        "title": "{topic}强制爱｜赛博朋克警告⚠️",
+        "hook": "如果未来有颜色，那一定是{topic}的霓虹绿。",
+        "body": "这是一场属于代码与灵魂的共振。\n⌨️ 机械键盘的敲击声，是深夜唯一的慰藉\n🔌 拒绝平庸，用技术构建最硬核的生活方式碎片\n🔋 能量充盈，在这里我就是主宰\n\n转发给你的极客搭子，一起冲！⚙️",
+        "theme": "techno",
+        "layout": "cover"
+    },
+    {
+        "title": "千金感{topic}｜贵气拿捏住🎀",
+        "hook": "这就是所谓的财阀家的小女儿既视感吧？",
+        "body": "生活需要一点仪式感，更需要一点{topic}的精致。\n💎 闪烁的细节，是每一个女孩都无法拒绝的温柔\n🎠 像是在云端漫步，空气中都弥漫着香甜的味道\n🧁 每一帧都值得珍藏，做自己的主角\n\n存下来，去做最耀眼的那个！👑",
+        "theme": "wonyoung",
+        "layout": "inner"
+    }
+]
 
 # Vercel Serverless Absolute Pathing Fix
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -384,6 +413,30 @@ async def ai_process(markdown_input: str = Form(...), theme: str = Form('loopy')
     res = smart_restructure(markdown_input)
     res = auto_illustrate(res, theme_id=theme)
     return {"markdown": res}
+
+@app.post("/api/xhs-magic")
+async def xhs_magic(request: XhsMagicRequest):
+    prompt = request.prompt
+    
+    # Logic: Pick a template based on keyword matching, or default to random
+    # This is "Stage 1" (Smart Templates). "Stage 2" would be real LLM.
+    topic = prompt[:10] if len(prompt) > 0 else "生活"
+    
+    # Rudimentary keyword matching for theme selection
+    if any(k in prompt for k in ["代码", "技术", "黑客", "未来"]):
+        template = XHS_TEMPLATES[1]
+    elif any(k in prompt for k in ["漂亮", "精致", "千金", "贵"]):
+        template = XHS_TEMPLATES[2]
+    else:
+        template = XHS_TEMPLATES[0]
+
+    return {
+        "title": template["title"].format(topic=topic),
+        "hook": template["hook"].format(topic=topic),
+        "body": template["body"].format(topic=topic),
+        "theme": template["theme"],
+        "layout": template["layout"]
+    }
 
 @app.post("/shuffle-image")
 async def shuffle_image(theme: str = Form("loopy")):

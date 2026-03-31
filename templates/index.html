@@ -581,24 +581,32 @@
                     <div id="xhs-canvas-content" class="relative h-full w-full flex flex-col overflow-hidden shadow-2xl rounded-md" style="${bgStyle}">
                         <div class="absolute inset-0 bg-gradient-to-b ${style.overlay} z-0"></div>
                         
+                        <!-- XHS Safe Zone Overlay (Visual Guide) -->
+                        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-16 h-64 bg-transparent z-10 flex flex-col items-center justify-center space-y-4 opacity-20 pointer-events-none">
+                            <div class="w-8 h-8 rounded-full border border-white"></div>
+                            <div class="w-6 h-6 rounded-full border border-white"></div>
+                            <div class="w-6 h-6 rounded-full border border-white"></div>
+                        </div>
+
                         <div id="particle-layer" class="absolute inset-0 overflow-hidden pointer-events-none z-0"></div>
                         
-                        <div class="relative z-10 flex flex-col h-full p-8 ${style.text}">
+                        <div class="relative z-10 flex flex-col h-full p-8 pr-20 ${style.text}">
                             
                             <div class="flex justify-between items-center text-[10px] font-mono tracking-widest uppercase mb-4 opacity-80 border-b border-current pb-2">
                                 <span>XYLAB // ISSUE NO.01</span>
-                                <span>2026 EDITION</span>
+                                <span class="bg-red-600 text-white px-2 py-0.5 rounded-sm font-black">EDITORS' CHOICE</span>
                             </div>
                             <h1 class="text-[72px] leading-[0.85] tracking-tighter text-center mt-2 mb-auto ${style.masthead} drop-shadow-lg">
                                 ${themeKey.toUpperCase()}
                             </h1>
 
-                            <div class="mt-auto mb-10 w-[90%] relative">
+                            <div class="mt-auto mb-10 w-[96%] relative">
                                 <div class="absolute inset-0 bg-gradient-to-br from-white/30 to-white/5 border border-white/50 rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] z-0"></div>
                                 
                                 <div class="relative z-10 p-6 backdrop-filter-none">
-                                    <div class="text-xs font-bold uppercase tracking-widest mb-3 py-1 border-l-4 pl-3 ${style.accent} drop-shadow-lg">
-                                        ${hook}
+                                    <div class="text-xs font-bold uppercase tracking-widest mb-3 py-1 border-l-4 pl-3 ${style.accent} drop-shadow-lg flex justify-between items-center">
+                                        <span>${hook}</span>
+                                        <span class="text-[10px] opacity-60"># 爆款必备</span>
                                     </div>
                                     <h2 class="text-4xl font-black leading-tight mb-4 drop-shadow-[0_5px_5px_rgba(0,0,0,0.9)]">
                                         ${title}
@@ -611,7 +619,7 @@
 
                             <div class="flex justify-between items-end border-t border-current pt-4 mt-auto">
                                 <div class="font-mono text-[8px] leading-tight opacity-70">
-                                    WWW.XYLAB.AGENT<br>PRINTED IN SF, CA
+                                    WWW.XYLAB.AGENT<br>DESIGNED FOR XHS
                                 </div>
                                 <div class="text-right">
                                     <div class="flex space-x-[2px] h-6 mb-1 items-end justify-end opacity-80">
@@ -622,7 +630,7 @@
                                         <div class="w-[3px] h-full bg-current"></div>
                                         <div class="w-[1px] h-full bg-current"></div>
                                     </div>
-                                    <div class="text-[8px] font-bold">$12.99 USD</div>
+                                    <div class="text-[8px] font-bold">WORTH COLLECTING</div>
                                 </div>
                             </div>
 
@@ -641,11 +649,16 @@
                 if(particleLayer) particleLayer.innerHTML = '';
 
                 canvasDiv.innerHTML = `
-                    <div id="xhs-canvas-content" class="h-full w-full flex flex-col p-10 ${innerStyle} shadow-2xl rounded-md transition-all duration-300 border-8 border-double">
+                    <div id="xhs-canvas-content" class="h-full w-full flex flex-col p-10 pr-20 ${innerStyle} shadow-2xl rounded-md transition-all duration-300 border-8 border-double relative">
                         
+                        <!-- Mini Viral Badge -->
+                        <div class="absolute top-8 right-8 rotate-12 bg-current text-white px-3 py-1 font-black text-[10px] rounded-full shadow-lg mix-blend-difference">
+                            7-DAY GROWTH
+                        </div>
+
                         <div class="flex justify-between items-center border-b-2 border-current pb-4 mb-8 opacity-80">
                             <span class="font-bold tracking-widest uppercase text-[10px]">${hook}</span>
-                            <span class="font-mono text-[8px]">PAGE 02 // XYLAB</span>
+                            <span class="font-mono text-[8px]">PAGE 02 // XYLAB GALLERY</span>
                         </div>
 
                         <h2 class="text-3xl font-black leading-snug mb-8 opacity-90 tracking-tight">
@@ -657,8 +670,8 @@
                         </div>
 
                         <div class="border-t border-current pt-4 mt-8 flex justify-between items-center opacity-60">
-                            <span class="font-mono text-[8px] uppercase">${themeKey} AESTHETIC</span>
-                            <span class="font-mono text-[8px] font-bold tracking-widest">READ MORE 👉</span>
+                            <span class="font-mono text-[8px] uppercase">${themeKey} AESTHETIC // 值得收藏</span>
+                            <span class="font-mono text-[8px] font-bold tracking-widest">TAP FOR MORE ↗</span>
                         </div>
                     </div>
                 `;
@@ -800,19 +813,29 @@
             magicBtn.classList.add('animate-pulse');
 
             try {
-                // SIMULATED LLM RESPONSE (For UI testing)
-                const simulatedData = {
-                    title: "THE BOTTARI AURA",
-                    hook: "WEEKEND RESET",
-                    body: "用气味构建属于自己的结界。\n木质调的沉稳，让周末的阅读时光变得极具颗粒感。\n这是属于智性恋的独处哲学。",
-                    theme: "bottari"
-                };
+                const response = await fetch('/api/xhs-magic', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: promptText })
+                });
+                
+                if (!response.ok) throw new Error("API failed");
+                const data = await response.json();
 
                 // 1. Fill the inputs
-                document.getElementById('xhs-title').value = simulatedData.title;
-                document.getElementById('xhs-hook').value = simulatedData.hook;
-                document.getElementById('xhs-body').value = simulatedData.body;
-                document.getElementById('xhs-theme-selector').value = simulatedData.theme;
+                document.getElementById('xhs-title').value = data.title;
+                document.getElementById('xhs-hook').value = data.hook;
+                document.getElementById('xhs-body').value = data.body;
+                document.getElementById('xhs-theme-selector').value = data.theme;
+                
+                // Set layout mode
+                const layoutRadios = document.getElementsByName('layout_mode');
+                for (let radio of layoutRadios) {
+                    if (radio.value === data.layout) {
+                        radio.checked = true;
+                        break;
+                    }
+                }
 
                 // 2. Trigger the theme-aware AI background shuffle
                 shuffleXhsBg();
