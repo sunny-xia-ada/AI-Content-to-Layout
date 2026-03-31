@@ -206,6 +206,21 @@
                     </div>
                     
                     <div class="space-y-4">
+                        <!-- Magic Brain Input -->
+                        <div class="mb-8 p-6 bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl border border-pink-200 shadow-sm">
+                            <label class="block text-sm font-black text-pink-600 uppercase tracking-widest mb-3">✨ AI 主编：一句话生成爆款排版</label>
+                            <textarea id="magic-prompt" rows="2" class="w-full p-4 bg-white border-2 border-pink-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-pink-200 text-gray-800 placeholder-gray-400 mb-3" placeholder="输入一句大白话，比如：周末宅家看书，喷了木质香水，感觉很平静..."></textarea>
+                            <button type="button" onclick="generateMagicPost()" id="magic-btn" class="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-black text-lg rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
+                                🚀 一键生成大片与文案
+                            </button>
+                        </div>
+
+                        <div class="flex items-center my-6">
+                            <div class="flex-grow border-t border-gray-300"></div>
+                            <span class="flex-shrink-0 mx-4 text-gray-400 text-xs font-bold uppercase">Or manually edit</span>
+                            <div class="flex-grow border-t border-gray-300"></div>
+                        </div>
+
                         <!-- Background Image -->
                         <div class="mb-4">
                             <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-2">📸 封面底图 (Background Image)</label>
@@ -692,23 +707,61 @@
             
             // 5. Visual feedback on the button & Auto-trigger
             const shuffleBtn = document.querySelector('button[onclick="shuffleXhsBg()"]');
-            const originalText = shuffleBtn.innerText;
-            shuffleBtn.innerText = "✨ AI 绘图中...";
-            
-            // Auto-trigger poster generation if we have a title or hook
-            const title = document.getElementById('xhs-title').value;
-            const hook = document.getElementById('xhs-hook').value;
-            
-            if (title || hook) {
-                if (typeof generatePoster === 'function') {
-                    generatePoster();
-                }
+            if (shuffleBtn) {
+                const originalText = shuffleBtn.innerText;
+                shuffleBtn.innerText = "✨ AI 绘图中...";
+                setTimeout(() => {
+                    shuffleBtn.innerText = originalText;
+                }, 1500);
             }
             
-            // Reset button text after a short delay
-            setTimeout(() => {
-                shuffleBtn.innerText = originalText;
-            }, 1500);
+            // Auto-trigger poster generation if we have a title or hook
+            if (bgInput.value && (document.getElementById('xhs-title').value || document.getElementById('xhs-hook').value)) {
+                setTimeout(() => generatePoster(), 500);
+            }
+        }
+
+        async function generateMagicPost() {
+            const promptText = document.getElementById('magic-prompt').value;
+            const magicBtn = document.getElementById('magic-btn');
+            
+            if (!promptText) {
+                alert("主编大人，请先输入一句话灵感！");
+                return;
+            }
+
+            magicBtn.innerText = "🧠 AI 主编正在爆肝写稿中...";
+            magicBtn.disabled = true;
+            magicBtn.classList.add('animate-pulse');
+
+            try {
+                // SIMULATED LLM RESPONSE (For UI testing)
+                const simulatedData = {
+                    title: "THE BOTTARI AURA",
+                    hook: "WEEKEND RESET",
+                    body: "用气味构建属于自己的结界。\n木质调的沉稳，让周末的阅读时光变得极具颗粒感。\n这是属于智性恋的独处哲学。",
+                    theme: "bottari"
+                };
+
+                // 1. Fill the inputs
+                document.getElementById('xhs-title').value = simulatedData.title;
+                document.getElementById('xhs-hook').value = simulatedData.hook;
+                document.getElementById('xhs-body').value = simulatedData.body;
+                document.getElementById('xhs-theme-selector').value = simulatedData.theme;
+
+                // 2. Trigger the theme-aware AI background shuffle
+                shuffleXhsBg();
+
+                // Note: shuffleXhsBg already calls generatePoster() automatically!
+                
+            } catch (error) {
+                console.error("Magic generation failed:", error);
+                alert("生成失败，请检查网络或后端接口。");
+            } finally {
+                magicBtn.innerText = "🚀 一键生成大片与文案";
+                magicBtn.disabled = false;
+                magicBtn.classList.remove('animate-pulse');
+            }
         }
     </script>
 </body>
