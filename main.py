@@ -18,28 +18,33 @@ app = FastAPI(title="XYLAB // SMART AGENT v4.4.1")
 class XhsMagicRequest(BaseModel):
     prompt: str
 
-# XHS Native Template Engine (Viral Frameworks)
+# XHS Native Template Engine (Viral Frameworks v5.0)
 XHS_TEMPLATES = [
     {
-        "title": "沉浸式{topic}｜我的结界。",
-        "hook": "救命！谁懂这个{topic}的含金量啊😭",
-        "body": "真的建议所有姐妹都去尝试这个{topic}！\n✅ 氛围感拉满，整个空间都被治愈了\n✅ 颗粒感十足，随手一拍都是大片\n✅ 极致冷静，这是属于智性恋的独处哲学\n\n快点收藏起来，不然下次找不到了！✨",
-        "theme": "bottari",
-        "layout": "cover"
+        "id": "shopping_selection_logic",
+        "category": {"primary": "shopping_brand_discovery", "secondary": "lifestyle_mood", "confidence": 0.96},
+        "copy": {
+            "title": "在韩国逛街，我只留下这3类品牌🛍️",
+            "hook": "有些品牌只是过客，有些才能进我生活。",
+            "body": "这几天在汉南洞和圣水洞走走停停，比起那些需要排长队的人气品牌，我更在意哪些能让我真正想带回家。\n\n我筛选的标准其实挺直接的：\n\n1. 看面料和质地。我更偏爱那种有呼吸感、有颗粒感的自然材质，这种质感才值得长久陪伴。\n2. 看店里的氛围感。真正好的品牌，店里应该是安静、有留白的，能让人在忙碌的行程里稍微停下来喘口气。\n3. 看穿搭的实穿度。我会想这件衣服和我衣柜里已有的衣服怎么搭，不想为了那点所谓的新鲜感买单。",
+            "ending": "与其说是筛选品牌，不如说是在理清我到底想要什么样的日常吧。",
+            "tags": ["韩国逛街", "汉南洞", "圣水洞", "我的生活方式", "小众品牌"]
+        },
+        "visual": {"theme": "bottari", "mode": "rednote_feed", "layout": "inner", "image_prompt": "Realistic lifestyle photography of a minimalist Hannam-dong boutique interior, soft natural light from a side window, a simple wooden clothing rack with linen textures, iPhone photo feel, subtle shadows, clean 3:4 composition, negative space at top."},
+        "quality": {"score_total": 88, "hook_strength": 82, "save_value": 92, "authenticity": 90, "specificity": 88, "xhs_fit": 86, "elegance": 80}
     },
     {
-        "title": "{topic}强制爱｜赛博朋克警告⚠️",
-        "hook": "如果未来有颜色，那一定是{topic}的霓虹绿。",
-        "body": "这是一场属于代码与灵魂的共振。\n⌨️ 机械键盘的敲击声，是深夜唯一的慰藉\n🔌 拒绝平庸，用技术构建最硬核的生活方式碎片\n🔋 能量充盈，在这里我就是主宰\n\n转发给你的极客搭子，一起冲！⚙️",
-        "theme": "techno",
-        "layout": "cover"
-    },
-    {
-        "title": "千金感{topic}｜贵气拿捏住🎀",
-        "hook": "这就是所谓的财阀家的小女儿既视感吧？",
-        "body": "生活需要一点仪式感，更需要一点{topic}的精致。\n💎 闪烁的细节，是每一个女孩都无法拒绝的温柔\n🎠 像是在云端漫步，空气中都弥漫着香甜的味道\n🧁 每一帧都值得珍藏，做自己的主角\n\n存下来，去做最耀眼的那个！👑",
-        "theme": "wonyoung",
-        "layout": "inner"
+        "id": "tech_minimalist_workflow",
+        "category": {"primary": "tech_desk_setup", "secondary": "productivity", "confidence": 0.92},
+        "copy": {
+            "title": "这就是我想要的代码避难所⌨️",
+            "hook": "拒绝复杂，回归最高效的简法工作流。",
+            "body": "深夜写码的时候，我发现能让我专注的从来不是昂贵的设备，而是这种极致的清爽感。\n\n我的桌搭逻辑其实就这几点：\n\n1. 极简布线。桌面上看不到一根多余的线，这种视觉上的无序感最消耗专注力。\n2. 纯粹质感。比起RGB灯带，我更喜欢冷色光的颗粒感，能让我更冷静地思考。\n3. 触感先行。键盘的反馈和鼠标的丝滑，是我和代码对话的唯一触媒。",
+            "ending": "效率不是加法，而是把多余的噪音彻底关掉。",
+            "tags": ["我的桌搭", "程序员日常", "极简生活", "生产力工具"]
+        },
+        "visual": {"theme": "techno", "mode": "rednote_feed", "layout": "cover", "image_prompt": "Realistic photography of a minimalist coding setup, dark aesthetic, single monitor with green code, mechanical keyboard, dark wood desk, natural moonlight shadow, iPhone photo feel, sharp textures, high contrast."},
+        "quality": {"score_total": 85, "hook_strength": 80, "save_value": 88, "authenticity": 85, "specificity": 82, "xhs_fit": 84, "elegance": 88}
     }
 ]
 
@@ -414,28 +419,49 @@ async def ai_process(markdown_input: str = Form(...), theme: str = Form('loopy')
     res = auto_illustrate(res, theme_id=theme)
     return {"markdown": res}
 
+def classify_content(prompt: str) -> dict:
+    if any(k in prompt for k in ["代码", "技术", "黑客", "未来", "程序员"]):
+        return XHS_TEMPLATES[1]["category"]
+    return XHS_TEMPLATES[0]["category"]
+
+def generate_structured_copy(prompt: str, category: dict, density_mode: str = "balanced") -> dict:
+    template = XHS_TEMPLATES[1] if category["primary"] == "tech_desk_setup" else XHS_TEMPLATES[0]
+    return template["copy"]
+
+def score_copy(copy_data: dict, category: dict) -> dict:
+    template = XHS_TEMPLATES[1] if category["primary"] == "tech_desk_setup" else XHS_TEMPLATES[0]
+    quality = template["quality"].copy()
+    
+    # MVP Revision Logic
+    quality["needs_revision"] = False
+    quality["revision_direction"] = ""
+    
+    if quality["score_total"] < 80: quality["needs_revision"] = True
+    if quality.get("specificity", 100) < 78: quality["revision_direction"] += "Please add more concrete, grounded details. "
+    if quality.get("xhs_fit", 100) < 78: quality["revision_direction"] += "Use more spoken, conversational Chinese. "
+    if quality.get("authenticity", 100) < 78: quality["revision_direction"] += "Reduce AI-polished or abstract phrasing. "
+    
+    return quality
+
+def build_visual_strategy(prompt: str, copy_data: dict, category: dict, visual_mode: str = "auto") -> dict:
+    template = XHS_TEMPLATES[1] if category["primary"] == "tech_desk_setup" else XHS_TEMPLATES[0]
+    return template["visual"]
+
 @app.post("/api/xhs-magic")
 async def xhs_magic(request: XhsMagicRequest):
     prompt = request.prompt
     
-    # Logic: Pick a template based on keyword matching, or default to random
-    # This is "Stage 1" (Smart Templates). "Stage 2" would be real LLM.
-    topic = prompt[:10] if len(prompt) > 0 else "生活"
+    # Modular Orchestration Chain
+    category = classify_content(prompt)
+    copy_data = generate_structured_copy(prompt, category)
+    quality = score_copy(copy_data, category)
+    visual = build_visual_strategy(prompt, copy_data, category)
     
-    # Rudimentary keyword matching for theme selection
-    if any(k in prompt for k in ["代码", "技术", "黑客", "未来"]):
-        template = XHS_TEMPLATES[1]
-    elif any(k in prompt for k in ["漂亮", "精致", "千金", "贵"]):
-        template = XHS_TEMPLATES[2]
-    else:
-        template = XHS_TEMPLATES[0]
-
     return {
-        "title": template["title"].format(topic=topic),
-        "hook": template["hook"].format(topic=topic),
-        "body": template["body"].format(topic=topic),
-        "theme": template["theme"],
-        "layout": template["layout"]
+        "category": category,
+        "copy": copy_data,
+        "visual": visual,
+        "quality": quality
     }
 
 @app.post("/shuffle-image")

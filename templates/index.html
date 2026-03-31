@@ -273,7 +273,11 @@
                         </div>
                         <div>
                             <label class="text-[10px] uppercase tracking-widest font-bold opacity-40 mb-2 block">Body Points</label>
-                            <textarea id="xhs-body" class="w-full text-sm outline-none resize-none h-40 bg-gray-50/50 rounded-xl p-4 focus:bg-white focus:ring-1 focus:ring-red-100 transition-all" placeholder="• Key takeaway one&#10;• Key takeaway two&#10;• Call to action..."></textarea>
+                            <textarea id="xhs-body" class="w-full text-sm outline-none resize-none h-40 bg-gray-50/50 rounded-xl p-4 focus:bg-white focus:ring-1 focus:ring-red-100 transition-all" placeholder="• Key takeaway one&#10;• Key takeaway two..."></textarea>
+                        </div>
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest font-bold opacity-40 mb-2 block">Ending Thought</label>
+                            <input type="text" id="xhs-ending" class="w-full text-sm outline-none border-b border-black/5 pb-2 focus:border-red-200 transition-colors" placeholder="One calm summary sentence...">
                         </div>
                     </div>
 
@@ -528,7 +532,12 @@
         async function generatePoster() {
             const title = document.getElementById('xhs-title').value || "THE CORE";
             const hook = document.getElementById('xhs-hook').value || "EXCLUSIVE INTERVIEW";
-            const body = document.getElementById('xhs-body').value.replace(/\n/g, '<br>') || "Discover the new aesthetic.\nIssue 01.";
+            const bodyText = document.getElementById('xhs-body').value || "Discover the new aesthetic.\nIssue 01.";
+            const endingText = document.getElementById('xhs-ending').value || "";
+            
+            // Format body with ending
+            const fullBody = endingText ? `${bodyText}\n\n${endingText}` : bodyText;
+            const body = fullBody.replace(/\n/g, '<br>');
             const bgImageUrl = document.getElementById('xhs-bg-image').value.trim();
             const themeKey = document.getElementById('xhs-theme-selector').value;
             const canvasDiv = document.getElementById('xhs-canvas');
@@ -750,7 +759,7 @@
         }
 
         // --- XHS Background Shuffle Logic ---
-        function shuffleXhsBg() {
+        function shuffleXhsBg(customPrompt = null) {
             const bgInput = document.getElementById('xhs-bg-image');
             const themeSelector = document.getElementById('xhs-theme-selector');
             const generateBtn = document.getElementById('generate-xhs-btn');
@@ -758,7 +767,7 @@
             // 1. Get current theme
             const currentTheme = themeSelector ? themeSelector.value : "techno";
             
-            // 2. The 3D High-Editorial AI Prompt Dictionary
+            // 2. The 3D High-Editorial AI Prompt Dictionary (Fallback)
             const themePrompts = {
                 "techno": "CGI masterpiece, 3D modeling, liquid chrome metal, glowing neon green wires, abstract futuristic aesthetic",
                 "wonyoungism": "CGI masterpiece, 3D modeling, floating glossy pink bubbles, soft silk cloth waving, hyper-realistic glass",
@@ -768,14 +777,16 @@
                 "bottari": "3D floating wood textures, amber glass perfume bottle, ray tracing, wabi sabi interior 3D concept",
                 "nomad": "3D topographical map landscape, surreal desert dunes, golden hour 3D environment, cinematic lighting",
                 "algorithm": "3D holographic data nodes, glowing blue glass cubes, futuristic UI spatial design, Blender 3D",
-                "y2k": "3D liquid metal shapes, chrome hearts, holographic floating stickers, retro CGI 2000s aesthetic",
+                "y2k": "3D liquid metal shapes, chrome hearts, holographic holographic stickers, retro CGI 2000s aesthetic",
                 "posh": "3D soft fabric simulation, floating white drapery, pristine studio lighting, minimalist expensive aesthetic"
             };
 
             // 3. Generate dynamic AI image URL via Pollinations with Cache-Buster
             const seed = Math.floor(Math.random() * 9999999);
-            const timestamp = new Date().getTime(); // Prevents aggressive browser caching
-            const basePrompt = themePrompts[currentTheme] || themePrompts["techno"];
+            const timestamp = new Date().getTime(); 
+            
+            // Use custom prompt from AI package if provided, else fallback to theme prompt
+            const basePrompt = customPrompt || themePrompts[currentTheme] || themePrompts["techno"];
             const finalPrompt = encodeURIComponent(basePrompt + ", empty background, no text, clean space");
             
             const newBgUrl = `https://image.pollinations.ai/prompt/${finalPrompt}?width=1000&height=1400&nologo=true&seed=${seed}&t=${timestamp}`;
@@ -820,27 +831,33 @@
                 });
                 
                 if (!response.ok) throw new Error("API failed");
-                const data = await response.json();
+                const package = await response.json();
 
-                // 1. Fill the inputs
-                document.getElementById('xhs-title').value = data.title;
-                document.getElementById('xhs-hook').value = data.hook;
-                document.getElementById('xhs-body').value = data.body;
-                document.getElementById('xhs-theme-selector').value = data.theme;
+                // 1. Fill the inputs from the Viral Package
+                document.getElementById('xhs-title').value = package.copy.title;
+                document.getElementById('xhs-hook').value = package.copy.hook;
+                document.getElementById('xhs-body').value = package.copy.body;
+                document.getElementById('xhs-ending').value = package.copy.ending || "";
+                document.getElementById('xhs-theme-selector').value = package.visual.theme;
                 
                 // Set layout mode
                 const layoutRadios = document.getElementsByName('layout_mode');
                 for (let radio of layoutRadios) {
-                    if (radio.value === data.layout) {
+                    if (radio.value === package.visual.layout) {
                         radio.checked = true;
                         break;
                     }
                 }
 
                 // 2. Trigger the theme-aware AI background shuffle
-                shuffleXhsBg();
+                // We pass the custom AI prompt from the package if available
+                shuffleXhsBg(package.visual.image_prompt);
 
-                // Note: shuffleXhsBg already calls generatePoster() automatically!
+                // 3. Optional Quality Console Log (For power users/devs)
+                console.log("Viral Package Quality Score:", package.quality.score_total);
+                if (package.quality.needs_revision) {
+                    console.warn("AI Revision Suggested:", package.quality.revision_direction);
+                }
                 
             } catch (error) {
                 console.error("Magic generation failed:", error);
