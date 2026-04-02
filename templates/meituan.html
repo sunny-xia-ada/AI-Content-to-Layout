@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XYLAB // MEITUAN LOCAL LIFE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FDF9F0; /* Brighter, food-inspired warmth */
+            color: #333;
+            overflow-x: hidden;
+        }
+        .fluid-bg {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120vw; height: 120vh;
+            background: radial-gradient(circle at center, rgba(255, 201, 23, 0.1) 0%, transparent 60%);
+            z-index: -1;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 15px 35px rgba(255, 201, 23, 0.1);
+        }
+        .meituan-yellow { color: #FFC917; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col p-6 md:p-12 relative leading-relaxed">
+    <div class="fluid-bg"></div>
+    
+    <header class="flex justify-between items-center mb-20 relative z-10 w-full">
+        <a href="/" class="flex items-center space-x-3 group">
+            <div class="w-10 h-10 rounded-full border border-black/5 flex items-center justify-center group-hover:bg-black/5 transition-colors">
+                <span class="text-black text-lg">←</span>
+            </div>
+            <span class="font-extrabold text-xl tracking-tight uppercase">XYLAB // OS</span>
+        </a>
+        <div class="px-4 py-2 rounded-full border border-black/5 bg-white/50 text-[10px] font-bold uppercase tracking-[0.2em] text-black/30">
+            Engine: Local Life v1.0
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col items-center justify-center text-center relative z-10">
+        <div class="w-20 h-20 bg-[#FFC917] rounded-3xl flex items-center justify-center mb-8 shadow-xl shadow-yellow-200">
+            <span class="text-4xl">🍱</span>
+        </div>
+        <h1 class="text-6xl md:text-[7rem] font-extrabold tracking-tighter leading-none mb-8">
+            Local Life <br>
+            <span class="meituan-yellow">Studio 🛵</span>
+        </h1>
+        <p class="text-xl text-black/60 max-w-2xl font-medium mb-12">
+            美团与大众点评的深度增长工具。从店铺 SEO 到 AI 回应差评，全方位提升本地商家的数字化竞争力。
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+            <div class="glass-panel p-10 rounded-3xl text-left hover:scale-[1.02] transition-all cursor-pointer group">
+                <div class="text-3xl mb-4 group-hover:rotate-12 transition-transform">🎯</div>
+                <h3 class="text-xl font-bold mb-2 uppercase meituan-yellow">Store SEO</h3>
+                <p class="text-sm text-black/40">基于关键词浓度的店铺详情页描述优化。</p>
+            </div>
+            <div class="glass-panel p-10 rounded-3xl text-left hover:scale-[1.02] transition-all cursor-pointer group border-l-4 border-[#FFC917]">
+                <div class="text-3xl mb-4 group-hover:rotate-12 transition-transform">💌</div>
+                <h3 class="text-xl font-bold mb-2 uppercase">Review AI</h3>
+                <p class="text-sm text-black/40">高情商、高转化的评价回复智能生成。</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 pt-10 border-t border-black/5 text-center text-black/10 text-[10px] font-bold uppercase tracking-[0.4em]">
+        XYLAB Creative Labs // Domestic Matrix 2026
+    </footer>
+</body>
+</html>

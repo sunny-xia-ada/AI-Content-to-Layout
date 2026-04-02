@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>XYLAB // WECHAT AURA ENGINE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #FDFDFD; color: #1A1A1A; }
+        .serif { font-family: 'Cormorant Garamond', serif; }
+        .chic-shadow { box-shadow: 0 20px 50px rgba(0, 0, 0, 0.03); }
+        .loopy-btn { background: #FEC5D2; transition: all 0.4s ease; }
+        .loopy-btn:active { transform: scale(0.95); opacity: 0.9; }
+        .tab-active { color: #1A1A1A; border-bottom: 2px solid #1A1A1A; }
+        .tab-inactive { color: #A0A0A0; }
+        textarea:focus { outline: none; }
+        #preview { transition: opacity 0.3s ease; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <nav class="h-16 flex items-center justify-between px-6 border-b border-black/5 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="flex items-center space-x-4">
+            <a href="/" class="text-xs font-bold bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-all text-gray-600">← XYLAB OS</a>
+            <span class="serif text-xl tracking-tighter uppercase font-bold text-black">XYLAB <span class="text-xs font-light opacity-30 italic ml-1">SMART AGENT V4.4</span></span>
+        </div>
+        <img src="{{ loopy_uri }}" class="w-8 h-8 rounded-full border border-pink-100" alt="loopy">
+    </nav>
+
+    <div class="flex md:hidden bg-white border-b border-black/5 items-center justify-around h-12">
+        <button id="tab-edit" class="h-full px-8 text-xs font-bold uppercase tracking-widest tab-active">Manuscript</button>
+        <button id="tab-preview" class="h-full px-8 text-xs font-bold uppercase tracking-widest tab-inactive">Aura View</button>
+    </div>
+
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden bg-[#F9F9F9]">
+        <section id="section-edit" class="flex-1 p-4 md:p-10 flex flex-col">
+            <div class="bg-white rounded-3xl chic-shadow flex-1 flex flex-col overflow-hidden border border-black/5">
+                <div class="px-6 py-4 border-b border-black/5 flex justify-between items-center">
+                    <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-300">Editor</span>
+                    <div class="flex items-center space-x-3">
+                        <button id="ai-btn" class="text-[10px] uppercase font-black bg-[#FEC5D2] text-[#E91E63] px-3 py-2 rounded-lg shadow-sm hover:scale-105 transition-all">AI Auto-Layout</button>
+                        <button type="button" id="shuffle-btn" onclick="shuffleImage()" class="text-[10px] uppercase font-black bg-gray-200 text-gray-700 px-3 py-2 rounded-lg shadow-sm hover:scale-105 transition-all">🎲 Shuffle</button>
+                        <button type="button" onclick="extractImage()" class="text-[10px] uppercase font-black bg-blue-100 text-blue-700 px-2 py-2 rounded-lg shadow-sm hover:scale-105 transition-all writing-vertical-rl">提取原图</button>
+                        
+                        <select name="theme" id="theme-selector" class="text-sm font-bold bg-transparent outline-none cursor-pointer pl-2">
+                            <option value="loopy">Loopy Cute</option>
+                            <option value="executive">Executive Gray</option>
+                            <option value="ethereal">Ethereal Sky</option>
+                            <option value="techno">Techno Cyber</option>
+                            <option value="urban" selected>Urban Pulse</option>
+                            <option value="wonyoung">Wonyoungism</option>
+                            <option value="algorithm">Algorithm Art</option>
+                            <option value="archive">Archive 2026</option>
+                            <option value="solidcore">Solidcore</option>
+                            <option value="bottari">Bottari</option>
+                        </select>
+                    </div>
+                </div>
+                <textarea id="editor" class="flex-1 p-6 text-base leading-relaxed text-gray-800 resize-none font-serif italic" placeholder="Type your story here..."></textarea>
+            </div>
+        </section>
+
+        <section id="section-preview" class="flex-1 p-4 md:p-10 flex flex-col md:flex hidden relative">
+            <div class="flex flex-col items-center justify-center h-full">
+                <div class="hidden md:flex text-[10px] uppercase tracking-[0.3em] font-bold opacity-30 mb-6">Mobile Preview (375px)</div>
+                <div class="w-full max-w-[375px] h-[667px] md:h-[700px] bg-white rounded-[40px] chic-shadow overflow-hidden border border-black/5 relative">
+                    <div id="preview" class="h-full overflow-y-auto overflow-x-hidden scroll-smooth bg-[#F8F8F8] pb-24">
+                        <div class="flex flex-col items-center justify-center h-full text-black/10 serif uppercase italic tracking-widest text-sm p-10 text-center">Write something to see the aura...</div>
+                    </div>
+                    
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-white via-white to-transparent">
+                        <button id="copy-btn" class="w-full py-4 bg-gradient-to-r from-pink-300 to-pink-200 text-white font-black tracking-[0.2em] rounded-2xl shadow-xl active:scale-95 transition-all uppercase text-sm">
+                            Copy For WeChat
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 bg-black text-white px-8 py-3 rounded-full text-[10px] uppercase tracking-widest font-bold opacity-0 transition-all duration-500 z-[200]">
+        Aura Copied to Clipboard
+    </div>
+
+    <script>
+        const editor = document.getElementById('editor');
+        const preview = document.getElementById('preview');
+        const copyBtn = document.getElementById('copy-btn');
+        const tabEdit = document.getElementById('tab-edit');
+        const tabPreview = document.getElementById('tab-preview');
+        const sectionEdit = document.getElementById('section-edit');
+        const sectionPreview = document.getElementById('section-preview');
+        const toast = document.getElementById('toast');
+        const aiBtn = document.getElementById('ai-btn');
+
+        // Mobile Tab Switching
+        tabEdit.addEventListener('click', () => {
+            tabEdit.classList.replace('tab-inactive', 'tab-active');
+            tabPreview.classList.replace('tab-active', 'tab-inactive');
+            sectionEdit.classList.remove('hidden');
+            sectionPreview.classList.add('hidden');
+        });
+
+        tabPreview.addEventListener('click', () => {
+            tabPreview.classList.replace('tab-inactive', 'tab-active');
+            tabEdit.classList.replace('tab-active', 'tab-inactive');
+            sectionPreview.classList.remove('hidden', 'md:flex');
+            sectionPreview.classList.add('flex');
+            sectionEdit.classList.add('hidden');
+        });
+
+        // Core Render Logic
+        let debounce;
+        async function updatePreview() {
+            const text = editor.value;
+            if (!text.trim()) return;
+            preview.style.opacity = 0;
+            const theme = document.getElementById('theme-selector').value;
+            try {
+                const res = await fetch('/convert', {
+                    method: 'POST',
+                    body: new URLSearchParams({ markdown_input: text, theme: theme })
+                });
+                const data = await res.json();
+                preview.innerHTML = data.html;
+            } catch(e) { console.error(e); }
+            setTimeout(() => { preview.style.opacity = 1; }, 50);
+        }
+
+        editor.addEventListener('input', () => {
+            clearTimeout(debounce);
+            debounce = setTimeout(updatePreview, 300);
+        });
+
+        document.getElementById('theme-selector').addEventListener('change', updatePreview);
+
+        // AI Logic
+        aiBtn.addEventListener('click', async () => {
+            const text = editor.value;
+            if (!text.trim()) return;
+            aiBtn.innerText = "Processing...";
+            aiBtn.classList.add("opacity-50");
+            try {
+                const res = await fetch('/ai-process', {
+                    method: 'POST',
+                    body: new URLSearchParams({ markdown_input: text, theme: document.getElementById('theme-selector').value })
+                });
+                const data = await res.json();
+                editor.value = data.markdown;
+                await updatePreview();
+            } catch (err) { console.error(err); } 
+            finally {
+                aiBtn.innerText = "AI Auto-Layout";
+                aiBtn.classList.remove("opacity-50");
+            }
+        });
+
+        // Shuffle Logic
+        async function shuffleImage() {
+            const btn = document.getElementById('shuffle-btn');
+            const originalText = btn.innerText;
+            btn.innerText = "🎲 Shuffling...";
+            try {
+                const res = await fetch('/shuffle-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ 'theme': document.getElementById('theme-selector').value })
+                });
+                const data = await res.json();
+                const imageRegex = /!\[Divider\]\(.*?\)/g; 
+                if (imageRegex.test(editor.value)) {
+                    editor.value = editor.value.replace(imageRegex, data.new_image_markdown);
+                } else {
+                    editor.value += "\n\n" + data.new_image_markdown + "\n\n";
+                }
+                updatePreview();
+            } catch (error) { console.error(error); } 
+            finally { btn.innerText = originalText; }
+        }
+
+        function extractImage() {
+            const imgMatch = editor.value.match(/!\[.*?\]\((.*?)\)/);
+            if (imgMatch && imgMatch[1]) window.open(imgMatch[1], '_blank');
+        }
+
+        // Exact Copy Logic
+        copyBtn.addEventListener('click', () => {
+            const auraCard = document.getElementById('aura-card');
+            if (!auraCard) return;
+            const range = document.createRange();
+            range.selectNode(auraCard);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                toast.classList.replace('opacity-0', 'opacity-100');
+                setTimeout(() => toast.classList.replace('opacity-100', 'opacity-0'), 2500);
+            } catch (err) { alert("Copy failed. Try manual selection."); }
+            selection.removeAllRanges();
+        });
+    </script>
+</body>
+</html>

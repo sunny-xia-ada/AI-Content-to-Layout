@@ -1,874 +1,212 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="referrer" content="no-referrer">
-    <title>XYLAB // SMART AGENT v4.4</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XYLAB OS // UNICORN AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@300;400;600&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background: #FDFDFD;
-            color: #1A1A1A;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .serif {
-            font-family: 'Cormorant Garamond', serif;
-        }
-
-        .chic-shadow {
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.03);
-        }
-
-        .pink-gradient {
-            background: linear-gradient(135deg, #FFF5F7 0%, #FFF 100%);
-        }
-
-        .loopy-btn {
-            background: #FEC5D2;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .loopy-btn:active {
-            transform: scale(0.95);
-            opacity: 0.9;
-        }
-
-        .tab-active {
-            color: #1A1A1A;
-            border-bottom: 2px solid #1A1A1A;
-        }
-
-        .tab-inactive {
-            color: #A0A0A0;
-        }
-
-        /* Mobile Sticky Footer */
-        @media (max-width: 768px) {
-            .mobile-height {
-                height: calc(100vh - 120px);
-            }
-
-            .sticky-footer {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                padding: 20px;
-                background: rgba(255, 255, 255, 0.8);
-                backdrop-filter: blur(20px);
-                border-top: 1px solid rgba(0, 0, 0, 0.05);
-                z-index: 100;
-            }
-        }
-
-        textarea:focus {
-            outline: none;
-        }
-
-        ::-webkit-scrollbar {
-            width: 0px;
-        }
-
-        #preview {
-            transition: opacity 0.3s ease;
-        }
-
-        @keyframes fallAndSway {
-            0% { transform: translateY(-50px) translateX(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            100% { transform: translateY(1200px) translateX(120px) rotate(360deg); opacity: 0; }
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            background-color: #F6F7F9;
+            color: #111;
+            overflow-x: hidden;
         }
         
-        .live-particle {
+        /* 3D Fluid Background Simulation */
+        .fluid-bg {
             position: absolute;
-            pointer-events: none;
-            z-index: 5;
-            animation: fallAndSway linear infinite;
-        }
-
-        #xhs-canvas-background-fluid {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(var(--bg-angle, 135deg), var(--primary-fluid), var(--secondary-fluid));
-            animation: hueRotate 10s infinite linear;
-            filter: blur(50px) saturate(2);
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120vw;
+            max-width: 1000px;
             z-index: -1;
+            mix-blend-mode: multiply;
+            pointer-events: none;
+            animation: breathe 8s ease-in-out infinite alternate;
+            filter: drop-shadow(0 30px 40px rgba(0,0,0,0.1));
+        }
+        @keyframes breathe {
+            0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+            100% { transform: translate(-50%, -52%) scale(1.03) rotate(2deg); }
         }
 
-        @keyframes hueRotate {
-            0% { filter: blur(50px) saturate(2) hue-rotate(0deg); }
-            100% { filter: blur(50px) saturate(2) hue-rotate(360deg); }
+        /* Holographic Gradient Text */
+        .holo-text {
+            background: linear-gradient(110deg, #A78BFA 0%, #F472B6 30%, #60A5FA 70%, #111111 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 5s linear infinite;
         }
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        /* Glassmorphism Elements */
+        .glass-pill {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.9);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 50px rgba(0,0,0,0.08);
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* Hide scrollbar */
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
+<body class="min-h-screen flex flex-col relative">
 
-<body class="min-h-screen flex flex-col">
+    <img src="/static/fluid_bg.png" alt="Fluid Background" class="fluid-bg mix-blend-multiply opacity-90">
 
-    <!-- Navbar -->
-    <nav
-        class="h-16 flex items-center justify-between px-6 border-b border-black/5 bg-white/80 backdrop-blur-md sticky top-0 z-50">
-        <div class="flex items-center space-x-2">
-            <span class="serif text-xl tracking-tighter uppercase font-bold text-black">XYLAB <span
-                    class="text-xs font-light opacity-30 italic ml-1">SMART AGENT v4.4</span></span>
+    <nav class="flex justify-between items-center p-6 md:px-12 relative z-10 w-full">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-[#111] rounded-full flex items-center justify-center shadow-lg">
+                <div class="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></div>
+            </div>
+            <span class="font-extrabold text-2xl tracking-tight">XYLAB</span>
         </div>
-        <img src="{{ loopy_uri }}" class="w-8 h-8 rounded-full border border-pink-100" alt="loopy">
+        
+        <div class="hidden md:flex items-center space-x-8 text-[13px] font-bold text-gray-500 uppercase tracking-widest">
+            <a href="#" class="hover:text-black transition-colors">控制台 Dashboard</a>
+            <a href="#engines" class="hover:text-black transition-colors">创作引擎 Engines</a>
+            <a href="#" class="hover:text-black transition-colors">实验室 Learn</a>
+        </div>
+        
+        <div class="flex space-x-4 items-center">
+            <button class="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-white transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            <button class="hidden md:block px-6 py-2.5 rounded-full bg-[#4F46E5] text-white text-sm font-bold hover:bg-[#4338CA] transition-colors shadow-lg shadow-indigo-200">
+                立即开始 — 免费体验
+            </button>
+        </div>
     </nav>
 
-    <!-- Mode Switcher -->
-    <div class="flex justify-center bg-white border-b border-black/5 py-4 space-x-4 sticky top-16 z-40">
-        <button id="tab-wechat" onclick="switchMode('wechat')" class="px-6 py-2 bg-black text-white font-bold rounded-full shadow-lg transition-all">🟢 微信排版模式</button>
-        <button id="tab-xhs" onclick="switchMode('xhs')" class="px-6 py-2 bg-gray-200 text-gray-500 font-bold rounded-full transition-all">🔴 小红书出图模式</button>
-    </div>
-
-    <!-- WeChat Workspace -->
-    <div id="wechat-workspace" class="flex-1 flex flex-col block">
-        <!-- Mobile Tabs (Visible on Mobile) -->
-        <div class="flex md:hidden bg-white border-b border-black/5 items-center justify-around h-12">
-            <button id="tab-edit"
-                class="h-full px-8 text-xs font-bold uppercase tracking-widest tab-active">Manuscript</button>
-            <button id="tab-preview" class="h-full px-8 text-xs font-bold uppercase tracking-widest tab-inactive">Aura
-                View</button>
+    <main class="flex-1 flex flex-col items-center justify-start pt-20 text-center px-4 relative z-10 w-full">
+        
+        <div class="glass-pill px-4 py-2 rounded-full flex items-center space-x-2 mb-8 cursor-default">
+            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-800 flex items-center">
+                <span class="text-base mr-2">🦄</span> UNICORN AI PARTNER / 独角兽 AI
+            </span>
         </div>
 
-        <!-- Main Content -->
-        <main class="flex-1 flex flex-col md:flex-row overflow-hidden bg-[#F9F9F9]">
-            <!-- Editor Section -->
-            <section id="section-edit" class="flex-1 p-4 md:p-10 flex flex-col">
-                <div class="bg-white rounded-3xl chic-shadow flex-1 flex flex-col overflow-hidden border border-black/5">
-                    <div class="px-6 py-4 border-b border-black/5 flex justify-between items-center">
-                        <span class="text-[10px] uppercase tracking-[0.2em] font-bold opacity-30">Editor</span>
-                        <div class="flex items-center space-x-4">
-                            <button id="ai-btn" class="text-[10px] uppercase font-bold bg-[#FEC5D2] text-[#E91E63] px-3 py-1 rounded shadow-sm hover:scale-105 transition-transform duration-300">AI Auto-Layout</button>
-                            <button type="button" id="shuffle-btn" onclick="shuffleImage()" class="text-[10px] uppercase font-bold bg-gray-200 text-gray-700 px-3 py-1 rounded shadow-sm hover:scale-105 transition-transform duration-300">🎲 Shuffle</button>
-                            <button type="button" onclick="extractImage()" class="text-[10px] uppercase font-bold bg-blue-100 text-blue-700 px-3 py-1 rounded shadow-sm hover:scale-105 transition-transform duration-300">📥 提取原图</button>
-                            <select name="theme" id="theme-selector" class="text-[10px] uppercase tracking-[0.2em] font-bold opacity-50 bg-transparent outline-none cursor-pointer">
-                                <option value="loopy">Loopy Cute</option>
-                                <option value="executive">Executive Gray</option>
-                                <option value="ethereal">Ethereal Sky</option>
-                                <option value="techno">Techno Cyber</option>
-                                <option value="urban">Urban Pulse</option>
-                                <option value="wonyoung">Wonyoungism</option>
-                                <option value="algorithm">Algorithm Art</option>
-                                <option value="archive">Archive 2026</option>
-                                <option value="solidcore">Solidcore</option>
-                                <option value="bottari">Bottari</option>
-                            </select>
-                            <div class="w-1.5 h-1.5 rounded-full bg-green-400"></div>
-                        </div>
+        <h1 class="text-5xl md:text-[5.5rem] font-extrabold tracking-tighter leading-[1.05] mb-6 max-w-5xl text-[#111]">
+            智能自动化系统 <br>
+            <span class="holo-text">赋能现代创作者</span>
+        </h1>
+
+        <p class="text-lg md:text-xl text-gray-500 font-medium max-w-2xl mb-12 leading-relaxed">
+            我们构建 AI 驱动的内容工厂，消除繁琐格式，降低认知负担，让您的数字影响力成倍增长。
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+            <a href="#engines" class="px-8 py-4 rounded-full bg-[#111] text-white font-bold text-lg hover:bg-gray-800 transition-all shadow-[0_20px_40px_rgba(0,0,0,0.2)] flex items-center group">
+                进入创作引擎 
+                <span class="ml-3 group-hover:translate-x-1 transition-transform">→</span>
+            </a>
+            <button class="px-8 py-4 rounded-full glass-pill font-bold text-lg hover:bg-white transition-all flex items-center text-gray-800">
+                <img src="https://ui-avatars.com/api/?name=XY&background=random&color=fff&rounded=true&size=32" class="w-6 h-6 rounded-full mr-3 border border-gray-200"> 
+                与我们合作
+            </button>
+        </div>
+    </main>
+
+    <section id="engines" class="relative z-20 w-full max-w-6xl mx-auto px-6 py-24">
+        <div class="text-center mb-16">
+            <h2 class="text-sm font-bold uppercase tracking-[0.3em] text-gray-400 mb-2">Capabilities / 核心能力</h2>
+            <h3 class="text-3xl font-extrabold tracking-tight">AI 驱动的内容生态</h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <a href="/xhs" class="glass-card p-8 rounded-3xl group block">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-br from-pink-100 to-red-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
+                        <span class="text-xl">📸</span>
                     </div>
-                    <textarea id="editor"
-                        class="flex-1 p-6 text-sm leading-relaxed text-black/70 resize-none font-serif italic"
-                        placeholder="Type your story here..."></textarea>
+                    <span class="text-[11px] font-extrabold uppercase tracking-widest text-pink-600 bg-pink-50/80 px-3 py-1.5 rounded-full border border-pink-100 backdrop-blur-sm">小红书爆款引擎</span>
                 </div>
-                <!-- Padding for sticky footer on mobile -->
-                <div class="h-24 md:hidden"></div>
-            </section>
+                <h4 class="text-xl font-extrabold mb-2">3D Vision Studio</h4>
+                <p class="text-sm text-gray-500 font-medium leading-relaxed">Automated XHS editorial layouts, 3D particles, and RAG-enhanced viral copywriting.</p>
+            </a>
 
-            <!-- Preview Section -->
-            <section id="section-preview" class="flex-1 p-4 md:p-10 flex flex-col md:flex hidden">
-                <div class="flex flex-col items-center justify-center h-full">
-                    <div class="hidden md:flex text-[10px] uppercase tracking-[0.3em] font-bold opacity-30 mb-6">Mobile
-                        Preview (375px)</div>
-
-                    <div
-                        class="w-full max-w-[375px] h-[667px] md:h-[700px] bg-white rounded-[40px] chic-shadow overflow-hidden border border-black/5 relative">
-                        <div id="preview" class="h-full overflow-y-auto overflow-x-hidden scroll-smooth bg-[#F8F8F8]">
-                            <div
-                                class="flex flex-col items-center justify-center h-full text-black/10 serif uppercase italic tracking-widest text-sm p-10 text-center">
-                                Write something to see the aura...
-                            </div>
-                        </div>
+            <a href="/douyin" class="glass-card p-8 rounded-3xl group block">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-br from-cyan-100 to-blue-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
+                        <span class="text-xl">🎵</span>
                     </div>
+                    <span class="text-[11px] font-extrabold uppercase tracking-widest text-cyan-700 bg-cyan-50/80 px-3 py-1.5 rounded-full border border-cyan-100 backdrop-blur-sm">抖音爆款引擎</span>
                 </div>
-                <!-- Padding for sticky footer on mobile -->
-                <div class="h-24 md:hidden"></div>
-            </section>
-        </main>
-    </div>
+                <h4 class="text-xl font-extrabold mb-2">Viral Video Agent</h4>
+                <p class="text-sm text-gray-500 font-medium leading-relaxed">3-second hook generation and script matching for short video algorithms.</p>
+            </a>
 
-    <!-- XHS Workspace -->
-    <div id="xhs-workspace" class="flex-1 flex flex-col hidden">
-        <main class="flex-1 flex flex-col md:flex-row overflow-hidden bg-[#F9F9F9]">
-            <!-- Left: XHS Inputs -->
-            <section class="flex-1 p-4 md:p-10 flex flex-col">
-                <div class="bg-white rounded-3xl chic-shadow flex-1 p-8 flex flex-col space-y-6 border border-black/5">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-[10px] uppercase tracking-[0.2em] font-bold opacity-30">XHS Studio</span>
-                        <div class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></div>
+            <a href="/meituan" class="glass-card p-8 rounded-3xl group block">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-br from-yellow-100 to-orange-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
+                        <span class="text-xl">🥡</span>
                     </div>
-                    
-                    <div class="space-y-4">
-                        <!-- Magic Brain Input -->
-                        <div class="mb-8 p-6 bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl border border-pink-200 shadow-sm">
-                            <label class="block text-sm font-black text-pink-600 uppercase tracking-widest mb-3">✨ AI 主编：一句话生成爆款排版</label>
-                            <textarea id="magic-prompt" rows="2" class="w-full p-4 bg-white border-2 border-pink-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-pink-200 text-gray-800 placeholder-gray-400 mb-3" placeholder="输入一句大白话，比如：周末宅家看书，喷了木质香水，感觉很平静..."></textarea>
-                            <button type="button" onclick="generateMagicPost()" id="magic-btn" class="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-black text-lg rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
-                                🚀 一键生成大片与文案
-                            </button>
-                        </div>
-
-                        <div class="flex items-center my-6">
-                            <div class="flex-grow border-t border-gray-300"></div>
-                            <span class="flex-shrink-0 mx-4 text-gray-400 text-xs font-bold uppercase">Or manually edit</span>
-                            <div class="flex-grow border-t border-gray-300"></div>
-                        </div>
-
-                        <!-- Background Image -->
-                        <div class="mb-4">
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-2">📸 封面底图 (Background Image)</label>
-                            <div class="flex space-x-2">
-                                <input type="text" id="xhs-bg-image" class="flex-grow p-3 bg-gray-50 border border-black/5 rounded-xl outline-none focus:ring-1 focus:ring-red-100 transition-all text-sm font-mono" placeholder="粘贴网址或点击右侧抽卡 👉">
-                                <button type="button" onclick="shuffleXhsBg()" class="px-4 py-3 bg-[#121212] text-white text-[10px] font-bold rounded-xl shadow-lg hover:bg-gray-800 transition-all whitespace-nowrap active:scale-95">
-                                    🎲 灵感盲盒
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Theme Selector -->
-                        <div class="mb-6">
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-2">🎨 杂志视觉情绪 (Editorial Theme)</label>
-                            <select id="xhs-theme-selector" onchange="shuffleXhsBg()" class="w-full p-3 bg-gray-50 border border-black/5 rounded-xl outline-none focus:ring-1 focus:ring-red-100 transition-all text-sm font-medium">
-                                <option value="techno">🔌 Techno Cyber (暗黑科技专刊)</option>
-                                <option value="wonyoungism">🎀 Wonyoungism (财阀千金画报)</option>
-                                <option value="solidcore">🔥 Solidcore Burn (硬核塑形海报)</option>
-                                <option value="urban">🛹 Urban Pulse (街头/舞蹈Lookbook)</option>
-                                <option value="salon">📚 Cultural Salon (文化沙龙/读书会)</option>
-                                <option value="bottari">🪵 Bottari Scent (木质香氛/空间美学)</option>
-                                <option value="nomad">✈️ Solo Nomad (旷野独旅/公路纪实)</option>
-                                <option value="algorithm">📐 Algorithm Art (极客代码/视觉逻辑)</option>
-                                <option value="y2k">💿 Y2K Archive (千禧复古/胶片碎念)</option>
-                                <option value="posh">👗 Posh Resale (极简高街/OOTD闲置)</option>
-                            </select>
-                        </div>
-
-                        <!-- Layout Mode Toggle -->
-                        <div class="mb-4">
-                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mb-2">📐 排版模式 (Layout Mode)</label>
-                            <div class="flex space-x-2">
-                                <label class="flex-1 cursor-pointer">
-                                    <input type="radio" name="layout_mode" value="cover" class="peer sr-only" checked onchange="if(typeof generatePoster === 'function') generatePoster()">
-                                    <div class="p-3 text-[10px] uppercase font-bold text-center bg-gray-50 border border-black/5 rounded-xl peer-checked:bg-[#121212] peer-checked:text-white transition-all">🖼️ 封面模式</div>
-                                </label>
-                                <label class="flex-1 cursor-pointer">
-                                    <input type="radio" name="layout_mode" value="inner" class="peer sr-only" onchange="if(typeof generatePoster === 'function') generatePoster()">
-                                    <div class="p-3 text-[10px] uppercase font-bold text-center bg-gray-50 border border-black/5 rounded-xl peer-checked:bg-[#121212] peer-checked:text-white transition-all">📄 长文内页</div>
-                                </label>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest font-bold opacity-40 mb-2 block">Post Title</label>
-                            <input type="text" id="xhs-title" class="w-full text-xl font-bold outline-none border-b border-black/5 pb-2 focus:border-red-200 transition-colors" placeholder="Create a catchy headline...">
-                        </div>
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest font-bold opacity-40 mb-2 block">The Hook</label>
-                            <textarea id="xhs-hook" class="w-full text-sm outline-none resize-none h-20 bg-gray-50/50 rounded-xl p-4 focus:bg-white focus:ring-1 focus:ring-red-100 transition-all font-serif italic" placeholder="Why should they stop scrolling?"></textarea>
-                        </div>
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest font-bold opacity-40 mb-2 block">Body Points</label>
-                            <textarea id="xhs-body" class="w-full text-sm outline-none resize-none h-40 bg-gray-50/50 rounded-xl p-4 focus:bg-white focus:ring-1 focus:ring-red-100 transition-all" placeholder="• Key takeaway one&#10;• Key takeaway two..."></textarea>
-                        </div>
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest font-bold opacity-40 mb-2 block">Ending Thought</label>
-                            <input type="text" id="xhs-ending" class="w-full text-sm outline-none border-b border-black/5 pb-2 focus:border-red-200 transition-colors" placeholder="One calm summary sentence...">
-                        </div>
-                    </div>
-
-                    <button id="generate-xhs-btn" onclick="generatePoster()" class="loopy-btn w-full py-5 rounded-2xl text-white font-bold uppercase tracking-[0.2em] text-sm shadow-xl shadow-red-100 flex items-center justify-center space-x-2 !bg-[#FF2442]">
-                        <span>🚀 Generate Poster</span>
-                    </button>
+                    <span class="text-[11px] font-extrabold uppercase tracking-widest text-orange-600 bg-orange-50/80 px-3 py-1.5 rounded-full border border-orange-100 backdrop-blur-sm">美团本地引擎</span>
                 </div>
-                <div class="h-24 md:hidden"></div>
-            </section>
+                <h4 class="text-xl font-extrabold mb-2">Local SEO Agent</h4>
+                <p class="text-sm text-gray-500 font-medium leading-relaxed">Store review response automation and local lifestyle copywriting.</p>
+            </a>
 
-            <!-- Right: XHS Preview -->
-            <section class="flex-1 p-4 md:p-10 flex flex-col items-center">
-                <div class="hidden md:flex text-[10px] uppercase tracking-[0.3em] font-bold opacity-30 mb-6">XHS Poster Preview (3:4)</div>
-                <div id="xhs-canvas" class="w-full max-w-[400px] aspect-[3/4] bg-white rounded-[40px] chic-shadow overflow-hidden border border-black/5 relative flex items-center justify-center group">
-                    <div class="absolute inset-0 bg-gradient-to-br from-red-50/30 to-blue-50/30 opacity-50"></div>
-                    <div class="flex flex-col items-center space-y-4 z-10">
-                        <div class="w-16 h-16 border-2 border-dashed border-black/10 rounded-full flex items-center justify-center">
-                            <span class="text-xl">🎨</span>
-                        </div>
-                        <span class="serif italic text-black/20 text-sm tracking-widest">Poster Viewport Placeholder</span>
+            <a href="/wechat" class="glass-card p-8 rounded-3xl group block">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-100 to-emerald-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
+                        <span class="text-xl">💬</span>
                     </div>
+                    <span class="text-[11px] font-extrabold uppercase tracking-widest text-emerald-700 bg-emerald-50/80 px-3 py-1.5 rounded-full border border-emerald-100 backdrop-blur-sm">微信排版引擎</span>
                 </div>
-                <div class="h-24 md:hidden"></div>
-            </section>
-        </main>
-    </div>
+                <h4 class="text-xl font-extrabold mb-2">Aura Aesthetics</h4>
+                <p class="text-sm text-gray-500 font-medium leading-relaxed">Inline CSS injection and Markdown typography engine for Official Accounts.</p>
+            </a>
 
-    <!-- Sticky Footer Copy Button -->
-    <div class="sticky-footer md:fixed md:bottom-10 md:right-10 md:bg-transparent md:border-none">
-        <button id="copy-btn"
-            class="loopy-btn w-full md:w-auto md:px-12 py-4 rounded-2xl md:rounded-full text-white font-bold uppercase tracking-[0.2em] text-sm shadow-xl shadow-pink-200">
-            Copy for WeChat
-        </button>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="toast"
-        class="fixed top-20 left-1/2 -translate-x-1/2 bg-black text-white px-8 py-3 rounded-full text-[10px] uppercase tracking-widest font-bold opacity-0 transition-all duration-500 z-[200]">
-        Aura Copied to Clipboard
-    </div>
-
-    <script>
-        const editor = document.getElementById('editor');
-        const preview = document.getElementById('preview');
-        const copyBtn = document.getElementById('copy-btn');
-        const tabEdit = document.getElementById('tab-edit');
-        const tabPreview = document.getElementById('tab-preview');
-        const sectionEdit = document.getElementById('section-edit');
-        const sectionPreview = document.getElementById('section-preview');
-        const toast = document.getElementById('toast');
-        const aiBtn = document.getElementById('ai-btn');
-
-        // Tab Switching
-        tabEdit.addEventListener('click', () => {
-            tabEdit.classList.replace('tab-inactive', 'tab-active');
-            tabPreview.classList.replace('tab-active', 'tab-inactive');
-            sectionEdit.classList.remove('hidden');
-            sectionPreview.classList.add('hidden');
-        });
-
-        tabPreview.addEventListener('click', () => {
-            tabPreview.classList.replace('tab-inactive', 'tab-active');
-            tabEdit.classList.replace('tab-active', 'tab-inactive');
-            sectionPreview.classList.remove('hidden', 'md:flex');
-            sectionPreview.classList.add('flex');
-            sectionEdit.classList.add('hidden');
-        });
-
-        // Conversion Logic
-        let debounce;
-        // Refactored Preview Function for Immediate Callback
-        async function updatePreview() {
-            const text = editor.value;
-            if (!text.trim()) {
-                preview.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-black/10 serif uppercase italic tracking-widest text-sm p-10 text-center">Write something to see the aura...</div>`;
-                preview.style.opacity = 1;
-                return;
-            }
-            
-            preview.style.opacity = 0;
-            
-            const theme = document.getElementById('theme-selector').value;
-            try {
-                const res = await fetch('/convert', {
-                    method: 'POST',
-                    body: new URLSearchParams({ markdown_input: text, theme: theme })
-                });
-                const data = await res.json();
-                preview.innerHTML = data.html;
-            } catch(e) { console.error(e); }
-            
-            setTimeout(() => {
-                preview.style.opacity = 1;
-            }, 50);
-        }
-
-        editor.addEventListener('input', () => {
-            clearTimeout(debounce);
-            debounce = setTimeout(updatePreview, 300);
-        });
-
-        document.getElementById('theme-selector').addEventListener('change', () => {
-            updatePreview();
-        });
-
-        // AI Auto-Layout Logic
-        aiBtn.addEventListener('click', async () => {
-            const text = editor.value;
-            if (!text.trim()) return;
-            
-            aiBtn.innerText = "Processing...";
-            aiBtn.classList.add("opacity-50");
-            
-            const theme = document.getElementById('theme-selector').value;
-            try {
-                const res = await fetch('/ai-process', {
-                    method: 'POST',
-                    body: new URLSearchParams({ markdown_input: text, theme: theme })
-                });
-                const data = await res.json();
-                // Strict Override
-                editor.value = data.markdown;
-                // Immediate View Refresh
-                await updatePreview();
-            } catch (err) {
-                console.error(err);
-            } finally {
-                aiBtn.innerText = "AI Auto-Layout";
-                aiBtn.classList.remove("opacity-50");
-            }
-        });
-
-        // Extract Image Logic
-        function extractImage() {
-            const editor = document.getElementById('editor');
-            const imgMatch = editor.value.match(/!\[.*?\]\((.*?)\)/);
-            if (imgMatch && imgMatch[1]) {
-                window.open(imgMatch[1], '_blank');
-            } else {
-                alert("当前排版中没有找到图片哦！请先点击 AI Auto-Layout。");
-            }
-        }
-
-        // Shuffle Logic
-        async function shuffleImage() {
-            // 1. Get elements 
-            const editor = document.getElementById('editor');
-            const themeSelect = document.getElementById('theme-selector'); 
-            const shuffleBtn = document.getElementById('shuffle-btn');
-            
-            if (!editor) { console.error("Could not find textarea!"); return; }
-
-            const originalText = shuffleBtn.innerText;
-            shuffleBtn.innerText = "🎲 Shuffling...";
-            
-            try {
-                // 2. Fetch new image from backend
-                const response = await fetch('/shuffle-image', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({ 'theme': themeSelect ? themeSelect.value : 'loopy' })
-                });
-                
-                const data = await response.json();
-                
-                if (data.new_image_markdown) {
-                    // 3. Bulletproof Regex: Target the Divider image specifically so we don't wipe the Hero
-                    const imageRegex = /!\[Divider\]\(.*?\)/g; 
-                    
-                    if (imageRegex.test(editor.value)) {
-                        editor.value = editor.value.replace(imageRegex, data.new_image_markdown);
-                    } else {
-                        // If somehow deleted, append to bottom
-                        editor.value += "\n\n" + data.new_image_markdown + "\n\n";
-                    }
-                    
-                    // 4. Force the preview to update! (Ensure this function exists)
-                    if (typeof updatePreview === "function") {
-                        updatePreview();
-                    } else {
-                        console.error("updatePreview() function is missing!");
-                    }
-                }
-            } catch (error) {
-                console.error("Shuffle API Error:", error);
-                alert("Failed to shuffle image. Check console.");
-            } finally {
-                shuffleBtn.innerText = originalText;
-            }
-        }
-
-        // Clipboard Copy
-        copyBtn.addEventListener('click', async () => {
-            const auraCard = document.getElementById('aura-card');
-            if (!auraCard) return;
-
-            const html = auraCard.outerHTML;
-            try {
-                await navigator.clipboard.writeText(html);
-                showToast();
-            } catch (err) {
-                // Fallback for older mobile browsers
-                const textArea = document.createElement("textarea");
-                textArea.value = html;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                showToast();
-            }
-        });
-
-        function showToast() {
-            toast.classList.replace('opacity-0', 'opacity-100');
-            setTimeout(() => toast.classList.replace('opacity-100', 'opacity-0'), 2500);
-        }
-
-        // Mode Switching Logic
-        function switchMode(mode) {
-            const wechatWorkspace = document.getElementById('wechat-workspace');
-            const xhsWorkspace = document.getElementById('xhs-workspace');
-            const tabWechat = document.getElementById('tab-wechat');
-            const tabXhs = document.getElementById('tab-xhs');
-            const copyBtn = document.getElementById('copy-btn');
-
-            if (mode === 'wechat') {
-                wechatWorkspace.classList.remove('hidden');
-                wechatWorkspace.classList.add('block');
-                xhsWorkspace.classList.remove('block');
-                xhsWorkspace.classList.add('hidden');
-                
-                // Active Tab Style
-                tabWechat.className = "px-6 py-2 bg-black text-white font-bold rounded-full shadow-lg transition-all";
-                tabXhs.className = "px-6 py-2 bg-gray-200 text-gray-500 font-bold rounded-full transition-all";
-                
-                if (copyBtn) copyBtn.innerText = "Copy for WeChat";
-            } else {
-                xhsWorkspace.classList.remove('hidden');
-                xhsWorkspace.classList.add('block');
-                wechatWorkspace.classList.remove('block');
-                wechatWorkspace.classList.add('hidden');
-                
-                // Active Tab Style
-                tabXhs.className = "px-6 py-2 bg-[#FF2442] text-white font-bold rounded-full shadow-lg transition-all";
-                tabWechat.className = "px-6 py-2 bg-gray-200 text-gray-500 font-bold rounded-full transition-all";
-                
-                if (copyBtn) copyBtn.innerText = "Export Image";
-            }
-        }
-
-        // --- XHS Poster Engine ---
-        async function generatePoster() {
-            const title = document.getElementById('xhs-title').value || "THE CORE";
-            const hook = document.getElementById('xhs-hook').value || "EXCLUSIVE INTERVIEW";
-            const bodyText = document.getElementById('xhs-body').value || "Discover the new aesthetic.\nIssue 01.";
-            const endingText = document.getElementById('xhs-ending').value || "";
-            
-            // Format body with ending
-            const fullBody = endingText ? `${bodyText}\n\n${endingText}` : bodyText;
-            const body = fullBody.replace(/\n/g, '<br>');
-            const bgImageUrl = document.getElementById('xhs-bg-image').value.trim();
-            const themeKey = document.getElementById('xhs-theme-selector').value;
-            const canvasDiv = document.getElementById('xhs-canvas');
-            const generateBtn = document.getElementById('generate-xhs-btn');
-
-            if (!canvasDiv || !generateBtn) return;
-
-            // 1. The 10-Theme Magazine Aesthetic Engine
-            const themes = {
-                "techno": { masthead: "font-mono text-[#00FF41]", text: "text-white", overlay: "from-black/95 via-black/40 to-black/95", accent: "border-[#00FF41]" },
-                "wonyoungism": { masthead: "font-serif text-[#FF1493]", text: "text-white", overlay: "from-pink-900/60 via-transparent to-pink-900/80", accent: "border-[#FF69B4]" },
-                "solidcore": { masthead: "font-black italic text-red-600", text: "text-white", overlay: "from-black/90 via-black/20 to-black/95", accent: "border-red-600" },
-                "urban": { masthead: "font-black uppercase text-white drop-shadow-[4px_4px_0_#FF00FF]", text: "text-white", overlay: "from-gray-900/80 via-gray-900/30 to-black", accent: "border-[#FF00FF]" },
-                "salon": { masthead: "font-serif font-light tracking-[0.2em] text-[#F5F5F0]", text: "text-[#F5F5F0]", overlay: "from-[#2C2C2C]/80 via-[#2C2C2C]/30 to-[#1A1A1A]/95", accent: "border-[#DCDCDC]" },
-                "bottari": { masthead: "font-serif text-[#EAE4D9]", text: "text-[#EAE4D9]", overlay: "from-[#5C4A3D]/80 via-[#5C4A3D]/20 to-[#3E2F21]/95", accent: "border-[#CBBFAB]" },
-                "nomad": { masthead: "font-sans font-black text-orange-200 uppercase", text: "text-white", overlay: "from-orange-900/80 via-transparent to-black/95", accent: "border-orange-400" },
-                "algorithm": { masthead: "font-mono font-bold text-blue-200 underline decoration-wavy", text: "text-white", overlay: "from-blue-900/80 via-blue-900/20 to-blue-950/95", accent: "border-blue-400" },
-                "y2k": { masthead: "font-black text-yellow-300 drop-shadow-[3px_3px_0_#FF00FF]", text: "text-white", overlay: "from-purple-900/60 via-purple-900/20 to-indigo-900/95", accent: "border-yellow-300" },
-                "posh": { masthead: "font-serif italic text-white", text: "text-white", overlay: "from-black/50 via-transparent to-black/90", accent: "border-white" }
-            };
-
-            const style = themes[themeKey] || themes["techno"];
-            
-            // 2. Layout Mode Selection & Style
-            const layoutMode = document.querySelector('input[name="layout_mode"]:checked').value;
-
-            // Inner Page Color Palette (Derived from the 10 themes)
-            const innerStyles = {
-                "techno": "bg-[#0A0A0A] text-[#00FF41] border-[#00FF41]",
-                "wonyoungism": "bg-[#FFF0F5] text-gray-800 border-[#FFB6C1]",
-                "solidcore": "bg-[#121212] text-gray-200 border-red-800",
-                "urban": "bg-gray-200 text-gray-900 border-black",
-                "salon": "bg-[#F5F5F0] text-[#333333] border-[#DCDCDC]",
-                "bottari": "bg-[#EAE4D9] text-[#5C4A3D] border-[#CBBFAB]",
-                "nomad": "bg-[#F4EDE4] text-[#4A3B32] border-orange-300",
-                "algorithm": "bg-[#F4F7FB] text-[#1E3A8A] border-blue-200",
-                "y2k": "bg-[#1A1A2E] text-pink-300 border-indigo-500",
-                "posh": "bg-white text-gray-900 border-gray-200"
-            };
-
-            const innerStyle = innerStyles[themeKey] || innerStyles["techno"];
-
-            if (layoutMode === 'cover') {
-                // === COVER MODE LOGIC (Standard Full-Bleed) ===
-                const bgStyle = bgImageUrl 
-                    ? `background-image: url('${bgImageUrl}'); background-size: cover; background-position: center;` 
-                    : `background: #121212;`;
-
-                canvasDiv.innerHTML = `
-                    <div id="xhs-canvas-content" class="relative h-full w-full flex flex-col overflow-hidden shadow-2xl rounded-md" style="${bgStyle}">
-                        <div class="absolute inset-0 bg-gradient-to-b ${style.overlay} z-0"></div>
-                        
-                        <!-- XHS Safe Zone Overlay (Visual Guide) -->
-                        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-16 h-64 bg-transparent z-10 flex flex-col items-center justify-center space-y-4 opacity-20 pointer-events-none">
-                            <div class="w-8 h-8 rounded-full border border-white"></div>
-                            <div class="w-6 h-6 rounded-full border border-white"></div>
-                            <div class="w-6 h-6 rounded-full border border-white"></div>
-                        </div>
-
-                        <div id="particle-layer" class="absolute inset-0 overflow-hidden pointer-events-none z-0"></div>
-                        
-                        <div class="relative z-10 flex flex-col h-full p-8 pr-20 ${style.text}">
-                            
-                            <div class="flex justify-between items-center text-[10px] font-mono tracking-widest uppercase mb-4 opacity-80 border-b border-current pb-2">
-                                <span>XYLAB // ISSUE NO.01</span>
-                                <span class="bg-red-600 text-white px-2 py-0.5 rounded-sm font-black">EDITORS' CHOICE</span>
-                            </div>
-                            <h1 class="text-[72px] leading-[0.85] tracking-tighter text-center mt-2 mb-auto ${style.masthead} drop-shadow-lg">
-                                ${themeKey.toUpperCase()}
-                            </h1>
-
-                            <div class="mt-auto mb-10 w-[96%] relative">
-                                <div class="absolute inset-0 bg-gradient-to-br from-white/30 to-white/5 border border-white/50 rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] z-0"></div>
-                                
-                                <div class="relative z-10 p-6 backdrop-filter-none">
-                                    <div class="text-xs font-bold uppercase tracking-widest mb-3 py-1 border-l-4 pl-3 ${style.accent} drop-shadow-lg flex justify-between items-center">
-                                        <span>${hook}</span>
-                                        <span class="text-[10px] opacity-60"># 爆款必备</span>
-                                    </div>
-                                    <h2 class="text-4xl font-black leading-tight mb-4 drop-shadow-[0_5px_5px_rgba(0,0,0,0.9)]">
-                                        ${title}
-                                    </h2>
-                                    <p class="text-sm leading-relaxed opacity-100 text-gray-100 font-medium drop-shadow-md">
-                                        ${body}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="flex justify-between items-end border-t border-current pt-4 mt-auto">
-                                <div class="font-mono text-[8px] leading-tight opacity-70">
-                                    WWW.XYLAB.AGENT<br>DESIGNED FOR XHS
-                                </div>
-                                <div class="text-right">
-                                    <div class="flex space-x-[2px] h-6 mb-1 items-end justify-end opacity-80">
-                                        <div class="w-[1px] h-full bg-current"></div>
-                                        <div class="w-[2px] h-full bg-current"></div>
-                                        <div class="w-[1px] h-full bg-current"></div>
-                                        <div class="w-[1px] h-[70%] bg-current"></div>
-                                        <div class="w-[3px] h-full bg-current"></div>
-                                        <div class="w-[1px] h-full bg-current"></div>
-                                    </div>
-                                    <div class="text-[8px] font-bold">WORTH COLLECTING</div>
-                                </div>
-                            </div>
-
-                        </div>
+            <a href="/x" class="glass-card p-8 rounded-3xl group block">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-br from-gray-200 to-gray-100 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
+                        <span class="text-xl">𝕏</span>
                     </div>
-                `;
+                    <span class="text-[11px] font-extrabold uppercase tracking-widest text-gray-700 bg-gray-100/80 px-3 py-1.5 rounded-full border border-gray-200 backdrop-blur-sm">病毒裂变引擎</span>
+                </div>
+                <h4 class="text-xl font-extrabold mb-2">Viral Threads</h4>
+                <p class="text-sm text-gray-500 font-medium leading-relaxed">Short-form hook generation and strategic thread structuring agent.</p>
+            </a>
 
-                // Trigger particles for cover only
-                startParticles(themeKey);
-
-            } else {
-                // === INNER PAGE LOGIC (Typography-Focused) ===
-                // Stop particles for clean reading
-                if (typeof particleEmitterInterval !== 'undefined') clearInterval(particleEmitterInterval);
-                const particleLayer = document.getElementById('particle-layer');
-                if(particleLayer) particleLayer.innerHTML = '';
-
-                canvasDiv.innerHTML = `
-                    <div id="xhs-canvas-content" class="h-full w-full flex flex-col p-10 pr-20 ${innerStyle} shadow-2xl rounded-md transition-all duration-300 border-8 border-double relative">
-                        
-                        <!-- Mini Viral Badge -->
-                        <div class="absolute top-8 right-8 rotate-12 bg-current text-white px-3 py-1 font-black text-[10px] rounded-full shadow-lg mix-blend-difference">
-                            7-DAY GROWTH
-                        </div>
-
-                        <div class="flex justify-between items-center border-b-2 border-current pb-4 mb-8 opacity-80">
-                            <span class="font-bold tracking-widest uppercase text-[10px]">${hook}</span>
-                            <span class="font-mono text-[8px]">PAGE 02 // XYLAB GALLERY</span>
-                        </div>
-
-                        <h2 class="text-3xl font-black leading-snug mb-8 opacity-90 tracking-tight">
-                            ${title}
-                        </h2>
-
-                        <div class="flex-grow text-sm leading-[2.1] font-medium opacity-90 whitespace-pre-line text-justify">
-                            ${body}
-                        </div>
-
-                        <div class="border-t border-current pt-4 mt-8 flex justify-between items-center opacity-60">
-                            <span class="font-mono text-[8px] uppercase">${themeKey} AESTHETIC // 值得收藏</span>
-                            <span class="font-mono text-[8px] font-bold tracking-widest">TAP FOR MORE ↗</span>
-                        </div>
+            <a href="/youtube" class="glass-card p-8 rounded-3xl group block">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-br from-red-100 to-orange-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
+                        <span class="text-xl">▶</span>
                     </div>
-                `;
-            }
+                    <span class="text-[11px] font-extrabold uppercase tracking-widest text-red-600 bg-red-50/80 px-3 py-1.5 rounded-full border border-red-100 backdrop-blur-sm">视频分镜引擎</span>
+                </div>
+                <h4 class="text-xl font-extrabold mb-2">YouTube Director</h4>
+                <p class="text-sm text-gray-500 font-medium leading-relaxed">Storyboard visualization and automated video script generation.</p>
+            </a>
 
-            generateBtn.innerText = "⏳ 正在生成静态大片...";
-            generateBtn.disabled = true;
-            generateBtn.classList.add('opacity-50');
-            
-            try {
-                // Wait for background image to fully load before capturing
-                await new Promise(r => setTimeout(r, 400)); 
-                const canvas = await html2canvas(canvasDiv, { scale: 3, useCORS: true, allowTaint: true, backgroundColor: null });
-                const imgData = canvas.toDataURL("image/png");
-                
-                // Update Preview Area with Static Image (particles will freeze)
-                canvasDiv.innerHTML = `<img src="${imgData}" class="w-full h-full object-cover shadow-2xl rounded-md" alt="XHS Poster" />`;
-                generateBtn.innerText = "✅ 长按静态图保存";
+        </div>
 
-                // STOP PARTICLES on static image so they don't leak out
-                clearInterval(particleEmitterInterval);
-            } catch (error) {
-                console.error("Rendering failed:", error);
-                generateBtn.innerText = "❌ 生成失败";
-                canvasDiv.innerHTML = `<div class="p-8 text-center text-red-500">渲染失败。确保图片链接支持跨域加载 (CORS)。<br/>Error: ${error.message}</div>`;
-            } finally {
-                generateBtn.disabled = false;
-                generateBtn.classList.remove('opacity-50');
-            }
-        }
+        </div>
+    </section>
 
-        let particleEmitterInterval;
-
-        function startParticles(themeKey) {
-            const layer = document.getElementById('particle-layer');
-            if (!layer) return;
-            
-            // Clear existing interval to prevent overlap
-            clearInterval(particleEmitterInterval);
-            layer.innerHTML = ''; // Essential cleanup
-
-            // Curated dynamic particle pool
-            const particleMaps = {
-                "wonyoungism": ['🌸', '✨', '🎀', '🌸'], // Sakura and Ribbons
-                "y2k": ['🖤', '💖', '💿', '✨'], // Cyber Hearts & Discs
-                "urban": ['💸', '🔥', '✨'], // Hype vibe
-                "techno": ['0', '1', '⚡', '💻'], // Matrix vibe
-                "default": ['✨', '🫧', '🤍'] // Neutral sparkles/bubbles
-            };
-
-            const emojis = particleMaps[themeKey] || particleMaps["default"];
-
-            // Emitter loop
-            particleEmitterInterval = setInterval(() => {
-                const p = document.createElement('div');
-                p.className = 'live-particle drop-shadow-lg';
-                p.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-                
-                // Randomize size, position, and fall speed to simulate 3D depth
-                const size = Math.random() * 20 + 18; // 18px to 38px
-                const left = Math.random() * 100; // 0% to 100%
-                const duration = Math.random() * 6 + 5; // 5s to 11s fall time
-                
-                p.style.fontSize = `${size}px`;
-                p.style.left = `${left}%`;
-                p.style.top = `-50px`;
-                p.style.animationDuration = `${duration}s`;
-                
-                layer.appendChild(p);
-
-                // Cleanup element after fall
-                setTimeout(() => {
-                    if (p.parentNode) p.parentNode.removeChild(p);
-                }, duration * 1000);
-            }, 300); // Spawn new particle every 300ms
-        }
-
-        // --- XHS Background Shuffle Logic ---
-        function shuffleXhsBg(customPrompt = null) {
-            const bgInput = document.getElementById('xhs-bg-image');
-            const themeSelector = document.getElementById('xhs-theme-selector');
-            const generateBtn = document.getElementById('generate-xhs-btn');
-            
-            // 1. Get current theme
-            const currentTheme = themeSelector ? themeSelector.value : "techno";
-            
-            // 2. The 3D High-Editorial AI Prompt Dictionary (Fallback)
-            const themePrompts = {
-                "techno": "CGI masterpiece, 3D modeling, liquid chrome metal, glowing neon green wires, abstract futuristic aesthetic",
-                "wonyoungism": "CGI masterpiece, 3D modeling, floating glossy pink bubbles, soft silk cloth waving, hyper-realistic glass",
-                "solidcore": "CGI masterpiece, 3D abstract metallic liquid, dark chrome, dramatic red neon lighting, intense fitness",
-                "urban": "CGI 3D brutalist concrete structures, floating silver typography, fisheye perspective, street aesthetic",
-                "salon": "3D white marble minimalist sculpture, soft ambient occlusion, Kinfolk spatial design, clean lighting",
-                "bottari": "3D floating wood textures, amber glass perfume bottle, ray tracing, wabi sabi interior 3D concept",
-                "nomad": "3D topographical map landscape, surreal desert dunes, golden hour 3D environment, cinematic lighting",
-                "algorithm": "3D holographic data nodes, glowing blue glass cubes, futuristic UI spatial design, Blender 3D",
-                "y2k": "3D liquid metal shapes, chrome hearts, holographic holographic stickers, retro CGI 2000s aesthetic",
-                "posh": "3D soft fabric simulation, floating white drapery, pristine studio lighting, minimalist expensive aesthetic"
-            };
-
-            // 3. Generate dynamic AI image URL via Pollinations with Cache-Buster
-            const seed = Math.floor(Math.random() * 9999999);
-            const timestamp = new Date().getTime(); 
-            
-            // Use custom prompt from AI package if provided, else fallback to theme prompt
-            const basePrompt = customPrompt || themePrompts[currentTheme] || themePrompts["techno"];
-            const finalPrompt = encodeURIComponent(basePrompt + ", empty background, no text, clean space");
-            
-            const newBgUrl = `https://image.pollinations.ai/prompt/${finalPrompt}?width=1000&height=1400&nologo=true&seed=${seed}&t=${timestamp}`;
-            
-            // 4. Update input field
-            bgInput.value = newBgUrl;
-            
-            // 5. Visual feedback on the button & Auto-trigger
-            const shuffleBtn = document.querySelector('button[onclick="shuffleXhsBg()"]');
-            if (shuffleBtn) {
-                const originalText = shuffleBtn.innerText;
-                shuffleBtn.innerText = "✨ AI 绘图中...";
-                setTimeout(() => {
-                    shuffleBtn.innerText = originalText;
-                }, 1500);
-            }
-            
-            // Auto-trigger poster generation if we have a title or hook
-            if (bgInput.value && (document.getElementById('xhs-title').value || document.getElementById('xhs-hook').value)) {
-                setTimeout(() => generatePoster(), 500);
-            }
-        }
-
-        async function generateMagicPost() {
-            const promptText = document.getElementById('magic-prompt').value;
-            const magicBtn = document.getElementById('magic-btn');
-            
-            if (!promptText) {
-                alert("主编大人，请先输入一句话灵感！");
-                return;
-            }
-
-            magicBtn.innerText = "🧠 AI 主编正在爆肝写稿中...";
-            magicBtn.disabled = true;
-            magicBtn.classList.add('animate-pulse');
-
-            try {
-                const response = await fetch('/api/xhs-magic', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: promptText })
-                });
-                
-                if (!response.ok) throw new Error("API failed");
-                const package = await response.json();
-
-                // 1. Fill the inputs from the Viral Package
-                document.getElementById('xhs-title').value = package.copy.title;
-                document.getElementById('xhs-hook').value = package.copy.hook;
-                document.getElementById('xhs-body').value = package.copy.body;
-                document.getElementById('xhs-ending').value = package.copy.ending || "";
-                document.getElementById('xhs-theme-selector').value = package.visual.theme;
-                
-                // Set layout mode
-                const layoutRadios = document.getElementsByName('layout_mode');
-                for (let radio of layoutRadios) {
-                    if (radio.value === package.visual.layout) {
-                        radio.checked = true;
-                        break;
-                    }
-                }
-
-                // 2. Trigger the theme-aware AI background shuffle
-                // We pass the custom AI prompt from the package if available
-                shuffleXhsBg(package.visual.image_prompt);
-
-                // 3. Optional Quality Console Log (For power users/devs)
-                console.log("Viral Package Quality Score:", package.quality.score_total);
-                if (package.quality.needs_revision) {
-                    console.warn("AI Revision Suggested:", package.quality.revision_direction);
-                }
-                
-            } catch (error) {
-                console.error("Magic generation failed:", error);
-                alert("生成失败，请检查网络或后端接口。");
-            } finally {
-                magicBtn.innerText = "🚀 一键生成大片与文案";
-                magicBtn.disabled = false;
-                magicBtn.classList.remove('animate-pulse');
-            }
-        }
-    </script>
 </body>
-
 </html>

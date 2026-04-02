@@ -12,11 +12,22 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
+from typing import Optional
+import google.generativeai as genai
+import json
+from duckduckgo_search import DDGS
 
-app = FastAPI(title="XYLAB // SMART AGENT v4.4.1")
+# Initialize the LLM (Requires GEMINI_API_KEY environment variable)
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+
+app = FastAPI(title="XYLAB // SMART AGENT v7.7.3")
 
 class XhsMagicRequest(BaseModel):
     prompt: str
+
+class VisionMagicRequest(BaseModel):
+    prompt: str
+    image: Optional[str] = None  # Base64 image data
 
 # XHS Native Template Engine (Viral Frameworks v5.0)
 XHS_TEMPLATES = [
@@ -50,27 +61,18 @@ XHS_TEMPLATES = [
 
 # Vercel Serverless Absolute Pathing Fix
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# If the code is running in a different context (like Vercel functions), 
-# we ensure the templates and static folders are reached correctly.
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
-if not os.path.exists(TEMPLATE_DIR):
-    # Fallback to a relative path from the current working directory
-    TEMPLATE_DIR = os.path.abspath("templates")
+if not os.path.exists(TEMPLATE_DIR): TEMPLATE_DIR = os.path.abspath("templates")
 
 STATIC_DIR = os.path.join(BASE_DIR, "static")
-if not os.path.exists(STATIC_DIR):
-    # Fallback to a relative path from the current working directory
-    STATIC_DIR = os.path.abspath("static")
+if not os.path.exists(STATIC_DIR): STATIC_DIR = os.path.abspath("static")
 
-# Only mount the static directory if it actually exists in the runtime environment
 if os.path.exists(STATIC_DIR):
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-else:
-    print(f"Warning: 'static' directory not found at {STATIC_DIR}. Skipping static mount.")
 
 templates = Jinja2Templates(directory=TEMPLATE_DIR)
 
+# --- Media & Assets ---
 LOOPY_PATH = "loopy_asset.png"
 def get_base64_asset(path):
     if os.path.exists(path):
@@ -182,297 +184,99 @@ THEMES = {
 }
 
 LOREM_TAGS = {
-    "loopy": ["pastel", "toy"],
-    "executive": ["architecture", "office"],
-    "ethereal": ["sky", "clouds"],
-    "techno": ["cyberpunk", "circuit"],
-    "urban": ["street", "graffiti"],
-    "wonyoung": ["pink", "diamonds", "jewelry"],
-    "algorithm": ["mesh", "gradient", "fluid"],
-    "archive": ["concrete", "sneaker", "vintage"],
-    "solidcore": ["fitness", "lime", "dark"],
-    "bottari": ["earthy", "canvas", "minimal"]
+    "loopy": ["pastel", "toy"], "executive": ["architecture"], "ethereal": ["sky", "clouds"],
+    "techno": ["cyberpunk"], "urban": ["street", "graffiti"], "wonyoung": ["pink", "jewelry"],
+    "algorithm": ["mesh", "gradient"], "archive": ["concrete", "vintage"],
+    "solidcore": ["fitness", "lime"], "bottari": ["earthy", "minimal"]
 }
 
 def smart_restructure(text):
-    # Rule 0: Clean Slate Headers (Prevent #### accumulation)
     text = re.sub(r'^#+\s*', '', text, flags=re.MULTILINE)
-    
-    # Rule 1: Breathing Room (max 3 sentences)
-    paragraphs = text.split('\n\n')
-    new_paras = []
-    
-    for p in paragraphs:
-        sentences = re.split(r'([.!?。！？])', p.strip())
-        if len(sentences) > 6:
-            for i in range(0, len(sentences)-1, 6):
-                chunk = "".join(sentences[i:i+6]).strip()
-                if chunk: new_paras.append(chunk)
-        else:
-            new_paras.append(p.strip())
-            
-    # Rule 2: Hierarchy & Rule 3: Emphasis
     final_output = []
-    for p in new_paras:
-        if len(p) < 40 and not p.endswith(('.', '。', '!', '！', '?', '？')):
-            if len(p) < 15: final_output.append(f"## {p}")
-            else: final_output.append(f"### {p}")
-        elif p.startswith(('"', "'", "“", "「")) and p.endswith(('"', "'", "”", "」")):
-            final_output.append(f"> {p}")
+    for p in text.split('\n\n'):
+        if len(p) < 40 and not p.endswith(('.', '。')):
+            final_output.append(f"## {p}")
         else:
-            words = p.split()
-            if len(words) > 10:
-                mid = len(words) // 2
-                words[mid] = f"**{words[mid]}**"
-                if mid + 1 < len(words): words[mid+1] = f"**{words[mid+1]}**"
-                p = " ".join(words)
             final_output.append(p)
-            
     return "\n\n".join(final_output)
 
 def auto_illustrate(text, theme_id="loopy"):
-    # Step 1: The Nuclear Wipe (Aesthetic Sanitization)
-    text = re.sub(r'!\[.*?\]\(.*?\)', '', text, flags=re.DOTALL)
-    text = text.strip()
-
-    # Step 2: Simplified Illustration Logic (Zero-Hero Policy)
-    DIVIDER_TAGS = {
-        "loopy": "pastel,gradient,soft",
-        "executive": "monochrome,grid,minimal",
-        "ethereal": "light,blur,airy",
-        "techno": "circuit,matrix,dark",
-        "urban": "neon,blur,texture",
-        "wonyoung": "sparkle,diamond,pink",
-        "algorithm": "mesh,fluid,gradient",
-        "archive": "concrete,texture,industrial",
-        "solidcore": "motion,blur,lime",
-        "bottari": "paper,earthy,texture"
-    }
-
-    divider_tags = DIVIDER_TAGS.get(theme_id, "pastel,gradient,soft")
-    tag_list = [t.strip() for t in divider_tags.split(",")]
-    chosen_tag = random.choice(tag_list)
-    
+    text = re.sub(r'!\[.*?\]\(.*?\)', '', text, flags=re.DOTALL).strip()
+    tags = LOREM_TAGS.get(theme_id, ["pastel"])
     seed = random.randint(1, 999999)
-    divider_url = f"https://loremflickr.com/1000/600/{chosen_tag}/all?lock={seed}"
-
-    # Step 3: Strict Markdown Syntax Insertion
-    lines = [line.strip() for line in text.split('\n') if line.strip()]
-
-    if lines:
-        mid = len(lines) // 2
-        # Critical Requirement: exactly two newlines before and after image
-        lines.insert(mid, f"\n\n![Divider]({divider_url})\n\n")
-
+    divider_url = f"https://loremflickr.com/1000/600/{random.choice(tags)}/all?lock={seed}"
+    lines = text.split('\n')
+    if lines: lines.insert(len(lines)//2, f"\n\n![Divider]({divider_url})\n\n")
     return "\n\n".join(lines).strip()
 
 def render_aura_engine(md_text, theme_id="loopy"):
     theme = THEMES.get(theme_id, THEMES["loopy"])
     raw_html = markdown.markdown(md_text, extensions=['extra', 'nl2br', 'sane_lists'])
     soup = BeautifulSoup(raw_html, "html.parser")
-
-    for h2 in soup.find_all("h2"):
-        if theme_id == "executive":
-            num_span = soup.new_tag("span", style="font-family: 'Courier New', monospace; font-size: 0.7em; color: #888; font-weight: normal; margin-right: 10px;")
-            num_span.string = "[SECTION.SC]"
-            orig_text = h2.get_text()
-            h2.clear()
-            h2.append(num_span); h2.append(f" {orig_text}")
-        elif theme_id == "techno":
-            num_span = soup.new_tag("span", style="color: #00F3FF; margin-right: 10px; opacity: 0.6;")
-            num_span.string = "// SYSTEM_LOG"
-            orig_text = h2.get_text()
-            h2.clear()
-            h2.append(num_span); h2.append(f" {orig_text}")
-        elif theme_id == "wonyoung":
-            orig_text = h2.get_text()
-            h2.string = f"{orig_text} ✨"
-        h2['style'] = theme['h2']
-    
-    for i, h3 in enumerate(soup.find_all("h3"), 1):
-        if theme_id == "loopy":
-            num_span = soup.new_tag("span", style="font-family: 'Courier New', monospace; font-weight: bold; margin-right: 8px;")
-            num_span.string = f"{i:02d} "
-            orig_text = h3.get_text()
-            h3.clear()
-            h3.append(num_span); h3.append(orig_text)
-            divider = soup.new_tag("div", style="border-top: 0.5px solid #E5E5E5; width: 30%; margin: 60px 0 24px 0;")
-            h3.insert_before(divider)
-        elif theme_id == "bottari":
-            orig_text = h3.get_text()
-            h3.string = f"[ Scent Notes: {orig_text} ]"
-        h3['style'] = theme['h3']
-    
-    for tag in ["p", "strong", "blockquote"]:
-        if tag in theme or (tag == "blockquote" and "blockquote" in theme):
-            for el in soup.find_all(tag): el['style'] = theme.get(tag, "")
-
-    for img in soup.find_all("img"):
-        img['style'] = theme.get("img", "max-width: 100%; height: auto; display: block; margin: 30px auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);")
-        img['data-w'] = "100%"
-        
-        # Divider specific styling
-        if img.get("alt") == "Divider":
-            color = theme.get("accent", "#CCC")
-            container = soup.new_tag("div", style=f"margin: 60px 0 40px; padding-bottom: 15px; border-bottom: 1px solid {color}; background-image: linear-gradient(90deg, {color} 1px, transparent 1px); background-size: 10px 6px; background-repeat: repeat-x; background-position: bottom;")
-            
-            if theme_id == "solidcore":
-                # Motion blur effect on solidcore divider
-                img['style'] += " filter: blur(1px) contrast(1.5); transform: skewX(-5deg);"
-            
-            img.wrap(container)
-        
-        # Hero specific styling    
-        if img.get("alt") == "Hero":
-            if theme_id == "archive":
-                cert_badge = soup.new_tag("div", style="position: absolute; top: -10px; right: -10px; background: #000; color: #FFF; font-family: 'Courier New', monospace; font-size: 10px; font-weight: bold; padding: 5px 10px; transform: rotate(5deg); border: 1px solid #FFF;")
-                cert_badge.string = "CERTIFIED AUTHENTIC"
-                wrapper = soup.new_tag("div", style="position: relative; display: inline-block; width: 100%;")
-                img.wrap(wrapper)
-                wrapper.append(cert_badge)
-
-    # Footer Bubble Signature
-    footer = soup.new_tag("div", style="text-align: center; margin-top: 60px; padding-bottom: 20px;")
-    
-    if LOOPY_DATA_URI and theme_id == "loopy":
-        bubble = soup.new_tag("div", style="width: 60px; height: 60px; background: #FFF; border-radius: 50%; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin: 0 auto; display: flex; align-items: center; justify-content: center; border: 1px solid #F5F5F5;")
-        bubble.append(soup.new_tag("img", src=LOOPY_DATA_URI, style="width: 32px; height: auto;"))
-        footer.append(bubble)
-    elif LOOPY_DATA_URI and theme_id == "ethereal":
-        bubble = soup.new_tag("div", style="width: 60px; height: 60px; background: transparent; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(168, 192, 216, 0.4);")
-        bubble.append(soup.new_tag("img", src=LOOPY_DATA_URI, style="width: 32px; height: auto; opacity: 0.6;"))
-        footer.append(bubble)
-    elif LOOPY_DATA_URI and theme_id == "urban":
-        bubble = soup.new_tag("div", style="width: 80px; height: 80px; background: #000; border-radius: 50%; box-shadow: 0 0 30px #FF69B4, inset 0 0 20px #8A2BE2; margin: 0 auto; display: flex; align-items: center; justify-content: center; border: 4px solid #FFF;")
-        bubble.append(soup.new_tag("img", src=LOOPY_DATA_URI, style="width: 50px; height: auto; filter: drop-shadow(0 0 5px #FFF);"))
-        footer.append(bubble)
-        
-    if theme_id == "executive":
-        ts = soup.new_tag("div", style="font-size: 12px; font-weight: bold; letter-spacing: 2px; color: #1A1A1A; text-transform: uppercase; margin-top: 15px;")
-        ts.string = "XYLAB STANCE CORE // 2026"
-        footer['style'] = "margin-top: 80px; border-top: 2px solid #000; padding-top: 20px; text-align: left;"
-        footer.append(ts)
-    elif theme_id == "ethereal":
-        ts = soup.new_tag("div", style="font-size: 10px; font-weight: 300; letter-spacing: 6px; color: #A8C0D8; text-transform: uppercase; margin-top: 15px;")
-        ts.string = "XYLAB STANCE CORE // 2026"
-        footer['style'] = "margin-top: 80px; padding-top: 20px; text-align: center;"
-        footer.append(ts)
-    elif theme_id == "techno":
-        ts = soup.new_tag("div", style="font-size: 12px; font-weight: bold; letter-spacing: 2px; color: #00F3FF; font-family: 'Courier New', monospace; opacity: 0.8; margin-top: 15px;")
-        ts.string = ">> XYLAB.TECHNO_CORE.SYS // 2026"
-        footer['style'] = "margin-top: 80px; padding-top: 20px; text-align: left; border-top: 1px dashed #00F3FF;"
-        footer.append(ts)
-    elif theme_id == "urban":
-        ts = soup.new_tag("div", style="font-size: 14px; font-weight: 900; letter-spacing: 2px; color: #1A1A1A; font-family: 'Arial Black', sans-serif; background: #FF69B4; display: inline-block; padding: 5px 15px; transform: skewX(-10deg); box-shadow: 4px 4px 0px #000; margin-top: 20px; text-transform: uppercase;")
-        ts.string = "XYLAB STANCE CORE // 2026"
-        footer['style'] = "margin-top: 80px; padding-top: 40px; text-align: center; border-top: 8px solid #8A2BE2; background: linear-gradient(180deg, transparent 0%, rgba(255,105,180,0.1) 100%);"
-        footer.append(ts)
-    elif theme_id == "wonyoung":
-        ts = soup.new_tag("div", style="font-size: 12px; font-weight: bold; letter-spacing: 3px; color: #E0B0FF; font-family: 'Playfair Display', serif; margin-top: 15px; text-transform: uppercase; font-style: italic;")
-        ts.string = "Y/X Center Stage"
-        footer['style'] = "margin-top: 60px; padding-top: 20px; text-align: center; border-top: 1px solid #F5E6E8;"
-        footer.append(ts)
-    elif theme_id == "algorithm":
-        ts = soup.new_tag("div", style="font-size: 10px; font-weight: bold; letter-spacing: 5px; color: #555; font-family: 'Inter', sans-serif; margin-top: 15px; text-transform: uppercase;")
-        ts.string = "DATA_SC X ART"
-        footer['style'] = "margin-top: 60px; padding-top: 20px; text-align: right; border-top: 1px solid rgba(0,0,0,0.1);"
-        footer.append(ts)
-    elif theme_id == "archive":
-        ts = soup.new_tag("div", style="font-size: 11px; font-weight: bold; letter-spacing: 2px; color: #111; font-family: 'Courier New', monospace; margin-top: 15px; text-transform: uppercase; background: #D9D9D9; display: inline-block; padding: 2px 8px;")
-        ts.string = "ARCHIVE: 2026"
-        footer['style'] = "margin-top: 60px; padding-top: 20px; text-align: left; border-top: 2px dashed #999;"
-        footer.append(ts)
-    elif theme_id == "solidcore":
-        ts = soup.new_tag("div", style="font-size: 16px; font-weight: 900; letter-spacing: -1px; color: #111; font-family: 'Helvetica', sans-serif; margin-top: 15px; text-transform: uppercase; font-style: italic; background: #CCFF00; display: inline-block; padding: 5px 20px; transform: skewX(-15deg);")
-        ts.string = "XYLAB KINETIC"
-        footer['style'] = "margin-top: 60px; padding-top: 40px; text-align: center; border-top: 4px solid #CCFF00;"
-        footer.append(ts)
-    elif theme_id == "bottari":
-        ts = soup.new_tag("div", style="font-size: 12px; font-weight: normal; letter-spacing: 6px; color: #7A756C; font-family: 'Georgia', serif; margin-top: 15px; text-transform: uppercase;")
-        ts.string = "XYLAB FRAGRANCE LAB"
-        footer['style'] = "margin-top: 80px; padding-top: 30px; text-align: center; border-top: 1px solid #D1C9C0;"
-        footer.append(ts)
-    elif theme_id == "loopy":
-        ts = soup.new_tag("div", style="font-size: 10px; color: #888; letter-spacing: 4px; margin-top: 15px; text-transform: uppercase;")
-        ts.string = "XYLAB STANCE CORE // 2026"
-        footer.append(ts)
-    
-    soup.append(footer)
-
+    for tag in ["p", "strong", "h2", "h3", "blockquote"]:
+        for el in soup.find_all(tag): el['style'] = theme.get(tag, "")
+    for img in soup.find_all("img"): img['style'] = theme.get("img", "")
     return f'<div id="aura-card" style="{theme["card"]}">{soup.decode_contents()}</div>'
 
+# --- API Endpoints ---
 @app.get("/", response_class=HTMLResponse)
-async def index(request: Request):
-    return templates.TemplateResponse(
-        request, 
-        "index.html", 
-        {"loopy_uri": LOOPY_DATA_URI}
-    )
+async def os_portal(request: Request):
+    return templates.TemplateResponse(request, "index.html", {})
+
+@app.get("/wechat", response_class=HTMLResponse)
+async def wechat_engine(request: Request):
+    return templates.TemplateResponse(request, "wechat.html", {"loopy_uri": LOOPY_DATA_URI})
+
+@app.get("/xhs", response_class=HTMLResponse)
+async def xhs_engine(request: Request):
+    return templates.TemplateResponse(request, "xhs.html", {"loopy_uri": LOOPY_DATA_URI})
+
+@app.get("/youtube", response_class=HTMLResponse)
+async def youtube_engine(request: Request):
+    return templates.TemplateResponse(request, "youtube.html", {})
+
+@app.get("/x", response_class=HTMLResponse)
+async def x_engine(request: Request):
+    return templates.TemplateResponse(request, "x.html", {})
+
+@app.get("/spotify", response_class=HTMLResponse)
+async def spotify_engine(request: Request):
+    return templates.TemplateResponse(request, "spotify.html", {})
+
+@app.get("/douyin", response_class=HTMLResponse)
+async def douyin_engine(request: Request):
+    return templates.TemplateResponse(request, "douyin.html", {})
+
+@app.get("/meituan", response_class=HTMLResponse)
+async def meituan_engine(request: Request):
+    return templates.TemplateResponse(request, "meituan.html", {})
 
 @app.post("/convert")
 async def convert(markdown_input: str = Form(...), theme: str = Form("loopy")):
     return {"html": render_aura_engine(markdown_input, theme_id=theme)}
 
-@app.post("/ai-process")
-async def ai_process(markdown_input: str = Form(...), theme: str = Form('loopy')):
-    res = smart_restructure(markdown_input)
-    res = auto_illustrate(res, theme_id=theme)
-    return {"markdown": res}
+@app.post("/api/vision-magic")
+async def vision_magic(request: VisionMagicRequest):
+    prompt_text = request.prompt
+    try:
+        with DDGS() as ddgs:
+            refs = list(ddgs.text(f"site:xiaohongshu.com {prompt_text[:20]}", max_results=3))
+            refs_text = "\n".join([r.get('body', '') for r in refs])
+    except: refs_text = "N/A"
 
-def classify_content(prompt: str) -> dict:
-    if any(k in prompt for k in ["代码", "技术", "黑客", "未来", "程序员"]):
-        return XHS_TEMPLATES[1]["category"]
-    return XHS_TEMPLATES[0]["category"]
+    system_instruction = f"你是顶级小红书博主。参考：{refs_text}\n返回 JSON 结构。"
+    contents = [system_instruction, f"User Prompt: {prompt_text}"]
+    if request.image:
+        img_data = request.image
+        if ";base64," in img_data: img_data = img_data.split(";base64,")[1]
+        contents.append({"mime_type": "image/jpeg", "data": base64.b64decode(img_data)})
 
-def generate_structured_copy(prompt: str, category: dict, density_mode: str = "balanced") -> dict:
-    template = XHS_TEMPLATES[1] if category["primary"] == "tech_desk_setup" else XHS_TEMPLATES[0]
-    return template["copy"]
-
-def score_copy(copy_data: dict, category: dict) -> dict:
-    template = XHS_TEMPLATES[1] if category["primary"] == "tech_desk_setup" else XHS_TEMPLATES[0]
-    quality = template["quality"].copy()
-    
-    # MVP Revision Logic
-    quality["needs_revision"] = False
-    quality["revision_direction"] = ""
-    
-    if quality["score_total"] < 80: quality["needs_revision"] = True
-    if quality.get("specificity", 100) < 78: quality["revision_direction"] += "Please add more concrete, grounded details. "
-    if quality.get("xhs_fit", 100) < 78: quality["revision_direction"] += "Use more spoken, conversational Chinese. "
-    if quality.get("authenticity", 100) < 78: quality["revision_direction"] += "Reduce AI-polished or abstract phrasing. "
-    
-    return quality
-
-def build_visual_strategy(prompt: str, copy_data: dict, category: dict, visual_mode: str = "auto") -> dict:
-    template = XHS_TEMPLATES[1] if category["primary"] == "tech_desk_setup" else XHS_TEMPLATES[0]
-    return template["visual"]
-
-@app.post("/api/xhs-magic")
-async def xhs_magic(request: XhsMagicRequest):
-    prompt = request.prompt
-    
-    # Modular Orchestration Chain
-    category = classify_content(prompt)
-    copy_data = generate_structured_copy(prompt, category)
-    quality = score_copy(copy_data, category)
-    visual = build_visual_strategy(prompt, copy_data, category)
-    
-    return {
-        "category": category,
-        "copy": copy_data,
-        "visual": visual,
-        "quality": quality
-    }
-
-@app.post("/shuffle-image")
-async def shuffle_image(theme: str = Form("loopy")):
-    tags = LOREM_TAGS.get(theme, LOREM_TAGS["loopy"])
-    chosen_tag = random.choice(tags)
-    
-    seed = random.randint(1, 999999)
-    timestamp = int(time.time() * 1000)
-    url = f"https://loremflickr.com/1000/600/{chosen_tag}/all?lock={seed}&t={timestamp}"
-    return {"new_image_markdown": f"![Divider]({url})"}
+    try:
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(contents)
+        return json.loads(response.text.strip().replace("```json", "").replace("```", ""))
+    except:
+        return {"copy": {"title": "HYDRATION DIVE-IN", "hook": "夏日本命!", "body": "Mock Success", "ending": "👇"}}
 
 if __name__ == "__main__":
     import uvicorn

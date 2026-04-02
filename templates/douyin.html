@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XYLAB // DOUYIN STUDIO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0F0F1A; /* Darker, high-energy background */
+            color: #FFF;
+            overflow-x: hidden;
+        }
+        .fluid-bg {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 140vw; height: 140vh;
+            background: radial-gradient(circle at center, rgba(254, 44, 85, 0.15) 0%, rgba(37, 244, 238, 0.1) 50%, transparent 100%);
+            z-index: -1;
+            animation: pulse 10s ease-in-out infinite alternate;
+        }
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            100% { transform: translate(-50%, -52%) scale(1.1); opacity: 0.8; }
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+        .douyin-gradient-text {
+            background: linear-gradient(to right, #FE2C55, #25F4EE);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col p-6 md:p-12 relative">
+    <div class="fluid-bg"></div>
+    
+    <header class="flex justify-between items-center mb-20 relative z-10">
+        <a href="/" class="flex items-center space-x-3 group">
+            <div class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white/10 transition-colors">
+                <span class="text-white text-lg">←</span>
+            </div>
+            <span class="font-extrabold text-xl tracking-tight uppercase">XYLAB // OS</span>
+        </a>
+        <div class="px-4 py-2 rounded-full border border-white/10 bg-white/5 text-[10px] font-bold uppercase tracking-[0.2em] text-white/50">
+            Engine: Douyin Studio v1.0
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col items-center justify-center text-center relative z-10">
+        <h1 class="text-6xl md:text-[7rem] font-extrabold tracking-tighter leading-none mb-8">
+            Short Video <br>
+            <span class="douyin-gradient-text">Engine 🎬</span>
+        </h1>
+        <p class="text-xl text-white/60 max-w-2xl font-medium mb-12">
+            为抖音生态量身定制的爆款工厂。从 3 秒黄金钩子到直播连麦话术，一键生成具备极强转化力的视频脚本。
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
+            <div class="glass-panel p-8 rounded-3xl text-left hover:bg-white/10 transition-colors cursor-pointer group">
+                <div class="text-3xl mb-4 group-hover:scale-110 transition-transform">🔥</div>
+                <h3 class="text-xl font-bold mb-2 uppercase">Viral Hooks</h3>
+                <p class="text-sm text-white/40">3秒黄金钩子，让完播率直线提升。</p>
+            </div>
+            <div class="glass-panel p-8 rounded-3xl text-left hover:bg-white/10 transition-colors cursor-pointer group">
+                <div class="text-3xl mb-4 group-hover:scale-110 transition-transform">🎵</div>
+                <h3 class="text-xl font-bold mb-2 uppercase">BGM Emotion</h3>
+                <p class="text-sm text-white/40">基于文案情绪匹配最契合的热门 BGM 风格。</p>
+            </div>
+            <div class="glass-panel p-8 rounded-3xl text-left hover:bg-white/10 transition-colors cursor-pointer group">
+                <div class="text-3xl mb-4 group-hover:scale-110 transition-transform">🎙️</div>
+                <h3 class="text-xl font-bold mb-2 uppercase">Live Flow</h3>
+                <p class="text-sm text-white/40">直播间留人、逼单、连麦话术逻辑库。</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 pt-10 border-t border-white/5 text-center text-white/20 text-[10px] font-bold uppercase tracking-[0.4em]">
+        XYLAB Creative Labs // Domestic Matrix 2026
+    </footer>
+</body>
+</html>

@@ -1,0 +1,50 @@
+/Users/xylab/Documents/github/AI-Content-to-Layout/venv/lib/python3.9/site-packages/google/api_core/_python_version_support.py:234: FutureWarning: You are using a non-supported Python version (3.9.6). Google will not post any further updates to google.api_core supporting this Python version. Please upgrade to the latest Python version, or at least Python 3.10, and then update google.api_core.
+  warnings.warn(message, FutureWarning)
+/Users/xylab/Documents/github/AI-Content-to-Layout/venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+/Users/xylab/Documents/github/AI-Content-to-Layout/venv/lib/python3.9/site-packages/google/auth/__init__.py:54: FutureWarning: You are using a Python version 3.9 past its end of life. Google will update google-auth with critical bug fixes on a best-effort basis, but not with any other fixes or features. Please upgrade your Python version, and then update google-auth.
+  warnings.warn(eol_message.format("3.9"), FutureWarning)
+/Users/xylab/Documents/github/AI-Content-to-Layout/venv/lib/python3.9/site-packages/google/oauth2/__init__.py:40: FutureWarning: You are using a Python version 3.9 past its end of life. Google will update google-auth with critical bug fixes on a best-effort basis, but not with any other fixes or features. Please upgrade your Python version, and then update google-auth.
+  warnings.warn(eol_message.format("3.9"), FutureWarning)
+/Users/xylab/Documents/github/AI-Content-to-Layout/main.py:16: FutureWarning: 
+
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+  import google.generativeai as genai
+INFO:     Started server process [69734]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:56985 - "GET /douyin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56986 - "GET /meituan HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56994 - "GET /xhs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56997 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56997 - "GET /static/fluid_bg.png HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57013 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57013 - "GET /static/fluid_bg.png HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57024 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57024 - "GET /static/fluid_bg.png HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57025 - "GET /x HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57025 - "GET /wechat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57029 - "GET /youtube HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57043 - "GET /xhs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57044 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57044 - "GET /static/fluid_bg.png HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57044 - "GET /douyin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57044 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57046 - "GET /xhs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57048 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57048 - "GET /douyin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57050 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57050 - "GET /meituan HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57051 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57051 - "GET /wechat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57051 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57051 - "GET /x HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57051 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57051 - "GET /youtube HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57051 - "GET / HTTP/1.1" 200 OK

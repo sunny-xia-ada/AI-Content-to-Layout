@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XYLAB // X THREADS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; background: #FDFDFD; }</style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <nav class="h-16 flex items-center justify-between px-6 border-b border-black/5 bg-white/80 sticky top-0 z-50">
+        <div class="flex items-center space-x-4">
+            <a href="/" class="text-xs font-bold bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-all">← XYLAB OS</a>
+            <span class="text-xl tracking-tighter uppercase font-bold text-black">𝕏 <span class="text-xs font-light opacity-30 italic ml-1">THREADS ENGINE</span></span>
+        </div>
+        <div class="w-3 h-3 rounded-full bg-black animate-pulse"></div>
+    </nav>
+    <main class="flex-1 flex p-10 justify-center bg-[#F9F9F9]">
+        <section class="w-full max-w-2xl bg-white rounded-3xl shadow-sm border border-black/5 p-8 flex flex-col">
+            <h2 class="text-[10px] uppercase tracking-widest font-bold opacity-40 mb-6 border-b pb-2">Viral Thread Composer</h2>
+            <textarea class="w-full bg-gray-50 rounded-xl p-6 outline-none resize-none h-40 mb-4 text-lg font-medium" placeholder="What's happening? (Drop a core idea here...)"></textarea>
+            <div class="space-y-4 mb-6 opacity-50 pointer-events-none">
+                <div class="w-full bg-gray-50 rounded-xl p-4 border border-gray-100 flex items-start space-x-4">
+                    <div class="w-8 h-8 rounded-full bg-gray-200"></div>
+                    <div class="flex-1 h-12 bg-gray-200 rounded"></div>
+                </div>
+            </div>
+            <button class="mt-auto w-full py-4 bg-black text-white font-black text-lg rounded-xl shadow-lg hover:shadow-xl transition-all">
+                Split into Viral Thread
+            </button>
+        </section>
+    </main>
+</body>
+</html>
