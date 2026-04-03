@@ -64,9 +64,12 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 if not os.path.exists(TEMPLATE_DIR): TEMPLATE_DIR = os.path.abspath("templates")
 
+# Static Asset Resolution (Local vs Vercel)
 STATIC_DIR = os.path.join(BASE_DIR, "public", "static")
 if not os.path.exists(STATIC_DIR):
     STATIC_DIR = os.path.join(BASE_DIR, "static")
+if not os.path.exists(STATIC_DIR):
+    STATIC_DIR = os.path.abspath("static")
 
 if os.path.exists(STATIC_DIR):
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
