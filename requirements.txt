@@ -5,4 +5,3 @@ markdown
 beautifulsoup4
 python-multipart
 google-generativeai
-duckduckgo-search

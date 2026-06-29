@@ -18,9 +18,20 @@ import json
 from duckduckgo_search import DDGS
 
 # Initialize the LLM (Requires GEMINI_API_KEY environment variable)
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+genai.configure(api_key="AIzaSyBIsVN0XhvYWxkGDmBQwm2l8mLNfQnl-QU")
+
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="XYLAB // SMART AGENT v7.7.3")
+
+# Add CORS Middleware to support local file access
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class XhsMagicRequest(BaseModel):
     prompt: str
@@ -186,76 +197,343 @@ THEMES = {
 }
 
 LOREM_TAGS = {
-    "loopy": ["pastel", "toy"], "executive": ["architecture"], "ethereal": ["sky", "clouds"],
-    "techno": ["cyberpunk"], "urban": ["street", "graffiti"], "wonyoung": ["pink", "jewelry"],
-    "algorithm": ["mesh", "gradient"], "archive": ["concrete", "vintage"],
-    "solidcore": ["fitness", "lime"], "bottari": ["earthy", "minimal"]
+    "loopy": ["pastel", "toy"],
+    "executive": ["architecture", "office"],
+    "ethereal": ["sky", "clouds"],
+    "techno": ["cyberpunk", "circuit"],
+    "urban": ["street", "graffiti"],
+    "wonyoung": ["pink", "diamonds", "jewelry"],
+    "algorithm": ["mesh", "gradient", "fluid"],
+    "archive": ["concrete", "sneaker", "vintage"],
+    "solidcore": ["fitness", "lime", "dark"],
+    "bottari": ["earthy", "canvas", "minimal"]
 }
 
 def smart_restructure(text):
+    # Rule 0: Clean Slate Headers (Prevent #### accumulation)
     text = re.sub(r'^#+\s*', '', text, flags=re.MULTILINE)
-    final_output = []
-    for p in text.split('\n\n'):
-        if len(p) < 40 and not p.endswith(('.', '。')):
-            final_output.append(f"## {p}")
+    
+    # Rule 1: Breathing Room (max 3 sentences)
+    paragraphs = text.split('\n\n')
+    new_paras = []
+    
+    for p in paragraphs:
+        sentences = re.split(r'([.!?。！？])', p.strip())
+        if len(sentences) > 6:
+            for i in range(0, len(sentences)-1, 6):
+                chunk = "".join(sentences[i:i+6]).strip()
+                if chunk: new_paras.append(chunk)
         else:
+            new_paras.append(p.strip())
+            
+    # Rule 2: Hierarchy & Rule 3: Emphasis
+    final_output = []
+    for p in new_paras:
+        if len(p) < 40 and not p.endswith(('.', '。', '!', '！', '?', '？')):
+            if len(p) < 15: final_output.append(f"## {p}")
+            else: final_output.append(f"### {p}")
+        elif p.startswith(('"', "'", "“", "「")) and p.endswith(('"', "'", "”", "」")):
+            final_output.append(f"> {p}")
+        else:
+            words = p.split()
+            if len(words) > 10:
+                mid = len(words) // 2
+                words[mid] = f"**{words[mid]}**"
+                if mid + 1 < len(words): words[mid+1] = f"**{words[mid+1]}**"
+                p = " ".join(words)
             final_output.append(p)
+            
     return "\n\n".join(final_output)
 
 def auto_illustrate(text, theme_id="loopy"):
-    text = re.sub(r'!\[.*?\]\(.*?\)', '', text, flags=re.DOTALL).strip()
-    tags = LOREM_TAGS.get(theme_id, ["pastel"])
+    # Step 1: The Nuclear Wipe (Aesthetic Sanitization)
+    text = re.sub(r'!\[.*?\]\(.*?\)', '', text, flags=re.DOTALL)
+    text = text.strip()
+
+    # Step 2: Simplified Illustration Logic (Zero-Hero Policy)
+    DIVIDER_TAGS = {
+        "loopy": "pastel,gradient,soft",
+        "executive": "monochrome,grid,minimal",
+        "ethereal": "light,blur,airy",
+        "techno": "circuit,matrix,dark",
+        "urban": "neon,blur,texture",
+        "wonyoung": "sparkle,diamond,pink",
+        "algorithm": "mesh,fluid,gradient",
+        "archive": "concrete,texture,industrial",
+        "solidcore": "motion,blur,lime",
+        "bottari": "paper,earthy,texture"
+    }
+
+    divider_tags = DIVIDER_TAGS.get(theme_id, "pastel,gradient,soft")
+    tag_list = [t.strip() for t in divider_tags.split(",")]
+    chosen_tag = random.choice(tag_list)
+    
     seed = random.randint(1, 999999)
-    divider_url = f"https://loremflickr.com/1000/600/{random.choice(tags)}/all?lock={seed}"
-    lines = text.split('\n')
-    if lines: lines.insert(len(lines)//2, f"\n\n![Divider]({divider_url})\n\n")
+    divider_url = f"https://loremflickr.com/1000/600/{chosen_tag}/all?lock={seed}"
+
+    # Step 3: Strict Markdown Syntax Insertion
+    lines = [line.strip() for line in text.split('\n') if line.strip()]
+
+    if lines:
+        mid = len(lines) // 2
+        # Critical Requirement: exactly two newlines before and after image
+        lines.insert(mid, f"\n\n![Divider]({divider_url})\n\n")
+
     return "\n\n".join(lines).strip()
 
 def render_aura_engine(md_text, theme_id="loopy"):
     theme = THEMES.get(theme_id, THEMES["loopy"])
     raw_html = markdown.markdown(md_text, extensions=['extra', 'nl2br', 'sane_lists'])
     soup = BeautifulSoup(raw_html, "html.parser")
-    for tag in ["p", "strong", "h2", "h3", "blockquote"]:
-        for el in soup.find_all(tag): el['style'] = theme.get(tag, "")
-    for img in soup.find_all("img"): img['style'] = theme.get("img", "")
+
+    for h2 in soup.find_all("h2"):
+        if theme_id == "executive":
+            num_span = soup.new_tag("span", style="font-family: 'Courier New', monospace; font-size: 0.7em; color: #888; font-weight: normal; margin-right: 10px;")
+            num_span.string = "[SECTION.SC]"
+            orig_text = h2.get_text()
+            h2.clear()
+            h2.append(num_span); h2.append(f" {orig_text}")
+        elif theme_id == "techno":
+            num_span = soup.new_tag("span", style="color: #00F3FF; margin-right: 10px; opacity: 0.6;")
+            num_span.string = "// SYSTEM_LOG"
+            orig_text = h2.get_text()
+            h2.clear()
+            h2.append(num_span); h2.append(f" {orig_text}")
+        elif theme_id == "wonyoung":
+            orig_text = h2.get_text()
+            h2.string = f"{orig_text} ✨"
+        h2['style'] = theme['h2']
+    
+    for i, h3 in enumerate(soup.find_all("h3"), 1):
+        if theme_id == "loopy":
+            num_span = soup.new_tag("span", style="font-family: 'Courier New', monospace; font-weight: bold; margin-right: 8px;")
+            num_span.string = f"{i:02d} "
+            orig_text = h3.get_text()
+            h3.clear()
+            h3.append(num_span); h3.append(orig_text)
+            divider = soup.new_tag("div", style="border-top: 0.5px solid #E5E5E5; width: 30%; margin: 60px 0 24px 0;")
+            h3.insert_before(divider)
+        elif theme_id == "bottari":
+            orig_text = h3.get_text()
+            h3.string = f"[ Scent Notes: {orig_text} ]"
+        h3['style'] = theme['h3']
+    
+    for tag in ["p", "strong", "blockquote"]:
+        if tag in theme or (tag == "blockquote" and "blockquote" in theme):
+            for el in soup.find_all(tag): el['style'] = theme.get(tag, "")
+
+    for img in soup.find_all("img"):
+        img['style'] = theme.get("img", "max-width: 100%; height: auto; display: block; margin: 30px auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);")
+        img['data-w'] = "100%"
+        
+        # Divider specific styling
+        if img.get("alt") == "Divider":
+            color = theme.get("accent", "#CCC")
+            container = soup.new_tag("div", style=f"margin: 60px 0 40px; padding-bottom: 15px; border-bottom: 1px solid {color}; background-image: linear-gradient(90deg, {color} 1px, transparent 1px); background-size: 10px 6px; background-repeat: repeat-x; background-position: bottom;")
+            
+            if theme_id == "solidcore":
+                # Motion blur effect on solidcore divider
+                img['style'] += " filter: blur(1px) contrast(1.5); transform: skewX(-5deg);"
+            
+            img.wrap(container)
+        
+        # Hero specific styling    
+        if img.get("alt") == "Hero":
+            if theme_id == "archive":
+                cert_badge = soup.new_tag("div", style="position: absolute; top: -10px; right: -10px; background: #000; color: #FFF; font-family: 'Courier New', monospace; font-size: 10px; font-weight: bold; padding: 5px 10px; transform: rotate(5deg); border: 1px solid #FFF;")
+                cert_badge.string = "CERTIFIED AUTHENTIC"
+                wrapper = soup.new_tag("div", style="position: relative; display: inline-block; width: 100%;")
+                img.wrap(wrapper)
+                wrapper.append(cert_badge)
+
+    # Footer Bubble Signature
+    footer = soup.new_tag("div", style="text-align: center; margin-top: 60px; padding-bottom: 20px;")
+    
+    if LOOPY_DATA_URI and theme_id == "loopy":
+        bubble = soup.new_tag("div", style="width: 60px; height: 60px; background: #FFF; border-radius: 50%; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin: 0 auto; display: flex; align-items: center; justify-content: center; border: 1px solid #F5F5F5;")
+        bubble.append(soup.new_tag("img", src=LOOPY_DATA_URI, style="width: 32px; height: auto;"))
+        footer.append(bubble)
+    elif LOOPY_DATA_URI and theme_id == "ethereal":
+        bubble = soup.new_tag("div", style="width: 60px; height: 60px; background: transparent; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(168, 192, 216, 0.4);")
+        bubble.append(soup.new_tag("img", src=LOOPY_DATA_URI, style="width: 32px; height: auto; opacity: 0.6;"))
+        footer.append(bubble)
+    elif LOOPY_DATA_URI and theme_id == "urban":
+        bubble = soup.new_tag("div", style="width: 80px; height: 80px; background: #000; border-radius: 50%; box-shadow: 0 0 30px #FF69B4, inset 0 0 20px #8A2BE2; margin: 0 auto; display: flex; align-items: center; justify-content: center; border: 4px solid #FFF;")
+        bubble.append(soup.new_tag("img", src=LOOPY_DATA_URI, style="width: 50px; height: auto; filter: drop-shadow(0 0 5px #FFF);"))
+        footer.append(bubble)
+        
+    if theme_id == "executive":
+        ts = soup.new_tag("div", style="font-size: 12px; font-weight: bold; letter-spacing: 2px; color: #1A1A1A; text-transform: uppercase; margin-top: 15px;")
+        ts.string = "XYLAB STANCE CORE // 2026"
+        footer['style'] = "margin-top: 80px; border-top: 2px solid #000; padding-top: 20px; text-align: left;"
+        footer.append(ts)
+    elif theme_id == "ethereal":
+        ts = soup.new_tag("div", style="font-size: 10px; font-weight: 300; letter-spacing: 6px; color: #A8C0D8; text-transform: uppercase; margin-top: 15px;")
+        ts.string = "XYLAB STANCE CORE // 2026"
+        footer['style'] = "margin-top: 80px; padding-top: 20px; text-align: center;"
+        footer.append(ts)
+    elif theme_id == "techno":
+        ts = soup.new_tag("div", style="font-size: 12px; font-weight: bold; letter-spacing: 2px; color: #00F3FF; font-family: 'Courier New', monospace; opacity: 0.8; margin-top: 15px;")
+        ts.string = ">> XYLAB.TECHNO_CORE.SYS // 2026"
+        footer['style'] = "margin-top: 80px; padding-top: 20px; text-align: left; border-top: 1px dashed #00F3FF;"
+        footer.append(ts)
+    elif theme_id == "urban":
+        ts = soup.new_tag("div", style="font-size: 14px; font-weight: 900; letter-spacing: 2px; color: #1A1A1A; font-family: 'Arial Black', sans-serif; background: #FF69B4; display: inline-block; padding: 5px 15px; transform: skewX(-10deg); box-shadow: 4px 4px 0px #000; margin-top: 20px; text-transform: uppercase;")
+        ts.string = "XYLAB STANCE CORE // 2026"
+        footer['style'] = "margin-top: 80px; padding-top: 40px; text-align: center; border-top: 8px solid #8A2BE2; background: linear-gradient(180deg, transparent 0%, rgba(255,105,180,0.1) 100%);"
+        footer.append(ts)
+    elif theme_id == "wonyoung":
+        ts = soup.new_tag("div", style="font-size: 12px; font-weight: bold; letter-spacing: 3px; color: #E0B0FF; font-family: 'Playfair Display', serif; margin-top: 15px; text-transform: uppercase; font-style: italic;")
+        ts.string = "Y/X Center Stage"
+        footer['style'] = "margin-top: 60px; padding-top: 20px; text-align: center; border-top: 1px solid #F5E6E8;"
+        footer.append(ts)
+    elif theme_id == "algorithm":
+        ts = soup.new_tag("div", style="font-size: 10px; font-weight: bold; letter-spacing: 5px; color: #555; font-family: 'Inter', sans-serif; margin-top: 15px; text-transform: uppercase;")
+        ts.string = "DATA_SC X ART"
+        footer['style'] = "margin-top: 60px; padding-top: 20px; text-align: right; border-top: 1px solid rgba(0,0,0,0.1);"
+        footer.append(ts)
+    elif theme_id == "archive":
+        ts = soup.new_tag("div", style="font-size: 11px; font-weight: bold; letter-spacing: 2px; color: #111; font-family: 'Courier New', monospace; margin-top: 15px; text-transform: uppercase; background: #D9D9D9; display: inline-block; padding: 2px 8px;")
+        ts.string = "ARCHIVE: 2026"
+        footer['style'] = "margin-top: 60px; padding-top: 20px; text-align: left; border-top: 2px dashed #999;"
+        footer.append(ts)
+    elif theme_id == "solidcore":
+        ts = soup.new_tag("div", style="font-size: 16px; font-weight: 900; letter-spacing: -1px; color: #111; font-family: 'Helvetica', sans-serif; margin-top: 15px; text-transform: uppercase; font-style: italic; background: #CCFF00; display: inline-block; padding: 5px 20px; transform: skewX(-15deg);")
+        ts.string = "XYLAB KINETIC"
+        footer['style'] = "margin-top: 60px; padding-top: 40px; text-align: center; border-top: 4px solid #CCFF00;"
+        footer.append(ts)
+    elif theme_id == "bottari":
+        ts = soup.new_tag("div", style="font-size: 12px; font-weight: normal; letter-spacing: 6px; color: #7A756C; font-family: 'Georgia', serif; margin-top: 15px; text-transform: uppercase;")
+        ts.string = "XYLAB FRAGRANCE LAB"
+        footer['style'] = "margin-top: 80px; padding-top: 30px; text-align: center; border-top: 1px solid #D1C9C0;"
+        footer.append(ts)
+    elif theme_id == "loopy":
+        ts = soup.new_tag("div", style="font-size: 10px; color: #888; letter-spacing: 4px; margin-top: 15px; text-transform: uppercase;")
+        ts.string = "XYLAB STANCE CORE // 2026"
+        footer.append(ts)
+    
+    soup.append(footer)
+
     return f'<div id="aura-card" style="{theme["card"]}">{soup.decode_contents()}</div>'
 
 # --- API Endpoints ---
 @app.get("/", response_class=HTMLResponse)
+@app.get("/index.html", response_class=HTMLResponse)
 async def os_portal(request: Request):
     return templates.TemplateResponse(request, "index.html", {})
 
 @app.get("/wechat", response_class=HTMLResponse)
+@app.get("/wechat.html", response_class=HTMLResponse)
 async def wechat_engine(request: Request):
     return templates.TemplateResponse(request, "wechat.html", {"loopy_uri": LOOPY_DATA_URI})
 
 @app.get("/xhs", response_class=HTMLResponse)
+@app.get("/xhs.html", response_class=HTMLResponse)
 async def xhs_engine(request: Request):
     return templates.TemplateResponse(request, "xhs.html", {"loopy_uri": LOOPY_DATA_URI})
 
 @app.get("/youtube", response_class=HTMLResponse)
+@app.get("/youtube.html", response_class=HTMLResponse)
 async def youtube_engine(request: Request):
     return templates.TemplateResponse(request, "youtube.html", {})
 
 @app.get("/x", response_class=HTMLResponse)
+@app.get("/x.html", response_class=HTMLResponse)
 async def x_engine(request: Request):
     return templates.TemplateResponse(request, "x.html", {})
 
 @app.get("/spotify", response_class=HTMLResponse)
+@app.get("/spotify.html", response_class=HTMLResponse)
 async def spotify_engine(request: Request):
     return templates.TemplateResponse(request, "spotify.html", {})
 
 @app.get("/douyin", response_class=HTMLResponse)
+@app.get("/douyin.html", response_class=HTMLResponse)
 async def douyin_engine(request: Request):
     return templates.TemplateResponse(request, "douyin.html", {})
 
 @app.get("/meituan", response_class=HTMLResponse)
+@app.get("/meituan.html", response_class=HTMLResponse)
 async def meituan_engine(request: Request):
     return templates.TemplateResponse(request, "meituan.html", {})
+
+@app.get("/api/proxy-image")
+async def proxy_image(url: str):
+    import httpx
+    from fastapi import Response
+    import random
+    
+    decoded_url = urllib.parse.unquote(url)
+    if not decoded_url.startswith(("http://", "https://")):
+        return Response(status_code=400, content="Invalid URL scheme")
+        
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+    
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.get(decoded_url, headers=headers)
+            if resp.status_code == 200:
+                return Response(
+                    content=resp.content,
+                    media_type=resp.headers.get("content-type", "image/jpeg"),
+                    headers={
+                        "Access-Control-Allow-Origin": "*",
+                        "Cache-Control": "public, max-age=86400"
+                    }
+                )
+            print(f"Proxy main request returned status {resp.status_code} for {decoded_url}")
+    except Exception as e:
+        print(f"Proxy main request exception for {decoded_url}: {e}")
+
+    # Fallback: Curated high-quality backgrounds that support CORS
+    FALLBACKS = [
+        "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=1000&q=80",
+        "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1000&q=80",
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80",
+        "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1000&q=80",
+        "https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=1000&q=80"
+    ]
+    
+    fallback_url = random.choice(FALLBACKS)
+    print(f"Proxy falling back to curated image: {fallback_url}")
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.get(fallback_url, headers=headers)
+            if resp.status_code == 200:
+                return Response(
+                    content=resp.content,
+                    media_type=resp.headers.get("content-type", "image/jpeg"),
+                    headers={
+                        "Access-Control-Allow-Origin": "*",
+                        "Cache-Control": "public, max-age=86400"
+                    }
+                )
+    except Exception as fallback_err:
+        print(f"Proxy fallback request exception: {fallback_err}")
+        
+    return Response(status_code=500, content="Proxy Error")
 
 @app.post("/convert")
 async def convert(markdown_input: str = Form(...), theme: str = Form("loopy")):
     return {"html": render_aura_engine(markdown_input, theme_id=theme)}
+
+@app.post("/ai-process")
+async def ai_process(markdown_input: str = Form(...), theme: str = Form('loopy')):
+    res = smart_restructure(markdown_input)
+    res = auto_illustrate(res, theme_id=theme)
+    return {"markdown": res}
+
+@app.post("/shuffle-image")
+async def shuffle_image(theme: str = Form("loopy")):
+    tags = LOREM_TAGS.get(theme, LOREM_TAGS["loopy"])
+    chosen_tag = random.choice(tags)
+    
+    seed = random.randint(1, 999999)
+    timestamp = int(time.time() * 1000)
+    url = f"https://loremflickr.com/1000/600/{chosen_tag}/all?lock={seed}&t={timestamp}"
+    return {"new_image_markdown": f"![Divider]({url})"}
 
 @app.post("/api/vision-magic")
 async def vision_magic(request: VisionMagicRequest):
@@ -266,21 +544,383 @@ async def vision_magic(request: VisionMagicRequest):
             refs_text = "\n".join([r.get('body', '') for r in refs])
     except: refs_text = "N/A"
 
-    system_instruction = f"你是顶级小红书博主。参考：{refs_text}\n返回 JSON 结构。"
+    system_instruction = (
+        f"你是顶级小红书与美妆护肤博主。参考：{refs_text}\n"
+        "根据用户提示与可能上传的商品图，生成多张极其种草、爆款的小红书轮播图分镜卡片文案（限制在 2 到 6 张卡片内）。\n"
+        "文案必须按页面顺序拆分：\n"
+        "1. 第一张卡片（数组第1项）必须是封面标题页（Cover Page），标题要极其吸睛、有冲击力，Hook为引流句，Core Copy列出产品最核心的 2-3 个爆炸卖点（如：5D复合玻尿酸、15分钟极速补水退红）。\n"
+        "2. 第二张及之后的卡片为细节干货页（Detail Page），包含具体的使用体验、成分拆解、保姆级敷法步骤、避坑指南等，排版列点清晰，字数精简适合手机卡片阅读。\n"
+        "必须返回且仅返回一个干净的 JSON 对象（不包含 ``` 标记），结构必须为：\n"
+        "{\n"
+        "  \"scenes\": [\n"
+        "    {\n"
+        "      \"title\": \"本页标题（如：这面膜太神了 / 🔍成分深度拆解）\",\n"
+        "      \"hook\": \"本页Hook/引流句（如：敷完脸上掐得出水💦）\",\n"
+        "      \"body\": \"本页干货内容（分行列出 2-3 点，使用换行符号或 Emoji）\"\n"
+        "    }\n"
+        "  ]\n"
+        "}"
+    )
     contents = [system_instruction, f"User Prompt: {prompt_text}"]
     if request.image:
         img_data = request.image
         if ";base64," in img_data: img_data = img_data.split(";base64,")[1]
         contents.append({"mime_type": "image/jpeg", "data": base64.b64decode(img_data)})
 
-    try:
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        response = model.generate_content(contents)
-        return json.loads(response.text.strip().replace("```json", "").replace("```", ""))
-    except:
-        return {"copy": {"title": "HYDRATION DIVE-IN", "hook": "夏日本命!", "body": "Mock Success", "ending": "👇"}}
+    # Try multiple models to find one with quota
+    candidate_models = [
+        'models/gemini-2.5-flash',
+        'models/gemini-2.0-flash',
+        'models/gemini-flash-latest',
+        'models/gemini-1.5-flash',
+        'models/gemini-2.5-pro',
+        'models/gemini-pro-latest'
+    ]
+    
+    last_error = ""
+    for model_name in candidate_models:
+        try:
+            print(f"Trying model: {model_name}...")
+            model = genai.GenerativeModel(model_name)
+            response = model.generate_content(contents)
+            text = response.text.strip()
+            if "```json" in text:
+                text = text.split("```json")[1].split("```")[0].strip()
+            elif "```" in text:
+                text = text.split("```")[1].split("```")[0].strip()
+            return json.loads(text)
+        except Exception as e:
+            last_error = str(e)
+            print(f"Model {model_name} failed: {last_error}")
+            continue # Try next model
+            
+    # If all models fail
+    if "429" in last_error:
+        return {
+            "scenes": [{
+                "title": "🚦 创作配额受限", 
+                "hook": "检测到 API 额度异常", 
+                "body": f"虽然你今天没用过，但 Google 返回了配额错误：{last_error}\n这通常是因为：\n1. 网络代理所在地区受限\n2. 该 Key 尚未在 AI Studio 激活预览权限"
+            }]
+        }
+    
+    return {
+        "scenes": [{
+            "title": "GENERATION FAILED", 
+            "hook": "API Error", 
+            "body": f"所有尝试的模型均失败。最后报错: {last_error}"
+        }]
+    }
+
+# --- XHS STUDIO NEW ARCHITECTURE ENDPOINTS ---
+
+class BriefRequest(BaseModel):
+    prompt: str
+    image: Optional[str] = None
+
+class CarouselRequest(BaseModel):
+    brief: dict
+    theme: str
+    pageCount: int
+
+class RegenerateRequest(BaseModel):
+    pageIndex: int
+    theme: str
+    brief: dict
+    pages: list
+
+def mock_generate_brief(prompt: str):
+    return {
+        "detectedTopic": prompt or "美妆日常",
+        "recommendedFormat": "6-page-carousel",
+        "suggestedTheme": "XYLab Beauty",
+        "visualMood": ["clean", "glowy", "soft pink"],
+        "copyTone": "calm editorial, slightly confident",
+        "narrativeArc": [
+            "Cover: emotional hook about " + (prompt[:15] if prompt else "Aesthetics"),
+            "Page 01: core insight on why this matters",
+            "Page 02: detail breakdown or ingredients analysis",
+            "Page 03: routine steps or methodology",
+            "Page 04: direct results or comparisons",
+            "Page 05: final review & call to action"
+        ]
+    }
+
+def mock_generate_carousel(brief: dict, theme: str, page_count: int = 6):
+    topic = brief.get("detectedTopic", "Aesthetic Idea")
+    mood = brief.get("visualMood", ["editorial", "clean"])
+    
+    layouts = ["magazine-cover", "split-editorial", "info-card", "routine-flow", "before-after", "quote-page", "product-catalog"]
+    
+    # Map theme presets
+    presets_map = {
+        "XYLab Muse": "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=800&q=80",
+        "XYLab Beauty": "https://images.unsplash.com/photo-1608248597481-496100c80836?auto=format&fit=crop&w=800&q=80",
+        "XYLab Stage": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80",
+        "XYLab Gems": "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=800&q=80",
+        "XYLab Salon": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=800&q=80"
+    }
+    
+    img_url = presets_map.get(theme, "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80")
+    
+    pages = []
+    # cover
+    pages.append({
+        "id": "page_0",
+        "pageNumber": 1,
+        "type": "cover",
+        "headline": f"{topic}",
+        "subheadline": "XYLab Editorial Concept",
+        "body": "A curated visual storytelling project exploring modern styling dynamics.",
+        "smallNote": "VOL. 01 / XYLAB MUSE",
+        "layout": "magazine-cover",
+        "imageRole": "hero",
+        "imageUrl": img_url,
+        "accent": "",
+        "textAlign": "center",
+        "density": "medium",
+        "logoPosition": "bottom-right"
+    })
+    
+    # inner
+    for i in range(1, page_count):
+        lay = layouts[i % len(layouts)]
+        if i == page_count - 1:
+            lay = "quote-page"
+            
+        headline = f"Core Insight 0{i}"
+        body = f"Detail point A for this section.\nDetail point B showing logical breakdown.\nKeep paragraphs spaced nicely."
+        
+        pages.append({
+            "id": f"page_{i}",
+            "pageNumber": i + 1,
+            "type": "insight" if i < 3 else "detail",
+            "headline": headline,
+            "subheadline": f"AESTHETIC ANALYSIS // 0{i}",
+            "body": body,
+            "smallNote": f"SPECIFICATION {i}",
+            "layout": lay,
+            "imageRole": "supporting",
+            "imageUrl": img_url,
+            "accent": "",
+            "textAlign": "left" if lay != "quote-page" else "center",
+            "density": "medium",
+            "logoPosition": "bottom-right"
+        })
+        
+    return {
+        "projectTitle": topic,
+        "theme": theme,
+        "format": f"{page_count}-page-carousel",
+        "visualMood": mood,
+        "pages": pages,
+        "caption": f"💡 {topic}\n\n这里是为您自动生成的精彩小红书文案！\n包含核心卖点和详细步骤拆解，排版极具杂志高级感。\n\n#小红书排版 #高级感 #审美提升 #XYLab",
+        "hashtags": [f"#{topic}", "#小红书排版", "#高级感", "#XYLab"]
+    }
+
+@app.post("/api/xhs/generate-brief")
+async def api_generate_brief(request: BriefRequest):
+    prompt_text = request.prompt
+    
+    system_instruction = (
+        "You are a top Xiaohongshu (XHS) creator and editorial director.\n"
+        "Analyze the user's idea or rough draft and output a structured creative brief.\n"
+        "You must return ONLY a valid JSON object matching this schema (do not include markdown block wrappers):\n"
+        "{\n"
+        "  \"detectedTopic\": \"Detected theme or core idea (e.g., 白金发之后的妆容逻辑)\",\n"
+        "  \"recommendedFormat\": \"Format like '6-page-carousel', '8-page-carousel', or '9-page-archive-carousel'\",\n"
+        "  \"suggestedTheme\": \"Name of the theme matching the style DNA (e.g. XYLab Beauty)\",\n"
+        "  \"visualMood\": [\"Color accent or key visual words (e.g., soft pink, clean editorial)\"],\n"
+        "  \"copyTone\": \"Copywriter writing tone (e.g., calm editorial, slightly confident)\",\n"
+        "  \"narrativeArc\": [\n"
+        "    \"Cover: hook statement\",\n"
+        "    \"Page 01: insight statement\",\n"
+        "    \"Page 02: detail/concept statement\",\n"
+        "    ...\n"
+        "  ]\n"
+        "}"
+    )
+    
+    contents = [system_instruction, f"User Idea/Draft: {prompt_text}"]
+    if request.image:
+        img_data = request.image
+        if ";base64," in img_data: img_data = img_data.split(";base64,")[1]
+        contents.append({"mime_type": "image/jpeg", "data": base64.b64decode(img_data)})
+
+    candidate_models = [
+        'models/gemini-2.5-flash',
+        'models/gemini-2.0-flash',
+        'models/gemini-flash-latest',
+        'models/gemini-1.5-flash',
+        'models/gemini-2.5-pro',
+        'models/gemini-pro-latest'
+    ]
+    
+    for model_name in candidate_models:
+        try:
+            print(f"Brief generation using: {model_name}...")
+            model = genai.GenerativeModel(model_name)
+            response = model.generate_content(contents)
+            text = response.text.strip()
+            if "```json" in text:
+                text = text.split("```json")[1].split("```")[0].strip()
+            elif "```" in text:
+                text = text.split("```")[1].split("```")[0].strip()
+            return json.loads(text)
+        except Exception as e:
+            print(f"Model {model_name} failed for brief: {e}")
+            continue
+            
+    # Fallback
+    return mock_generate_brief(prompt_text)
+
+@app.post("/api/xhs/generate-carousel")
+async def api_generate_carousel(request: CarouselRequest):
+    brief = request.brief
+    theme = request.theme
+    page_count = request.pageCount
+    
+    system_instruction = (
+        f"You are a premium editorial director for Xiaohongshu. Based on the provided Creative Brief, selected Theme ({theme}), and requested page count ({page_count}), generate a full multi-page carousel project.\n"
+        "Generate carousel data as structured JSON, then return ONLY a valid JSON object matching this schema (do not wrap in markdown tags):\n"
+        "{\n"
+        "  \"projectTitle\": \"Title of the project\",\n"
+        "  \"theme\": \"Chosen theme\",\n"
+        "  \"format\": \"Format e.g., 6-page-carousel\",\n"
+        "  \"visualMood\": [\"Color accent or key visual words\"],\n"
+        "  \"pages\": [\n"
+        "    {\n"
+        "      \"id\": \"page_0\",\n"
+        "      \"pageNumber\": 1,\n"
+        "      \"type\": \"cover\",\n"
+        "      \"headline\": \"Cover headline (punchy, high hook)\",\n"
+        "      \"subheadline\": \"English subtitle for editorial feeling\",\n"
+        "      \"body\": \"\",\n"
+        "      \"smallNote\": \"Refined small label or issue name\",\n"
+        "      \"layout\": \"magazine-cover\",\n"
+        "      \"imageRole\": \"hero\",\n"
+        "      \"imageUrl\": \"curated image URL based on theme visual mood\",\n"
+        "      \"accent\": \"Hex color string like #D7B7C8 or empty\",\n"
+        "      \"textAlign\": \"center\",\n"
+        "      \"density\": \"medium\",\n"
+        "      \"logoPosition\": \"bottom-right\"\n"
+        "    },\n"
+        "    {\n"
+        "      \"id\": \"page_1\",\n"
+        "      \"pageNumber\": 2,\n"
+        "      \"type\": \"insight\",\n"
+        "      \"headline\": \"Page headline\",\n"
+        "      \"subheadline\": \"English small category header\",\n"
+        "      \"body\": \"Detailed body content - use line breaks (\\n) and bullets if needed\",\n"
+        "      \"smallNote\": \"Refined small annotation\",\n"
+        "      \"layout\": \"split-editorial\",\n"
+        "      \"imageRole\": \"supporting\",\n"
+        "      \"imageUrl\": \"curated image URL\",\n"
+        "      \"accent\": \"\",\n"
+        "      \"textAlign\": \"left\",\n"
+        "      \"density\": \"medium\",\n"
+        "      \"logoPosition\": \"bottom-right\"\n"
+        "    }\n"
+        "  ],\n"
+        "  \"caption\": \"Xiaohongshu post text caption (engaging, emojis, bullet points)\",\n"
+        "  \"hashtags\": [\"#hashtag1\", \"#hashtag2\"]\n"
+        "}\n\n"
+        "Use these layout names where appropriate: 'magazine-cover' (mandatory for Cover), 'split-editorial', 'info-card', 'moodboard-archive', 'routine-flow', 'before-after', 'quote-page', 'product-catalog'."
+    )
+    
+    contents = [system_instruction, f"Creative Brief: {json.dumps(brief)}"]
+    
+    candidate_models = [
+        'models/gemini-2.5-flash',
+        'models/gemini-2.0-flash',
+        'models/gemini-flash-latest',
+        'models/gemini-1.5-flash',
+        'models/gemini-2.5-pro'
+    ]
+    
+    for model_name in candidate_models:
+        try:
+            print(f"Carousel generation using: {model_name}...")
+            model = genai.GenerativeModel(model_name)
+            response = model.generate_content(contents)
+            text = response.text.strip()
+            if "```json" in text:
+                text = text.split("```json")[1].split("```")[0].strip()
+            elif "```" in text:
+                text = text.split("```")[1].split("```")[0].strip()
+            return json.loads(text)
+        except Exception as e:
+            print(f"Model {model_name} failed for carousel: {e}")
+            continue
+            
+    # Fallback
+    return mock_generate_carousel(brief, theme, page_count)
+
+@app.post("/api/xhs/regenerate-page")
+async def api_regenerate_page(request: RegenerateRequest):
+    page_index = request.pageIndex
+    theme = request.theme
+    brief = request.brief
+    current_pages = request.pages
+    
+    if page_index < 0 or page_index >= len(current_pages):
+        return {"error": "Invalid page index"}
+        
+    page_to_regen = current_pages[page_index]
+    
+    system_instruction = (
+        f"You are a premium editorial director for Xiaohongshu. Regenerate this single page (index: {page_index}) in a multi-page carousel project.\n"
+        f"Selected Theme: {theme}\n"
+        f"Brief: {json.dumps(brief)}\n"
+        f"Current Slide Content: {json.dumps(page_to_regen)}\n"
+        "Improve the copywriting, headlines, subheadlines, or structure to make it punchier and look more like an editorial magazine.\n"
+        "Return ONLY a valid JSON object matching the single page schema (do not wrap in markdown tags):\n"
+        "{\n"
+        "  \"id\": \"page_id\",\n"
+        "  \"pageNumber\": number,\n"
+        "  \"type\": \"page type\",\n"
+        "  \"headline\": \"...\",\n"
+        "  \"subheadline\": \"...\",\n"
+        "  \"body\": \"...\",\n"
+        "  \"smallNote\": \"...\",\n"
+        "  \"layout\": \"...\",\n"
+        "  \"imageRole\": \"...\",\n"
+        "  \"imageUrl\": \"...\",\n"
+        "  \"accent\": \"...\",\n"
+        "  \"textAlign\": \"...\",\n"
+        "  \"density\": \"...\",\n"
+        "  \"logoPosition\": \"...\"\n"
+        "}"
+    )
+    
+    candidate_models = [
+        'models/gemini-2.5-flash',
+        'models/gemini-2.0-flash',
+        'models/gemini-flash-latest'
+    ]
+    
+    for model_name in candidate_models:
+        try:
+            print(f"Regenerating page {page_index} using: {model_name}...")
+            model = genai.GenerativeModel(model_name)
+            response = model.generate_content([system_instruction])
+            text = response.text.strip()
+            if "```json" in text:
+                text = text.split("```json")[1].split("```")[0].strip()
+            elif "```" in text:
+                text = text.split("```")[1].split("```")[0].strip()
+            return json.loads(text)
+        except Exception as e:
+            print(f"Model {model_name} failed for page regen: {e}")
+            continue
+            
+    # Fallback: simple text enhancement
+    page_to_regen["headline"] = page_to_regen.get("headline", "") + " ✨"
+    page_to_regen["body"] = page_to_regen.get("body", "") + "\n(Regenerated copy details)"
+    return page_to_regen
 
 if __name__ == "__main__":
+
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
