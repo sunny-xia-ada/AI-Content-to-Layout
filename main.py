@@ -6,6 +6,7 @@ import random
 import uuid
 import time
 import markdown
+import json
 from bs4 import BeautifulSoup
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
@@ -13,12 +14,13 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from typing import Optional
-import google.generativeai as genai
-import json
-from duckduckgo_search import DDGS
-
-# Initialize the LLM (Requires GEMINI_API_KEY environment variable)
-genai.configure(api_key="AIzaSyBIsVN0XhvYWxkGDmBQwm2l8mLNfQnl-QU")
+try:
+    import google.generativeai as genai
+    genai.configure(api_key="AIzaSyBIsVN0XhvYWxkGDmBQwm2l8mLNfQnl-QU")
+    genai_available = True
+except Exception as e:
+    print(f"Warning: google.generativeai import/configuration failed: {e}")
+    genai_available = False
 
 from fastapi.middleware.cors import CORSMiddleware
 
