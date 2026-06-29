@@ -1,5 +1,7 @@
 // XYLab XHS Visual Studio - Front-end UI Coordinator
 
+let selectedThemeKey = "beauty";
+
 document.addEventListener('DOMContentLoaded', () => {
   // Initial page layout
   renderThemesList();
