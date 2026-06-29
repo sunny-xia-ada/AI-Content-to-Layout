@@ -22,6 +22,15 @@ const globalOverrides = {
   accentColor: ""     // Hex color
 };
 
+// Wrap external image URLs in CORS proxy
+function ensureProxyUrl(url) {
+  if (!url) return "";
+  if (url.startsWith("data:") || url.startsWith("/api/proxy-image") || url.startsWith("http://localhost") || url.startsWith("/")) {
+    return url;
+  }
+  return `/api/proxy-image?url=${encodeURIComponent(url)}`;
+}
+
 // Local mock brief generator fallback
 function mockGenerateBrief(prompt) {
   return {
@@ -205,6 +214,9 @@ function renderPreviewSlide(containerId, page, themeKey) {
 
   // Render using layout module
   const pageToRender = { ...page };
+  if (pageToRender.imageUrl) {
+    pageToRender.imageUrl = ensureProxyUrl(pageToRender.imageUrl);
+  }
   if (globalOverrides.logoPosition) {
     pageToRender.logoPosition = globalOverrides.logoPosition;
   }

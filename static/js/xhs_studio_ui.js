@@ -350,7 +350,7 @@ function renderThumbnailsDeck() {
           <span class="text-[7px] font-light truncate max-w-[40px] uppercase">${p.layout.split('-')[0]}</span>
         </div>
         <div class="w-full aspect-[4/3] rounded bg-neutral-100 overflow-hidden border border-neutral-200/30">
-          ${p.imageUrl ? `<img src="${p.imageUrl}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-[7px] text-gray-400">NO IMG</div>`}
+          ${p.imageUrl ? `<img src="${ensureProxyUrl(p.imageUrl)}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-[7px] text-gray-400">NO IMG</div>`}
         </div>
         <span class="text-[9px] font-bold truncate max-w-[80px]" style="color: ${textPrimaryColor}">${p.headline || "Untitled"}</span>
       </div>
@@ -477,6 +477,18 @@ function renderThemesList() {
       </div>
     `;
   }).join('');
+}
+
+function selectTheme(key) {
+  selectedThemeKey = key;
+  studioState.selectedTheme = XYLAB_THEMES[key].name;
+  if (studioState.creativeBrief) {
+    studioState.creativeBrief.suggestedTheme = XYLAB_THEMES[key].name;
+  }
+  renderThemesList();
+  if (studioState.pages.length > 0) {
+    renderProjectWorkspace();
+  }
 }
 
 // Style lock mechanics
