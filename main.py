@@ -22,6 +22,94 @@ except Exception as e:
     print(f"Warning: google.generativeai import/configuration failed: {e}")
     genai_available = False
 
+try:
+    import anthropic
+    anthropic_available = True
+except Exception as e:
+    print(f"Warning: anthropic import failed: {e}")
+    anthropic_available = False
+
+try:
+    from openai import OpenAI as OpenAIClient
+    openai_available = True
+except Exception as e:
+    print(f"Warning: openai import failed: {e}")
+    openai_available = False
+
+# ─── Multi-provider AI helper ──────────────────────────────────────────────
+# Keys are loaded from environment — set ANTHROPIC_API_KEY and OPENAI_API_KEY
+# in Vercel project settings (or locally in your shell).
+ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+OPENAI_KEY = os.environ.get("OPENAI_API_KEY", "")
+
+def call_ai_for_json(system_prompt: str, user_message: str) -> dict | None:
+    """Try Claude → GPT → Gemini in sequence; return parsed JSON or None."""
+    errors = []
+
+    # ── 1. Anthropic Claude ────────────────────────────────────────────────
+    if anthropic_available and ANTHROPIC_KEY:
+        for model in ["claude-sonnet-4-5", "claude-haiku-4-5", "claude-3-5-haiku-latest"]:
+            try:
+                client = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
+                msg = client.messages.create(
+                    model=model,
+                    max_tokens=4096,
+                    system=system_prompt,
+                    messages=[{"role": "user", "content": user_message}]
+                )
+                text = msg.content[0].text.strip()
+                if "```json" in text:
+                    text = text.split("```json")[1].split("```")[0].strip()
+                elif "```" in text:
+                    text = text.split("```")[1].split("```")[0].strip()
+                print(f"AI call succeeded with Claude model: {model}")
+                return json.loads(text)
+            except Exception as e:
+                errors.append(f"Claude {model}: {e}")
+                continue
+
+    # ── 2. OpenAI GPT ─────────────────────────────────────────────────────
+    if openai_available and OPENAI_KEY:
+        for model in ["gpt-4o", "gpt-4o-mini", "gpt-3.5-turbo"]:
+            try:
+                client = OpenAIClient(api_key=OPENAI_KEY)
+                resp = client.chat.completions.create(
+                    model=model,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_message}
+                    ],
+                    temperature=0.7,
+                    max_tokens=4096,
+                    response_format={"type": "json_object"}
+                )
+                text = resp.choices[0].message.content.strip()
+                print(f"AI call succeeded with OpenAI model: {model}")
+                return json.loads(text)
+            except Exception as e:
+                errors.append(f"GPT {model}: {e}")
+                continue
+
+    # ── 3. Google Gemini fallback ──────────────────────────────────────────
+    if genai_available:
+        for model_name in ["models/gemini-2.5-flash", "models/gemini-2.0-flash", "models/gemini-1.5-flash"]:
+            try:
+                model = genai.GenerativeModel(model_name)
+                response = model.generate_content([system_prompt, user_message])
+                text = response.text.strip()
+                if "```json" in text:
+                    text = text.split("```json")[1].split("```")[0].strip()
+                elif "```" in text:
+                    text = text.split("```")[1].split("```")[0].strip()
+                print(f"AI call succeeded with Gemini model: {model_name}")
+                return json.loads(text)
+            except Exception as e:
+                errors.append(f"Gemini {model_name}: {e}")
+                continue
+
+    print(f"All AI providers failed. Errors: {errors}")
+    return None
+
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="XYLAB // SMART AGENT v7.7.3")
@@ -743,35 +831,11 @@ async def api_generate_brief(request: BriefRequest):
         "}"
     )
     
-    contents = [system_instruction, f"User Idea/Draft: {prompt_text}"]
-    if request.image:
-        img_data = request.image
-        if ";base64," in img_data: img_data = img_data.split(";base64,")[1]
-        contents.append({"mime_type": "image/jpeg", "data": base64.b64decode(img_data)})
-
-    candidate_models = [
-        'models/gemini-2.5-flash',
-        'models/gemini-2.0-flash',
-        'models/gemini-flash-latest',
-        'models/gemini-1.5-flash',
-        'models/gemini-2.5-pro',
-        'models/gemini-pro-latest'
-    ]
-    
-    for model_name in candidate_models:
-        try:
-            print(f"Brief generation using: {model_name}...")
-            model = genai.GenerativeModel(model_name)
-            response = model.generate_content(contents)
-            text = response.text.strip()
-            if "```json" in text:
-                text = text.split("```json")[1].split("```")[0].strip()
-            elif "```" in text:
-                text = text.split("```")[1].split("```")[0].strip()
-            return json.loads(text)
-        except Exception as e:
-            print(f"Model {model_name} failed for brief: {e}")
-            continue
+    # Use multi-provider AI helper
+    user_message = f"User Idea/Draft: {prompt_text}"
+    result = call_ai_for_json(system_instruction, user_message)
+    if result:
+        return result
             
     # Fallback
     return mock_generate_brief(prompt_text)
@@ -830,30 +894,11 @@ async def api_generate_carousel(request: CarouselRequest):
         "Use these layout names where appropriate: 'magazine-cover' (mandatory for Cover), 'split-editorial', 'info-card', 'moodboard-archive', 'routine-flow', 'before-after', 'quote-page', 'product-catalog'."
     )
     
-    contents = [system_instruction, f"Creative Brief: {json.dumps(brief)}"]
-    
-    candidate_models = [
-        'models/gemini-2.5-flash',
-        'models/gemini-2.0-flash',
-        'models/gemini-flash-latest',
-        'models/gemini-1.5-flash',
-        'models/gemini-2.5-pro'
-    ]
-    
-    for model_name in candidate_models:
-        try:
-            print(f"Carousel generation using: {model_name}...")
-            model = genai.GenerativeModel(model_name)
-            response = model.generate_content(contents)
-            text = response.text.strip()
-            if "```json" in text:
-                text = text.split("```json")[1].split("```")[0].strip()
-            elif "```" in text:
-                text = text.split("```")[1].split("```")[0].strip()
-            return json.loads(text)
-        except Exception as e:
-            print(f"Model {model_name} failed for carousel: {e}")
-            continue
+    # Use multi-provider AI helper
+    user_message = f"Creative Brief: {json.dumps(brief)}"
+    result = call_ai_for_json(system_instruction, user_message)
+    if result and "pages" in result:
+        return result
             
     # Fallback
     return mock_generate_carousel(brief, theme, page_count)
@@ -895,27 +940,12 @@ async def api_regenerate_page(request: RegenerateRequest):
         "}"
     )
     
-    candidate_models = [
-        'models/gemini-2.5-flash',
-        'models/gemini-2.0-flash',
-        'models/gemini-flash-latest'
-    ]
-    
-    for model_name in candidate_models:
-        try:
-            print(f"Regenerating page {page_index} using: {model_name}...")
-            model = genai.GenerativeModel(model_name)
-            response = model.generate_content([system_instruction])
-            text = response.text.strip()
-            if "```json" in text:
-                text = text.split("```json")[1].split("```")[0].strip()
-            elif "```" in text:
-                text = text.split("```")[1].split("```")[0].strip()
-            return json.loads(text)
-        except Exception as e:
-            print(f"Model {model_name} failed for page regen: {e}")
-            continue
-            
+    # Use multi-provider AI helper
+    user_message = f"Regenerate slide {page_index}. Current content: {json.dumps(page_to_regen)}"
+    result = call_ai_for_json(system_instruction, user_message)
+    if result and "headline" in result:
+        return result
+
     # Fallback: simple text enhancement
     page_to_regen["headline"] = page_to_regen.get("headline", "") + " ✨"
     page_to_regen["body"] = page_to_regen.get("body", "") + "\n(Regenerated copy details)"

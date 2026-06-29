@@ -5,3 +5,6 @@ markdown
 beautifulsoup4
 python-multipart
 google-generativeai
+anthropic
+openai
+httpx
