@@ -401,21 +401,107 @@ THEMES = {
     }
 }
 
-LOREM_TAGS = {
-    "loopy": ["pastel", "toy"],
-    "executive": ["architecture", "office"],
-    "ethereal": ["sky", "clouds"],
-    "techno": ["cyberpunk", "circuit"],
-    "urban": ["street", "graffiti"],
-    "wonyoung": ["pink", "diamonds", "jewelry"],
-    "algorithm": ["mesh", "gradient", "fluid"],
-    "archive": ["concrete", "sneaker", "vintage"],
-    "solidcore": ["fitness", "lime", "dark"],
-    "bottari": ["earthy", "canvas", "minimal"],
-    "pearl": ["pearl", "skin", "minimal", "silver"],
-    "glory": ["glass", "prism", "silver", "dark"],
-    "fantasy": ["crystal", "butterfly", "soft", "dreamlike"]
+# ── Per-theme curated Unsplash keyword pools ───────────────────────────
+# Unsplash Source: https://source.unsplash.com/{w}x{h}/?{keywords}
+# Keywords are comma-separated; Unsplash picks a random matching photo.
+UNSPLASH_POOLS: dict[str, list[str]] = {
+    "loopy": [
+        "pastel,pink,soft",
+        "minimal,cute,toy",
+        "blush,light,dreamy",
+        "pink,flower,soft-light",
+    ],
+    "executive": [
+        "architecture,minimal,concrete",
+        "office,grid,clean",
+        "brutalist,structure,monochrome",
+        "city,glass,reflection",
+    ],
+    "ethereal": [
+        "sky,cloud,light",
+        "mist,fog,morning",
+        "blue,atmosphere,airy",
+        "window,natural-light,pale",
+    ],
+    "techno": [
+        "neon,dark,circuit",
+        "cyberpunk,city,night",
+        "abstract,digital,blue",
+        "matrix,code,glow",
+    ],
+    "urban": [
+        "street,graffiti,urban",
+        "neon,night,city",
+        "concrete,texture,wall",
+        "fashion,editorial,street",
+    ],
+    "wonyoung": [
+        "jewelry,sparkle,pink",
+        "diamond,glitter,rose",
+        "pearl,soft,feminine",
+        "luxury,flower,pastel",
+    ],
+    "algorithm": [
+        "abstract,gradient,fluid",
+        "mesh,colorful,digital",
+        "liquid,wave,minimal",
+        "geometry,flow,art",
+    ],
+    "archive": [
+        "vintage,film,grain",
+        "concrete,industrial,texture",
+        "analog,retro,worn",
+        "black-white,street,archive",
+    ],
+    "solidcore": [
+        "fitness,motion,dark",
+        "gym,sport,blur",
+        "dynamic,energy,lime",
+        "body,movement,athletic",
+    ],
+    "bottari": [
+        "earthy,canvas,linen",
+        "ceramic,natural,texture",
+        "sand,minimal,organic",
+        "clay,craft,warm",
+    ],
+    # XYLab DNA themes — most carefully curated
+    "pearl": [
+        "skin,gloss,minimal,white",
+        "pearl,silver,beauty,clean",
+        "glass,transparent,light",
+        "korean,beauty,editorial,pale",
+        "face,porcelain,studio",
+        "cosmetic,luxury,soft",
+    ],
+    "glory": [
+        "glass,shattered,prism",
+        "silver,metallic,dark",
+        "obsidian,black,reflection",
+        "crystal,fracture,cold",
+        "platinum,abstract,light",
+        "monochrome,editorial,sharp",
+    ],
+    "fantasy": [
+        "crystal,butterfly,soft",
+        "petal,floating,dreamy",
+        "purple,mist,magical",
+        "fairy,light,bokeh",
+        "floral,pastel,fantasy",
+        "lavender,haze,ethereal",
+    ],
 }
+
+# Fallback for any unknown theme
+UNSPLASH_POOLS["default"] = UNSPLASH_POOLS["ethereal"]
+
+def _unsplash_url(theme_id: str, width: int = 1200, height: int = 800) -> str:
+    """Return a random Unsplash Source URL matching the theme aesthetic."""
+    pool = UNSPLASH_POOLS.get(theme_id, UNSPLASH_POOLS["default"])
+    keywords = random.choice(pool)
+    # Cache-busting via random seed so each shuffle gives a new image
+    seed = random.randint(1, 9_999_999)
+    return f"https://source.unsplash.com/{width}x{height}/?{keywords}&sig={seed}"
 
 def smart_restructure(text):
     # Rule 0: Clean Slate Headers (Prevent #### accumulation)
@@ -458,26 +544,8 @@ def auto_illustrate(text, theme_id="loopy"):
     text = re.sub(r'!\[.*?\]\(.*?\)', '', text, flags=re.DOTALL)
     text = text.strip()
 
-    # Step 2: Simplified Illustration Logic (Zero-Hero Policy)
-    DIVIDER_TAGS = {
-        "loopy": "pastel,gradient,soft",
-        "executive": "monochrome,grid,minimal",
-        "ethereal": "light,blur,airy",
-        "techno": "circuit,matrix,dark",
-        "urban": "neon,blur,texture",
-        "wonyoung": "sparkle,diamond,pink",
-        "algorithm": "mesh,fluid,gradient",
-        "archive": "concrete,texture,industrial",
-        "solidcore": "motion,blur,lime",
-        "bottari": "paper,earthy,texture"
-    }
-
-    divider_tags = DIVIDER_TAGS.get(theme_id, "pastel,gradient,soft")
-    tag_list = [t.strip() for t in divider_tags.split(",")]
-    chosen_tag = random.choice(tag_list)
-    
-    seed = random.randint(1, 999999)
-    divider_url = f"https://loremflickr.com/1000/600/{chosen_tag}/all?lock={seed}"
+    # Step 2: Pick a high-quality Unsplash image matching the theme
+    divider_url = _unsplash_url(theme_id, width=1200, height=800)
 
     # Step 3: Strict Markdown Syntax Insertion
     lines = [line.strip() for line in text.split('\n') if line.strip()]
@@ -784,12 +852,7 @@ async def ai_process(markdown_input: str = Form(...), theme: str = Form('loopy')
 
 @app.post("/shuffle-image")
 async def shuffle_image(theme: str = Form("loopy")):
-    tags = LOREM_TAGS.get(theme, LOREM_TAGS["loopy"])
-    chosen_tag = random.choice(tags)
-    
-    seed = random.randint(1, 999999)
-    timestamp = int(time.time() * 1000)
-    url = f"https://loremflickr.com/1000/600/{chosen_tag}/all?lock={seed}&t={timestamp}"
+    url = _unsplash_url(theme, width=1200, height=800)
     return {"new_image_markdown": f"![Divider]({url})"}
 
 @app.post("/api/vision-magic")
