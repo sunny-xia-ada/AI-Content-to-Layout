@@ -21,9 +21,15 @@
 <body class="min-h-screen flex flex-col">
 
     <nav class="h-16 flex items-center justify-between px-6 border-b border-black/5 bg-white/80 backdrop-blur-md sticky top-0 z-50">
-        <div class="flex items-center space-x-4">
-            <a href="/" class="text-xs font-bold bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-all text-gray-600">← XYLAB OS</a>
-            <span class="serif text-xl tracking-tighter uppercase font-bold text-black">XYLAB <span class="text-xs font-light opacity-30 italic ml-1">SMART AGENT V4.4</span></span>
+        <div class="flex items-center space-x-6">
+            <a href="index.html" class="flex items-center space-x-3 group">
+                <div class="w-8 h-8 bg-[#111] rounded-full flex items-center justify-center shadow-lg transition-transform group-hover:scale-110">
+                    <div class="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></div>
+                </div>
+                <span class="font-extrabold text-xl tracking-tight">XYLAB <span class="text-xs font-normal opacity-40 ml-1">OS</span></span>
+            </a>
+            <div class="h-4 w-[1px] bg-gray-300"></div>
+            <span class="serif text-xl tracking-tighter uppercase font-bold text-black/80">XYLAB <span class="text-xs font-light opacity-30 italic ml-1">SMART AGENT V4.4</span></span>
         </div>
         <img src="{{ loopy_uri }}" class="w-8 h-8 rounded-full border border-pink-100" alt="loopy">
     </nav>
@@ -54,6 +60,9 @@
                             <option value="archive">Archive 2026</option>
                             <option value="solidcore">Solidcore</option>
                             <option value="bottari">Bottari</option>
+                            <option value="pearl">✦ Pearl Editorial</option>
+                            <option value="glory">✦ Glory Afterimage</option>
+                            <option value="fantasy">✦ Fantasy Archive</option>
                         </select>
                     </div>
                 </div>

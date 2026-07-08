@@ -283,6 +283,121 @@ THEMES = {
         "blockquote": "padding: 30px; margin: 40px 0; border: 1px solid #D1C9C0; font-style: italic; color: #6C6862; text-align: center;",
         "img": "max-width: 100%; display: block; margin: 50px auto; opacity: 0.85; filter: sepia(0.1);",
         "accent": "#D1C9C0"
+    },
+    # ──────────────────── NEW XYLAB DNA THEMES ─────────────────────────
+    # 01  Pearl Editorial — Korean beauty editorial, pearl white / silver / dusty blue
+    "pearl": {
+        "card": (
+            "width: 100%; max-width: 540px; margin: 0 auto;"
+            "background: #FDFDFC;"
+            "padding: 80px 48px 96px;"
+            "border-radius: 6px;"
+            "font-family: 'Georgia', 'Songti SC', serif;"
+            "color: #2D2D2D;"
+            "box-shadow: 0 24px 64px rgba(180,180,195,0.12);"
+            "border: 1px solid #ECECEC;"
+        ),
+        "h2": (
+            "font-size: 13px; font-weight: 400; color: #9EA8B5;"
+            "text-transform: uppercase; letter-spacing: 6px;"
+            "margin: 64px 0 10px 0; border-bottom: 0;"
+        ),
+        "h3": (
+            "font-size: 22px; font-weight: 300; color: #2D2D2D;"
+            "margin: 4px 0 28px 0; letter-spacing: 0.02em; line-height: 1.4;"
+        ),
+        "p": (
+            "font-size: 15px; line-height: 2.2; color: #5A5A62;"
+            "margin: 0 0 2em; text-align: left;"
+        ),
+        "blockquote": (
+            "border-left: 2px solid #AEBFD1; padding: 20px 24px;"
+            "margin: 40px 0; color: #8A8FA5; font-style: italic; font-size: 16px;"
+            "background: #F8F9FB; border-radius: 0 6px 6px 0;"
+        ),
+        "strong": "color: #2D2D2D; font-weight: 600; letter-spacing: 0.01em;",
+        "img": (
+            "max-width: 100%; display: block; margin: 44px auto;"
+            "border-radius: 4px; box-shadow: 0 8px 32px rgba(174,191,209,0.2);"
+        ),
+        "accent": "#AEBFD1"
+    },
+    # 02  Glory Afterimage — obsidian / prism / cold silver / controlled fragility
+    "glory": {
+        "card": (
+            "width: 100%; max-width: 550px; margin: 0 auto;"
+            "background: #0E0E10;"
+            "padding: 80px 48px 100px;"
+            "border-radius: 2px;"
+            "font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', sans-serif;"
+            "color: #E8E8EC;"
+            "box-shadow: 0 0 80px rgba(174,200,220,0.08), inset 0 0 1px rgba(255,255,255,0.06);"
+            "border: 1px solid rgba(255,255,255,0.06);"
+        ),
+        "h2": (
+            "font-size: 10px; font-weight: 400; color: #5A6070;"
+            "text-transform: uppercase; letter-spacing: 8px;"
+            "margin: 72px 0 8px 0;"
+        ),
+        "h3": (
+            "font-size: 26px; font-weight: 200; color: #E8E8EC;"
+            "margin: 0 0 32px; letter-spacing: -0.02em; line-height: 1.25;"
+        ),
+        "p": (
+            "font-size: 15px; line-height: 2.0; color: #9A9AA8;"
+            "margin: 0 0 2em; text-align: left;"
+        ),
+        "blockquote": (
+            "border-left: 1px solid #C4D0DC; padding: 20px 24px;"
+            "margin: 48px 0; color: #BFC8D4; font-style: normal; font-size: 17px;"
+            "letter-spacing: 0.02em; background: rgba(196,208,220,0.04);"
+        ),
+        "strong": "color: #D5DDE6; font-weight: 500;",
+        "img": (
+            "max-width: 100%; display: block; margin: 48px auto;"
+            "filter: contrast(1.08) brightness(0.92) saturate(0.7);"
+            "box-shadow: 0 0 40px rgba(0,0,0,0.6);"
+        ),
+        "accent": "#7B90A8"
+    },
+    # 03  Fantasy Archive — dreamy / crystal / floating / real-photo-plus-wonder
+    "fantasy": {
+        "card": (
+            "width: 100%; max-width: 540px; margin: 0 auto;"
+            "background: linear-gradient(160deg, #F8F5FF 0%, #F5F8FF 50%, #FFF5FD 100%);"
+            "padding: 80px 48px 100px;"
+            "border-radius: 16px;"
+            "font-family: 'Georgia', 'Songti SC', serif;"
+            "color: #2E2B38;"
+            "box-shadow: 0 24px 80px rgba(140,120,180,0.1);"
+            "border: 1px solid rgba(200,185,220,0.25);"
+        ),
+        "h2": (
+            "font-size: 10px; font-weight: 400; color: #B8ABCC;"
+            "text-transform: uppercase; letter-spacing: 6px;"
+            "margin: 64px 0 8px 0;"
+        ),
+        "h3": (
+            "font-size: 22px; font-weight: 300; color: #3A2E4E;"
+            "margin: 0 0 28px; letter-spacing: 0.01em; line-height: 1.45;"
+        ),
+        "p": (
+            "font-size: 15px; line-height: 2.3; color: #5C5472;"
+            "margin: 0 0 2em; text-align: left;"
+        ),
+        "blockquote": (
+            "padding: 24px 28px; margin: 44px 0;"
+            "border: 1px solid rgba(180,160,210,0.35);"
+            "border-radius: 12px; background: rgba(240,235,255,0.5);"
+            "color: #7A6A98; font-style: italic; font-size: 16px;"
+        ),
+        "strong": "color: #5A4875; font-weight: 600;",
+        "img": (
+            "max-width: 100%; display: block; margin: 44px auto;"
+            "border-radius: 20px;"
+            "box-shadow: 0 16px 48px rgba(160,130,200,0.18);"
+        ),
+        "accent": "#C3B2DC"
     }
 }
 
@@ -296,7 +411,10 @@ LOREM_TAGS = {
     "algorithm": ["mesh", "gradient", "fluid"],
     "archive": ["concrete", "sneaker", "vintage"],
     "solidcore": ["fitness", "lime", "dark"],
-    "bottari": ["earthy", "canvas", "minimal"]
+    "bottari": ["earthy", "canvas", "minimal"],
+    "pearl": ["pearl", "skin", "minimal", "silver"],
+    "glory": ["glass", "prism", "silver", "dark"],
+    "fantasy": ["crystal", "butterfly", "soft", "dreamlike"]
 }
 
 def smart_restructure(text):
@@ -376,7 +494,7 @@ def render_aura_engine(md_text, theme_id="loopy"):
     raw_html = markdown.markdown(md_text, extensions=['extra', 'nl2br', 'sane_lists'])
     soup = BeautifulSoup(raw_html, "html.parser")
 
-    for h2 in soup.find_all("h2"):
+    for i, h2 in enumerate(soup.find_all("h2"), 1):
         if theme_id == "executive":
             num_span = soup.new_tag("span", style="font-family: 'Courier New', monospace; font-size: 0.7em; color: #888; font-weight: normal; margin-right: 10px;")
             num_span.string = "[SECTION.SC]"
@@ -392,6 +510,14 @@ def render_aura_engine(md_text, theme_id="loopy"):
         elif theme_id == "wonyoung":
             orig_text = h2.get_text()
             h2.string = f"{orig_text} ✨"
+        elif theme_id in ("pearl", "glory", "fantasy"):
+            # Convert ## headings into editorial eyebrow labels
+            num_str = f"{i:02d}"
+            orig_text = h2.get_text()
+            eyebrow = soup.new_tag("div", style=theme["h2"])
+            eyebrow.string = f"{num_str}  //  {orig_text.upper()}"
+            h2.replace_with(eyebrow)
+            continue  # style already applied inline above
         h2['style'] = theme['h2']
     
     for i, h3 in enumerate(soup.find_all("h3"), 1):
@@ -406,6 +532,25 @@ def render_aura_engine(md_text, theme_id="loopy"):
         elif theme_id == "bottari":
             orig_text = h3.get_text()
             h3.string = f"[ Scent Notes: {orig_text} ]"
+        elif theme_id == "pearl":
+            # Thin rule above, then title in light weight
+            orig_text = h3.get_text()
+            rule = soup.new_tag("div", style="height: 1px; background: linear-gradient(90deg, #AEBFD1 0%, transparent 100%); width: 40px; margin: 56px 0 20px 0;")
+            h3.insert_before(rule)
+        elif theme_id == "glory":
+            # Angular slash prefix
+            slash = soup.new_tag("span", style="color: #7B90A8; margin-right: 10px; font-weight: 200; font-size: 0.85em;")
+            slash.string = "/"
+            orig_text = h3.get_text()
+            h3.clear()
+            h3.append(slash); h3.append(orig_text)
+        elif theme_id == "fantasy":
+            # Soft glyph prefix
+            glyph = soup.new_tag("span", style="color: #C3B2DC; margin-right: 8px;")
+            glyph.string = "◆"
+            orig_text = h3.get_text()
+            h3.clear()
+            h3.append(glyph); h3.append(orig_text)
         h3['style'] = theme['h3']
     
     for tag in ["p", "strong", "blockquote"]:
@@ -436,7 +581,7 @@ def render_aura_engine(md_text, theme_id="loopy"):
                 img.wrap(wrapper)
                 wrapper.append(cert_badge)
 
-    # Footer Bubble Signature
+    # ── Footer / Archive Signature ─────────────────────────────────
     footer = soup.new_tag("div", style="text-align: center; margin-top: 60px; padding-bottom: 20px;")
     
     if LOOPY_DATA_URI and theme_id == "loopy":
@@ -501,6 +646,28 @@ def render_aura_engine(md_text, theme_id="loopy"):
         ts = soup.new_tag("div", style="font-size: 10px; color: #888; letter-spacing: 4px; margin-top: 15px; text-transform: uppercase;")
         ts.string = "XYLAB STANCE CORE // 2026"
         footer.append(ts)
+    # ── New XYLab DNA theme signatures ──────────────────────────────
+    elif theme_id == "pearl":
+        footer['style'] = "margin-top: 80px; padding-top: 36px; border-top: 1px solid #DEDEDE; text-align: left;"
+        line1 = soup.new_tag("div", style="font-size: 10px; letter-spacing: 6px; color: #AEBFD1; text-transform: uppercase; font-family: 'Georgia', serif;")
+        line1.string = "XYLab Beauty Editorial"
+        line2 = soup.new_tag("div", style="font-size: 9px; letter-spacing: 3px; color: #C8C8C8; margin-top: 8px; text-transform: uppercase;")
+        line2.string = "Imagination · Skin · Archive"
+        footer.append(line1); footer.append(line2)
+    elif theme_id == "glory":
+        footer['style'] = "margin-top: 80px; padding-top: 36px; border-top: 1px solid rgba(255,255,255,0.07); text-align: left;"
+        line1 = soup.new_tag("div", style="font-size: 10px; letter-spacing: 7px; color: #5A6070; text-transform: uppercase;")
+        line1.string = "XYLab Glory  //  Afterimage"
+        line2 = soup.new_tag("div", style="font-size: 9px; letter-spacing: 3px; color: #3A3A42; margin-top: 8px; font-style: italic;")
+        line2.string = "All glory is meant to break."
+        footer.append(line1); footer.append(line2)
+    elif theme_id == "fantasy":
+        footer['style'] = "margin-top: 80px; padding-top: 36px; border-top: 1px solid rgba(195,178,220,0.3); text-align: center;"
+        line1 = soup.new_tag("div", style="font-size: 10px; letter-spacing: 6px; color: #C3B2DC; text-transform: uppercase; font-family: 'Georgia', serif;")
+        line1.string = "XYLab Fantasy Archive"
+        line2 = soup.new_tag("div", style="font-size: 9px; letter-spacing: 3px; color: #B8ABCC; margin-top: 8px;")
+        line2.string = "Imagination  ·  Aesthetics  ·  Becoming"
+        footer.append(line1); footer.append(line2)
     
     soup.append(footer)
 
@@ -628,11 +795,7 @@ async def shuffle_image(theme: str = Form("loopy")):
 @app.post("/api/vision-magic")
 async def vision_magic(request: VisionMagicRequest):
     prompt_text = request.prompt
-    try:
-        with DDGS() as ddgs:
-            refs = list(ddgs.text(f"site:xiaohongshu.com {prompt_text[:20]}", max_results=3))
-            refs_text = "\n".join([r.get('body', '') for r in refs])
-    except: refs_text = "N/A"
+    refs_text = "N/A"  # DDGS search removed
 
     system_instruction = (
         f"你是顶级小红书与美妆护肤博主。参考：{refs_text}\n"
@@ -651,54 +814,16 @@ async def vision_magic(request: VisionMagicRequest):
         "  ]\n"
         "}"
     )
-    contents = [system_instruction, f"User Prompt: {prompt_text}"]
-    if request.image:
-        img_data = request.image
-        if ";base64," in img_data: img_data = img_data.split(";base64,")[1]
-        contents.append({"mime_type": "image/jpeg", "data": base64.b64decode(img_data)})
+    user_message = f"User Prompt: {prompt_text}"
+    result = call_ai_for_json(system_instruction, user_message)
+    if result and "scenes" in result:
+        return result
 
-    # Try multiple models to find one with quota
-    candidate_models = [
-        'models/gemini-2.5-flash',
-        'models/gemini-2.0-flash',
-        'models/gemini-flash-latest',
-        'models/gemini-1.5-flash',
-        'models/gemini-2.5-pro',
-        'models/gemini-pro-latest'
-    ]
-    
-    last_error = ""
-    for model_name in candidate_models:
-        try:
-            print(f"Trying model: {model_name}...")
-            model = genai.GenerativeModel(model_name)
-            response = model.generate_content(contents)
-            text = response.text.strip()
-            if "```json" in text:
-                text = text.split("```json")[1].split("```")[0].strip()
-            elif "```" in text:
-                text = text.split("```")[1].split("```")[0].strip()
-            return json.loads(text)
-        except Exception as e:
-            last_error = str(e)
-            print(f"Model {model_name} failed: {last_error}")
-            continue # Try next model
-            
-    # If all models fail
-    if "429" in last_error:
-        return {
-            "scenes": [{
-                "title": "🚦 创作配额受限", 
-                "hook": "检测到 API 额度异常", 
-                "body": f"虽然你今天没用过，但 Google 返回了配额错误：{last_error}\n这通常是因为：\n1. 网络代理所在地区受限\n2. 该 Key 尚未在 AI Studio 激活预览权限"
-            }]
-        }
-    
     return {
         "scenes": [{
-            "title": "GENERATION FAILED", 
-            "hook": "API Error", 
-            "body": f"所有尝试的模型均失败。最后报错: {last_error}"
+            "title": "GENERATION FAILED",
+            "hook": "API Error",
+            "body": "所有模型均失败，请稍后重试。"
         }]
     }
 
